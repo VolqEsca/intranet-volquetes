@@ -6,11 +6,8 @@ import {
   User,
   Lock,
   AlertCircle,
-  Truck,
-  TrendingUp,
-  Users,
+  Calendar,
   Clock,
-  CheckCircle,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -19,47 +16,17 @@ export const LoginPage = () => {
   const { login, isLoading } = useAuth();
   const [error, setError] = useState<string>("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const slides = [
-    {
-      icon: Truck,
-      title: "Sistema de Gestión Integral",
-      description:
-        "Optimiza las operaciones de tu flota con nuestra plataforma intuitiva y potente.",
-      stats: { label: "Vehículos Activos", value: "45+" },
-    },
-    {
-      icon: TrendingUp,
-      title: "Aumenta tu Productividad",
-      description:
-        "Reduce tiempos muertos y maximiza la eficiencia de tus recursos.",
-      stats: { label: "Mejora Promedio", value: "32%" },
-    },
-    {
-      icon: Users,
-      title: "Gestión de Equipos",
-      description:
-        "Coordina conductores, mecánicos y administrativos desde un solo lugar.",
-      stats: { label: "Usuarios Activos", value: "120+" },
-    },
-    {
-      icon: Clock,
-      title: "Reportes en Tiempo Real",
-      description:
-        "Toma decisiones informadas con datos actualizados al instante.",
-      stats: { label: "Actualizaciones", value: "24/7" },
-    },
-  ];
-
+  // Actualizar fecha y hora cada segundo
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+      setCurrentTime(new Date());
+    }, 1000);
 
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -72,6 +39,33 @@ export const LoginPage = () => {
     if (!success) {
       setError("Usuario o contraseña incorrectos");
     }
+  };
+
+  // Formateo elegante de fecha en español
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // Formateo de hora con segundos
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  // ✅ SALUDO PERSONALIZADO PARA VOLQUETES ESCALANTE
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour < 15) return "Buenos días";      // 00:00 - 14:59
+    if (hour < 20) return "Buenas tardes";    // 15:00 - 19:59
+    return "Buenas noches";                   // 20:00 - 23:59
   };
 
   return (
@@ -119,7 +113,6 @@ export const LoginPage = () => {
                   required
                   className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all duration-200"
                   placeholder="Ingresa tu usuario"
-                  defaultValue="admin"
                 />
               </div>
             </div>
@@ -142,7 +135,6 @@ export const LoginPage = () => {
                   required
                   className="block w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all duration-200"
                   placeholder="Ingresa tu contraseña"
-                  defaultValue="password"
                 />
                 <button
                   type="button"
@@ -218,68 +210,51 @@ export const LoginPage = () => {
         </div>
       </div>
 
-      {/* Panel derecho - Visual dinámico */}
+      {/* Panel derecho - Solo información real y útil */}
       <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-primary-dark via-secondary to-light-accent">
         <div className="flex-1 flex flex-col justify-center items-center p-12 text-white">
-          <div className="max-w-md text-center">
-            {/* Contenido dinámico */}
+          <div className="max-w-lg text-center">
+            
+            {/* Saludo dinámico personalizado */}
             <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6 transition-all duration-500">
-                {React.createElement(slides[currentSlide].icon, {
-                  className: "w-10 h-10 text-white",
-                })}
-              </div>
+              <h2 className="text-4xl font-bold mb-4">
+                {getGreeting()}
+              </h2>
+              <p className="text-xl text-white/90">
+                Sistema VERSO - Volquetes Escalante
+              </p>
             </div>
 
-            <h2 className="text-4xl font-bold mb-4 transition-all duration-500">
-              {slides[currentSlide].title}
-            </h2>
-
-            <p className="text-lg text-white/90 leading-relaxed mb-8 transition-all duration-500">
-              {slides[currentSlide].description}
-            </p>
-
-            {/* Estadística destacada */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-8">
-              <div className="text-3xl font-bold mb-1">
-                {slides[currentSlide].stats.value}
-              </div>
-              <div className="text-sm text-white/80">
-                {slides[currentSlide].stats.label}
-              </div>
-            </div>
-
-            {/* Indicadores de slides */}
-            <div className="flex justify-center gap-3">
-              {slides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentSlide
-                      ? "bg-white w-8"
-                      : "bg-white/40 hover:bg-white/60"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Features destacados */}
-            <div className="mt-12 grid grid-cols-2 gap-4 text-left">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-white/80 mt-0.5" />
-                <div>
-                  <div className="font-semibold">100% Cloud</div>
-                  <div className="text-sm text-white/70">
-                    Acceso desde cualquier lugar
+            {/* Solo fecha y hora - Información pura */}
+            <div className="space-y-6">
+              
+              {/* Fecha */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="flex items-center justify-center mb-3">
+                  <Calendar className="w-8 h-8 text-white/80 mr-4" />
+                  <div className="text-left">
+                    <div className="text-sm text-white/70 uppercase tracking-wide font-medium">
+                      Fecha
+                    </div>
+                    <div className="text-2xl font-semibold capitalize">
+                      {formatDate(currentTime)}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-white/80 mt-0.5" />
-                <div>
-                  <div className="font-semibold">Seguro</div>
-                  <div className="text-sm text-white/70">Datos encriptados</div>
+
+              {/* Hora en tiempo real */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="flex items-center justify-center mb-3">
+                  <Clock className="w-8 h-8 text-white/80 mr-4" />
+                  <div className="text-left">
+                    <div className="text-sm text-white/70 uppercase tracking-wide font-medium">
+                      Hora actual
+                    </div>
+                    <div className="text-3xl font-bold font-mono tabular-nums">
+                      {formatTime(currentTime)}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
