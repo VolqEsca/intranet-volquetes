@@ -17,12 +17,11 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { dialog } from "../../services/dialog.service";
 
 export const ProfilePage = () => {
   const { user, updateUserInfo } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -77,8 +76,6 @@ export const ProfilePage = () => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
     setLoading(true);
 
     try {
@@ -98,10 +95,12 @@ export const ProfilePage = () => {
         rol: formData.rol,
       });
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      await dialog.success('Tu perfil ha sido actualizado correctamente', '✅ Perfil Actualizado');
     } catch (error: any) {
-      setError(error.response?.data?.error || "Error al actualizar perfil");
+      await dialog.error(
+        error.response?.data?.error || 'No se pudo actualizar tu perfil. Por favor, inténtalo de nuevo.',
+        'Error al actualizar perfil'
+      );
     } finally {
       setLoading(false);
     }
@@ -109,16 +108,14 @@ export const ProfilePage = () => {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      await dialog.error('Las contraseñas no coinciden. Por favor, verifica que ambas sean idénticas.');
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+      await dialog.error('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
@@ -136,10 +133,16 @@ export const ProfilePage = () => {
         confirmPassword: "",
       });
       setPasswordStrength(0);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      
+      await dialog.success(
+        'Tu contraseña ha sido actualizada exitosamente. Recuerda usar la nueva contraseña en tu próximo inicio de sesión.',
+        '✅ Contraseña Actualizada'
+      );
     } catch (error: any) {
-      setError(error.response?.data?.error || "Error al cambiar contraseña");
+      await dialog.error(
+        error.response?.data?.error || 'No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.',
+        'Error al cambiar contraseña'
+      );
     } finally {
       setLoading(false);
     }
@@ -191,21 +194,6 @@ export const ProfilePage = () => {
             Gestiona tu información personal y seguridad
           </p>
         </div>
-
-        {/* Mensajes de estado */}
-        {error && (
-          <div className="mb-6 flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-6 flex items-center gap-2 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-            <CheckCircle size={20} />
-            <span>Cambios guardados exitosamente</span>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Información Personal */}

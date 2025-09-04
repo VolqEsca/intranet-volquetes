@@ -10,4 +10,9 @@ export default defineConfig({
     },
     allowedHosts: ["hcm7s3-5173.csb.app"],
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'app-assets', // ✅ CRÍTICO: Evita colisión con /assets del backend
+    emptyOutDir: true,
+  }
 });

@@ -1,6 +1,7 @@
+// src/components/ui/Button.tsx
 import React from "react";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -26,7 +27,7 @@ export const Button = ({
     disabled:opacity-50 disabled:cursor-not-allowed
   `;
 
-  // Variantes usando los colores corporativos
+  // Variantes usando solo los colores corporativos azules
   const variants = {
     primary: `
       bg-primary-dark text-white shadow-sm
@@ -47,11 +48,6 @@ export const Button = ({
       bg-transparent text-gray-600
       hover:bg-light-accent/20 hover:text-primary-dark
       focus:ring-gray-500
-    `,
-    danger: `
-      bg-red-600 text-white shadow-sm
-      hover:bg-red-700 hover:shadow-md
-      focus:ring-red-600
     `,
   };
 

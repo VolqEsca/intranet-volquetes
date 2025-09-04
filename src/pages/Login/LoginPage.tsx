@@ -11,6 +11,8 @@ import {
   Users,
   Clock,
   CheckCircle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export const LoginPage = () => {
@@ -18,6 +20,7 @@ export const LoginPage = () => {
   const [error, setError] = useState<string>("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   const slides = [
     {
@@ -135,12 +138,23 @@ export const LoginPage = () => {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all duration-200"
+                  className="block w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all duration-200"
                   placeholder="Ingresa tu contraseña"
                   defaultValue="password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </div>
 

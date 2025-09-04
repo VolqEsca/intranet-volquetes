@@ -11,37 +11,26 @@ import {
   UserCheck,
   UserX,
   Shield,
+  Mail,
+  Calendar,
+  User,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { apiClient } from "../../api";
 import { UserModal } from "./components/UserModal";
 import { PasswordModal } from "./components/PasswordModal";
+import { getRoleConfig } from "../../config/roles";
+import { dialog } from "../../services/dialog.service";
 
 interface User {
   id: number;
   username: string;
   email?: string;
-  rol: "admin" | "operador" | "viewer";
+  nombre?: string;
+  apellidos?: string;
+  rol: string;
   created_at: string;
 }
-
-const roleConfig = {
-  admin: {
-    label: "Administrador",
-    color: "bg-purple-100 text-purple-800",
-    icon: Shield,
-  },
-  operador: {
-    label: "Operador",
-    color: "bg-blue-100 text-blue-800",
-    icon: UserCheck,
-  },
-  viewer: {
-    label: "Solo Consulta",
-    color: "bg-gray-100 text-gray-800",
-    icon: UserX,
-  },
-};
 
 export const UsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -52,9 +41,10 @@ export const UsersPage = () => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string>("");
 
-  // Solo admins pueden acceder
-  const canManageUsers = currentUser?.rol === "admin";
+  // Solo admins pueden acceder - verificamos ambos formatos
+  const canManageUsers = currentUser?.rol === "admin" || currentUser?.rol === "Administrador";
 
   useEffect(() => {
     if (canManageUsers) {
@@ -65,10 +55,13 @@ export const UsersPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get("/users");
-      setUsers(response.data);
+      setError("");
+      const response = await apiClient.get("/users/list.php");
+      console.log("Usuarios recibidos:", response.data);
+      setUsers(response.data || []);
     } catch (error) {
       console.error("Error al cargar usuarios:", error);
+      setError("Error al cargar la lista de usuarios");
     } finally {
       setLoading(false);
     }
@@ -92,16 +85,31 @@ export const UsersPage = () => {
   };
 
   const handleDeleteUser = async (userId: number) => {
-    if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
+    const userToDelete = users.find(u => u.id === userId);
+    const userName = userToDelete?.username || 'este usuario';
+    
+    const confirmed = await dialog.confirm(
+      `¿Estás seguro de que quieres eliminar a "${userName}"? Esta acción no se puede deshacer.`,
+      'Eliminar Usuario',
+      {
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        variant: 'warning'
+      }
+    );
+    
+    if (!confirmed) return;
 
     try {
-      await apiClient.delete("/users/delete.php", {
-        data: { id: userId },
-      });
+      await apiClient.delete(`/users/delete.php?id=${userId}`);
+      await dialog.success(`Usuario "${userName}" eliminado correctamente`);
       fetchUsers();
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
-      alert("Error al eliminar el usuario");
+      await dialog.error(
+        'No se pudo eliminar el usuario. Por favor, inténtalo de nuevo.',
+        'Error al eliminar'
+      );
     }
   };
 
@@ -109,13 +117,14 @@ export const UsersPage = () => {
     try {
       if (isCreating) {
         await apiClient.post("/users/create.php", userData);
+        await dialog.success('Usuario creado correctamente');
       } else if (selectedUser) {
         await apiClient.put("/users/update.php", {
           ...userData,
           id: selectedUser.id,
         });
+        await dialog.success('Usuario actualizado correctamente');
       }
-      setIsUserModalOpen(false);
       fetchUsers();
     } catch (error) {
       console.error("Error al guardar usuario:", error);
@@ -131,7 +140,7 @@ export const UsersPage = () => {
         id: selectedUser.id,
         password,
       });
-      setIsPasswordModalOpen(false);
+      await dialog.success(`Contraseña actualizada correctamente para "${selectedUser.username}"`);
     } catch (error) {
       console.error("Error al cambiar contraseña:", error);
       throw error;
@@ -141,8 +150,17 @@ export const UsersPage = () => {
   const filteredUsers = users.filter(
     (user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.apellidos?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Ordenar usuarios por rol (usando el orden definido en la configuración)
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const roleA = getRoleConfig(a.rol);
+    const roleB = getRoleConfig(b.rol);
+    return roleA.order - roleB.order;
+  });
 
   if (!canManageUsers) {
     return (
@@ -161,139 +179,201 @@ export const UsersPage = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Gestión de Usuarios
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Administra los usuarios del sistema
-          </p>
+    <div className="p-6">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Gestión de Usuarios
+            </h1>
+            <p className="text-gray-600">
+              Administra los usuarios del sistema
+            </p>
+          </div>
+          <Button onClick={handleCreateUser} className="flex items-center gap-2">
+            <Plus size={20} />
+            Nuevo Usuario
+          </Button>
         </div>
-        <Button variant="primary" size="lg" onClick={handleCreateUser}>
-          <Plus size={20} className="mr-2" />
-          Nuevo Usuario
-        </Button>
+
+        {/* Buscador */}
+        <Card className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Buscar por nombre, email o usuario..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+            />
+          </div>
+        </Card>
+
+        {/* Lista de usuarios */}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-dark"></div>
+          </div>
+        ) : error ? (
+          <Card className="p-6">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button onClick={fetchUsers}>Reintentar</Button>
+            </div>
+          </Card>
+        ) : sortedUsers.length === 0 ? (
+          <Card className="p-12">
+            <div className="text-center text-gray-500">
+              {searchTerm 
+                ? "No se encontraron usuarios con ese criterio de búsqueda"
+                : "No hay usuarios registrados"
+              }
+            </div>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {/* Encabezado de la lista */}
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <div className="col-span-4">Usuario</div>
+              <div className="col-span-3">Email</div>
+              <div className="col-span-2">Rol</div>
+              <div className="col-span-2">Fecha</div>
+              <div className="col-span-1 text-right">Acciones</div>
+            </div>
+
+            {/* Lista de usuarios como filas */}
+            {sortedUsers.map((user) => {
+              const roleInfo = getRoleConfig(user.rol);
+              const RoleIcon = roleInfo.icon;
+
+              return (
+                <Card
+                  key={user.id}
+                  className="p-4 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                    {/* Usuario */}
+                    <div className="col-span-12 lg:col-span-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-dark rounded-full flex items-center justify-center text-white font-medium">
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {user.username}
+                          </h3>
+                          {user.nombre && (
+                            <p className="text-sm text-gray-600">
+                              {user.nombre} {user.apellidos}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-span-12 lg:col-span-3">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Mail size={16} className="text-gray-400 lg:hidden" />
+                        <span className="text-sm">{user.email || 'Sin email'}</span>
+                      </div>
+                    </div>
+
+                    {/* Rol */}
+                    <div className="col-span-12 lg:col-span-2">
+                      <div className="flex items-center gap-2">
+                        <RoleIcon size={16} />
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleInfo.color}`}
+                        >
+                          {roleInfo.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Fecha */}
+                    <div className="col-span-12 lg:col-span-2">
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <Calendar size={16} className="text-gray-400 lg:hidden" />
+                        <span className="text-sm">
+                          {new Date(user.created_at).toLocaleDateString("es-ES")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Acciones */}
+                    <div className="col-span-12 lg:col-span-1">
+                      <div className="flex gap-2 lg:justify-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditUser(user)}
+                          className="flex items-center gap-1"
+                          title="Editar usuario"
+                        >
+                          <Edit size={16} />
+                          <span className="lg:hidden">Editar</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleChangePassword(user)}
+                          className="flex items-center gap-1"
+                          title="Cambiar contraseña"
+                        >
+                          <Key size={16} />
+                          <span className="lg:hidden">Contraseña</span>
+                        </Button>
+                        {user.id !== currentUser?.id ? (
+                          <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="flex items-center gap-1 text-secondary hover:bg-light-accent/20 hover:text-primary-dark"
+                          title="Eliminar usuario"
+                        >
+                          <Trash2 size={16} />
+                          <span className="lg:hidden">Eliminar</span>
+                        </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled
+                            className="flex items-center gap-1 text-gray-400 cursor-not-allowed"
+                            title="No puedes eliminarte a ti mismo"
+                          >
+                            <Trash2 size={16} />
+                            <span className="lg:hidden">Eliminar</span>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Modales */}
+        <UserModal
+          isOpen={isUserModalOpen}
+          onClose={() => setIsUserModalOpen(false)}
+          onSave={handleSaveUser}
+          user={selectedUser}
+          isCreating={isCreating}
+        />
+
+        <PasswordModal
+          isOpen={isPasswordModalOpen}
+          onClose={() => setIsPasswordModalOpen(false)}
+          onSave={handleSavePassword}
+          username={selectedUser?.username || ""}
+        />
       </div>
-
-      {/* Buscador */}
-      <Card className="p-6 border-0">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar por nombre o email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-          />
-        </div>
-      </Card>
-
-      {/* Lista de usuarios */}
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-gray-500">Cargando usuarios...</div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers.map((user) => {
-            const roleInfo = roleConfig[user.rol];
-            const RoleIcon = roleInfo.icon;
-
-            return (
-              <Card
-                key={user.id}
-                className="p-6 hover:shadow-xl transition-all duration-300 border-0"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary-dark rounded-full flex items-center justify-center text-white font-medium text-lg">
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {user.username}
-                      </h3>
-                      {user.email && (
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                      )}
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" className="p-1">
-                    <MoreVertical size={20} />
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <RoleIcon size={16} />
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleInfo.color}`}
-                    >
-                      {roleInfo.label}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-500">
-                    Creado el{" "}
-                    {new Date(user.created_at).toLocaleDateString("es-ES")}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEditUser(user)}
-                    className="flex-1"
-                  >
-                    <Edit size={16} className="mr-1" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleChangePassword(user)}
-                    className="flex-1"
-                  >
-                    <Key size={16} className="mr-1" />
-                    Contraseña
-                  </Button>
-                  {user.id !== currentUser?.id && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Modales */}
-      <UserModal
-        isOpen={isUserModalOpen}
-        onClose={() => setIsUserModalOpen(false)}
-        onSave={handleSaveUser}
-        user={selectedUser}
-        isCreating={isCreating}
-      />
-
-      <PasswordModal
-        isOpen={isPasswordModalOpen}
-        onClose={() => setIsPasswordModalOpen(false)}
-        onSave={handleSavePassword}
-        username={selectedUser?.username || ""}
-      />
     </div>
   );
 };

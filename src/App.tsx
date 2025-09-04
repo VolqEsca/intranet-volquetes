@@ -5,10 +5,7 @@ import { ConfigPage } from "./pages/Config/ConfigPage";
 import { ProfilePage } from "./pages/Profile/ProfilePage";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-
-const OrdersPage = () => (
-  <h1 className="text-2xl font-bold">Módulo de Órdenes</h1>
-);
+import { OrdersPage } from './pages/Orders/OrdersPage';
 
 function App() {
   return (
@@ -22,7 +19,7 @@ function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/ordenes" element={<OrdersPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
         <Route path="/configuracion" element={<ConfigPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
       </Route>

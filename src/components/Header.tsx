@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { Bell, Search, LogOut, User, Key, ChevronDown } from "lucide-react";
+import { Bell, Search, LogOut, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/Button";
 import { useNavigate } from "react-router-dom";
 
@@ -52,10 +52,10 @@ export const Header = () => {
 
         {/* Acciones del usuario */}
         <div className="flex items-center gap-4 ml-8">
-          {/* Notificaciones */}
+          {/* Notificaciones - SIN punto rojo */}
           <Button variant="ghost" size="sm" className="relative p-2">
             <Bell size={20} />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            {/* Punto rojo eliminado - se puede añadir condicionalmente en el futuro */}
           </Button>
 
           {/* Separador */}
@@ -68,17 +68,18 @@ export const Header = () => {
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
             >
               <div className="w-10 h-10 bg-primary-dark rounded-full flex items-center justify-center text-white font-medium">
-                {(
-                  user?.nombre?.charAt(0) || user?.username.charAt(0)
-                ).toUpperCase()}
+                {/* Solución robusta al error TypeScript */}
+                {(user?.nombre || user?.username || "U").charAt(0).toUpperCase()}
               </div>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-semibold text-gray-800">
                   {user?.nombre && user?.apellidos
                     ? `${user.nombre} ${user.apellidos}`
-                    : user?.username}
+                    : user?.username || "Usuario"}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">{user?.rol}</p>
+                <p className="text-xs text-gray-500 capitalize">
+                  {user?.rol || "Usuario"}
+                </p>
               </div>
               <ChevronDown
                 size={16}
@@ -95,7 +96,7 @@ export const Header = () => {
                   <p className="text-sm font-medium text-gray-900">
                     {user?.nombre && user?.apellidos
                       ? `${user.nombre} ${user.apellidos}`
-                      : user?.username}
+                      : user?.username || "Usuario"}
                   </p>
                   <p className="text-xs text-gray-500">
                     {user?.email || "Sin email"}

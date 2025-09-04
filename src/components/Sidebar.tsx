@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Truck, Settings, ChevronRight } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
+
 const navItems = [
   {
     path: "/",
@@ -11,7 +12,7 @@ const navItems = [
     roles: ["admin", "operador", "viewer"],
   },
   {
-    path: "/ordenes",
+    path: "/orders",  // Cambiado de "/ordenes" a "/orders"
     label: "Órdenes",
     icon: Truck,
     roles: ["admin", "operador", "viewer"],
@@ -24,13 +25,16 @@ const navItems = [
   },
 ];
 
+
 export const Sidebar = () => {
   const { user } = useAuth();
+
 
   // Filtrar items según el rol
   const visibleItems = navItems.filter((item) =>
     item.roles.includes(user?.rol || "viewer")
   );
+
 
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200">
@@ -42,6 +46,7 @@ export const Sidebar = () => {
           className="h-10 w-auto"
         />
       </div>
+
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6">
@@ -84,6 +89,7 @@ export const Sidebar = () => {
           })}
         </div>
       </nav>
+
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200">
