@@ -6,6 +6,7 @@ import { ProfilePage } from "./pages/Profile/ProfilePage";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { OrdersPage } from './pages/Orders/OrdersPage';
+import ManufacturingOrdersPage from './pages/ManufacturingOrders/ManufacturingOrdersPage';
 
 function App() {
   return (
@@ -20,8 +21,10 @@ function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/manufacturing-orders" element={<ManufacturingOrdersPage />} />
         <Route path="/configuracion" element={<ConfigPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
+        
       </Route>
     </Routes>
   );
