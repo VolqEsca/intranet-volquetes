@@ -270,19 +270,6 @@ export const OrdersPage: React.FC = () => {
   };
 
   const handleChangeStatus = async (order: Order, newStatus: string) => {
-    const statusMessages = {
-      in_progress: 'en progreso',
-      completed: 'completada',
-      cancelled: 'cancelada'
-    };
-
-    const confirmed = await dialog.confirm(
-      `¿Cambiar el estado de la orden ${order.order_number} a ${statusMessages[newStatus as keyof typeof statusMessages]}?`,
-      'Esta acción actualizará el estado de la orden'
-    );
-
-    if (!confirmed) return;
-
     try {
       const response = await apiClient.put(`/orders/status/${order.id}`, {
         status: newStatus

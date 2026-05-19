@@ -262,19 +262,6 @@ export default function ManufacturingOrdersPage() {
   };
 
   const handleChangeStatus = async (order: ManufacturingOrder, newStatus: string) => {
-    const statusMessages = {
-      in_progress: 'en progreso',
-      completed: 'completada',
-      delivered: 'entregada'
-    };
-
-    const confirmed = await dialog.confirm(
-      `¿Cambiar el estado de la orden ${order.order_number} a ${statusMessages[newStatus as keyof typeof statusMessages]}?`,
-      'Esta acción actualizará el estado de la orden'
-    );
-
-    if (!confirmed) return;
-
     try {
       await manufacturingAPI.updateStatus(order.id, newStatus as any);
       await dialog.success('Estado actualizado correctamente');
