@@ -1,7 +1,9 @@
 <?php
-require_once '../config.php';
-require_once '../cors.php';
-require_once '../auth_check.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../../config.php';
+
+header('Content-Type: application/json');
 
 $userId = $_SESSION['user_id'];
 
