@@ -91,6 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     } finally {
+      localStorage.removeItem('verso_favorites_v14_3_1');
       setUser(null);
       navigate("/login", { replace: true });
     }
