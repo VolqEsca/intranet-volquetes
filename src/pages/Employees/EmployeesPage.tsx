@@ -10,6 +10,7 @@ import { GenerateDocumentsModal } from './components/GenerateDocumentsModal';
 import AlertDialog from '../../components/ui/AlertDialog';
 import { Plus, Upload, Edit, Trash2, Users, Search, FileText } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { dialog } from '../../services/dialog.service';
 
 export const EmployeesPage = () => {
   const { user } = useAuth();
@@ -91,21 +92,20 @@ export const EmployeesPage = () => {
   };
 
   // NUEVA FUNCIONALIDAD: Generar documentos con validaciones
-  const handleGenerateDocuments = (employee: Employee) => {
-    // Validaciones preventivas
+  const handleGenerateDocuments = async (employee: Employee) => {
     if (!employee.hire_date) {
-      alert(`${employee.full_name} no tiene fecha de alta registrada.\n\nEdítalo primero para añadir la fecha de alta antes de generar documentos.`);
+      await dialog.warning(`${employee.full_name} no tiene fecha de alta registrada. Edítalo primero para añadir la fecha de alta antes de generar documentos.`);
       return;
     }
-    
+
     const hireDate = new Date(employee.hire_date);
     if (isNaN(hireDate.getTime())) {
-      alert(`La fecha de alta de ${employee.full_name} tiene formato inválido.\n\nCorrígela antes de generar documentos.`);
+      await dialog.warning(`La fecha de alta de ${employee.full_name} tiene formato inválido. Corrígela antes de generar documentos.`);
       return;
     }
-    
+
     if (!employee.full_name || !employee.dni_nie) {
-      alert(`Faltan datos críticos para ${employee.full_name}.\n\nCompleta nombre completo y DNI/NIE antes de generar documentos.`);
+      await dialog.warning(`Faltan datos críticos para ${employee.full_name}. Completa nombre completo y DNI/NIE antes de generar documentos.`);
       return;
     }
 
