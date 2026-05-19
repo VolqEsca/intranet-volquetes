@@ -363,7 +363,7 @@ export const ChangePasswordPage = () => {
               type="submit"
               variant="primary"
               disabled={
-                loading || (passwordStrength && passwordStrength.strength < 2)
+                loading || (passwordStrength !== null && passwordStrength.strength < 2)
               }
             >
               <Save size={16} className="mr-2" />

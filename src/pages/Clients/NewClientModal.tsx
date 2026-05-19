@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../../components/ui/Modal';
-import Button from '../../components/ui/Button';
-import apiClient from '../../api';
+import { Button } from '../../components/ui/Button';
+import { apiClient } from '../../api';
 
 interface Props {
   isOpen: boolean;

@@ -48,7 +48,7 @@ export const getRoleConfig = (rol: string) => {
   const rolLower = rol.toLowerCase();
   
   // Buscar coincidencia exacta primero
-  if (ROLES_CONFIG[rol]) return ROLES_CONFIG[rol];
+  if (rol in ROLES_CONFIG) return ROLES_CONFIG[rol as keyof typeof ROLES_CONFIG];
   
   // Buscar por coincidencia parcial
   if (rolLower.includes('admin')) return ROLES_CONFIG.admin;
