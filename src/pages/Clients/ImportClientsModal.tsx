@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../../components/ui/Modal';
-import Button from '../../components/ui/Button';
-import apiClient from '../../api';
+import { Button } from '../../components/ui/Button'; // ← CORRECCIÓN: Named export
+import { apiClient } from '../../api'; // ← CORRECCIÓN: Named export
 
 interface Props {
   isOpen: boolean;
