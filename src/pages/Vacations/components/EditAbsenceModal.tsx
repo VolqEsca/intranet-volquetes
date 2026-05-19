@@ -149,8 +149,8 @@ export const EditAbsenceModal: React.FC<Props> = ({
 
     setIsGeneratingReceipt(true);
 
-    // URL directa al endpoint (mismo que funciona manualmente)
-    const pdfUrl = `https://intranet.volquetesescalante.com/api/vacations/receipt-pdf.php?id=${absence.id}`;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://intranet.volquetesescalante.com';
+    const pdfUrl = `${baseUrl}/api/vacations/receipt-pdf.php?id=${absence.id}`;
     
     // Abrir en nueva pestaña
     const newWindow = window.open(pdfUrl, '_blank');
