@@ -204,6 +204,7 @@ export const OrdersPage: React.FC = () => {
   const [showClientsModal, setShowClientsModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // ✅ FUNCIÓN HELPER PARA TRUNCADO INTELIGENTE
   const truncateText = (text: string, maxLength: number = 30): string => {
@@ -232,10 +233,12 @@ export const OrdersPage: React.FC = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await apiClient.get('/orders/');
       setOrders(response.data.data || []);
-    } catch (error) {
-      console.error('Error cargando órdenes:', error);
+    } catch (err: any) {
+      console.error('Error cargando órdenes:', err);
+      setError(err.response?.data?.message || 'Error al cargar las órdenes de trabajo');
     } finally {
       setLoading(false);
     }
@@ -419,6 +422,12 @@ export const OrdersPage: React.FC = () => {
       </div>
 
       {/* ✅ TABLA OPTIMIZADA CON TRUNCADO Y STICKY COLUMN */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
