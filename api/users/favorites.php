@@ -5,7 +5,7 @@ require_once __DIR__ . '/../auth_check.php';
 
 header('Content-Type: application/json');
 
-$userId = $_SESSION['user_id'];
+$userId = $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt = $pdo->prepare("SELECT favorites FROM usuarios WHERE id = ?");

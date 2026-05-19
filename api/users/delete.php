@@ -1,19 +1,12 @@
 <?php
-require_once __DIR__ . '/../cors.php';
-
-
-
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
+
+
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'Administrador') {
+if ($_SESSION['user']['rol'] !== 'Administrador' && $_SESSION['user']['rol'] !== 'admin') {
     echo json_encode(['error' => 'No autorizado']);
     http_response_code(403);
     exit();
