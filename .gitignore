@@ -3,5 +3,15 @@ dist/
 
 # Dependencies
 node_modules/
+vendor/
+
+# Config sensible
 config.php
+
+# Variables de entorno
 .env.development
+.env.production
+.env.local
+
+# Logs PHP
+api/**/*php_errorlog
