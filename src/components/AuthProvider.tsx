@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../api";
-import { AuthContext } from "../hooks/useAuth";
+import { AuthContext, LoginResult } from "../hooks/useAuth";
 
 interface User {
   id: number;
@@ -52,12 +52,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (
     username: string,
     password: string
-  ): Promise<boolean> => {
+  ): Promise<LoginResult> => {
     setIsLoading(true);
     try {
       const response = await apiClient.post("/login", { username, password });
       if (response.data && response.data.user) {
-        // Guardar TODOS los campos del usuario
         const userData = response.data.user;
         setUser({
           id: userData.id,
@@ -69,12 +68,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           created_at: userData.created_at || "",
         });
         navigate("/", { replace: true });
-        return true;
+        return { success: true };
       }
-      return false;
-    } catch (error) {
+      return { success: false, errorType: 'credentials' };
+    } catch (error: any) {
       setUser(null);
-      return false;
+      if (!error.response) {
+        return { success: false, errorType: 'network' };
+      }
+      if (error.response.status === 401 || error.response.status === 403) {
+        return { success: false, errorType: 'credentials' };
+      }
+      return { success: false, errorType: 'unknown' };
     } finally {
       setIsLoading(false);
     }

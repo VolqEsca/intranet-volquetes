@@ -35,9 +35,15 @@ export const LoginPage = () => {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
-    const success = await login(username, password);
-    if (!success) {
-      setError("Usuario o contraseña incorrectos");
+    const result = await login(username, password);
+    if (!result.success) {
+      if (result.errorType === 'network') {
+        setError("Error de conexión. Comprueba tu red e inténtalo de nuevo.");
+      } else if (result.errorType === 'credentials') {
+        setError("Usuario o contraseña incorrectos.");
+      } else {
+        setError("Error inesperado. Inténtalo de nuevo más tarde.");
+      }
     }
   };
 

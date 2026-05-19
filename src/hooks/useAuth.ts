@@ -10,13 +10,17 @@ interface User {
   created_at?: string;
 }
 
+export type LoginResult =
+  | { success: true }
+  | { success: false; errorType: 'credentials' | 'network' | 'unknown' };
+
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<LoginResult>;
   logout: () => void;
-  updateUserInfo: (user: Partial<User>) => void; // <-- Sin el ? opcional
+  updateUserInfo: (user: Partial<User>) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
