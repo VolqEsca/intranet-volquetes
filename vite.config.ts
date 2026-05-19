@@ -5,14 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    hmr: {
-      clientPort: 443,
-    },
-    allowedHosts: ["hcm7s3-5173.csb.app"],
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'app-assets', // ✅ CRÍTICO: Evita colisión con /assets del backend
+    assetsDir: 'app-assets',
     emptyOutDir: true,
   }
 });
