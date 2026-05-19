@@ -1,7 +1,7 @@
 // src/pages/Orders/components/NewOrderModal.tsx
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, ChevronDown, ChevronRight, ChevronLeft, User, Building2, Wrench, Calendar, AlertTriangle, Search, Check, AlertCircle, Zap, Paintbrush, Droplets, FileText } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { apiClient } from '../../../api';

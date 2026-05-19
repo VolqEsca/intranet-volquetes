@@ -1,7 +1,7 @@
 // src/pages/Orders/OrdersPage.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
 import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, Download, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle } from 'lucide-react';
+import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
 import NewOrderModal from './components/NewOrderModal';
@@ -11,6 +11,7 @@ import DepartmentBadge from './components/DepartmentBadge';
 import { ClientsManagementModal } from './components/ClientsManagementModal';
 import { dialog } from '../../services/dialog.service';
 import EditOrderModal from './components/EditOrderModal';
+import { formatDate, truncateText } from '../../utils/formatters';
 
 interface Order {
   id: number;
@@ -34,159 +35,6 @@ interface Order {
   created_at: string;
 }
 
-// Componente para el menú dropdown
-const DropdownMenu: React.FC<{
-  order: Order;
-  anchorEl: HTMLElement | null;
-  onClose: () => void;
-  onViewDetails: (order: Order) => void;
-  onEditOrder: (order: Order) => void;
-  onDownloadPDF: (order: Order) => void;
-  onChangeStatus: (order: Order, status: string) => void;
-  onDuplicateOrder: (order: Order) => void;
-  onDeleteOrder: (order: Order) => void;
-}> = ({ order, anchorEl, onClose, onViewDetails, onEditOrder, onDownloadPDF, onChangeStatus, onDuplicateOrder, onDeleteOrder }) => {
-  if (!anchorEl) return null;
-
-  const rect = anchorEl.getBoundingClientRect();
-  const menuHeight = 280;
-  const menuWidth = 224;
-  const padding = 10;
-
-  const viewport = {
-    width: window.innerWidth,
-    height: window.innerHeight
-  };
-
-  let top = rect.bottom + 5;
-  let left = rect.right - menuWidth;
-
-  if (top + menuHeight > viewport.height - padding) {
-    top = rect.top - menuHeight - 5;
-    if (top < padding) {
-      top = Math.max(padding, (viewport.height - menuHeight) / 2);
-    }
-  }
-
-  if (left < padding) {
-    left = rect.left;
-  } else if (left + menuWidth > viewport.width - padding) {
-    left = viewport.width - menuWidth - padding;
-  }
-
-  const style = {
-    position: 'fixed' as const,
-    top,
-    left,
-    zIndex: 9999,
-  };
-
-  return ReactDOM.createPortal(
-    <div
-      className="bg-white rounded-lg shadow-xl border border-gray-200 w-56 max-h-[80vh] overflow-y-auto"
-      style={style}
-    >
-      <div className="py-1">
-        <button
-          type="button"
-          onClick={() => {
-            onViewDetails(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-        >
-          <Eye className="w-4 h-4 text-gray-400" />
-          Ver/Editar orden
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            onDownloadPDF(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-        >
-          <Download className="w-4 h-4 text-gray-400" />
-          Imprimir PDF
-        </button>
-
-        <div className="border-t border-gray-100 my-1"></div>
-
-        {order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'cancelled' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'in_progress');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <AlertCircle className="w-4 h-4" style={{ color: '#5487c0' }} />
-            Marcar en progreso
-          </button>
-        )}
-
-        {order.status !== 'completed' && order.status !== 'cancelled' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'completed');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />
-            Marcar como completada
-          </button>
-        )}
-
-        {order.status !== 'cancelled' && order.status !== 'completed' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'cancelled');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <XCircle className="w-4 h-4" style={{ color: '#a2bade' }} />
-            Cancelar orden
-          </button>
-        )}
-
-        <div className="border-t border-gray-100 my-1"></div>
-
-        <button
-          type="button"
-          onClick={() => {
-            onDuplicateOrder(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-        >
-          <Copy className="w-4 h-4 text-gray-400" />
-          Duplicar orden
-        </button>
-
-        <div className="border-t border-gray-100 my-1"></div>
-
-        <button
-          type="button"
-          onClick={() => {
-            onDeleteOrder(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors text-left"
-        >
-          <Trash2 className="w-4 h-4" style={{ color: '#5487c0' }} />
-          <span style={{ color: '#5487c0' }}>Eliminar orden</span>
-        </button>
-      </div>
-    </div>,
-    document.body
-  );
-};
 
 const ORDERS_PER_PAGE = 20;
 
@@ -206,11 +54,6 @@ export const OrdersPage: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const truncateText = (text: string, maxLength: number = 30): string => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
-  };
 
   // Debounce búsqueda 300ms y resetear página
   useEffect(() => {
@@ -351,15 +194,6 @@ export const OrdersPage: React.FC = () => {
     setActiveDropdown(activeDropdown?.id === orderId ? null : {id: orderId, element});
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
 
   return (
     <div className="p-6">
@@ -634,20 +468,26 @@ export const OrdersPage: React.FC = () => {
         />
       )}
 
-      {/* Dropdown Menu Portal */}
-      {activeDropdown && (
-        <DropdownMenu
-          order={orders.find(o => o.id === activeDropdown.id)!}
-          anchorEl={activeDropdown.element}
-          onClose={() => setActiveDropdown(null)}
-          onViewDetails={handleViewDetails}
-          onEditOrder={handleEditOrder}
-          onDownloadPDF={handleDownloadPDF}
-          onChangeStatus={handleChangeStatus}
-          onDuplicateOrder={handleDuplicateOrder}
-          onDeleteOrder={handleDeleteOrder}
-        />
-      )}
+      {activeDropdown && (() => {
+        const order = orders.find(o => o.id === activeDropdown.id)!;
+        const close = () => setActiveDropdown(null);
+        const statusActions: DropdownAction[] = [];
+        if (order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'cancelled')
+          statusActions.push({ label: 'Marcar en progreso', icon: <AlertCircle className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleChangeStatus(order, 'in_progress'); close(); } });
+        if (order.status !== 'completed' && order.status !== 'cancelled')
+          statusActions.push({ label: 'Marcar como completada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />, onClick: () => { handleChangeStatus(order, 'completed'); close(); } });
+        if (order.status !== 'cancelled' && order.status !== 'completed')
+          statusActions.push({ label: 'Cancelar orden', icon: <XCircle className="w-4 h-4" style={{ color: '#a2bade' }} />, onClick: () => { handleChangeStatus(order, 'cancelled'); close(); } });
+        if (statusActions.length > 0) statusActions[0].dividerBefore = true;
+        const actions: DropdownAction[] = [
+          { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },
+          { label: 'Imprimir PDF',     icon: <Download className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
+          ...statusActions,
+          { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4 text-gray-400" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
+          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#5487c0' }, dividerBefore: true },
+        ];
+        return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
+      })()}
 
       {/* Modal de edición */}
       {showEditModal && selectedOrder && (

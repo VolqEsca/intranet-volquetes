@@ -1,6 +1,6 @@
 // src/pages/Employees/components/EditEmployeeModal.tsx - VERSIÓN COMPLETA CORREGIDA
 import React, { useState, useEffect } from 'react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS, Employee } from '../../../api/employees';
 

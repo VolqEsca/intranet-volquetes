@@ -9,7 +9,7 @@ interface ModalProps {
   size?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 'max-w-2xl' }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 'max-w-2xl' }) => {
   if (!isOpen) return null;
 
   return (
@@ -41,4 +41,3 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 
   );
 };
 
-export default Modal;

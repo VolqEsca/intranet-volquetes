@@ -1,13 +1,14 @@
 // src/pages/ManufacturingOrders/ManufacturingOrdersPage.tsx
 import { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { Plus, RefreshCw, FileDown, Search, Factory, MoreVertical, Eye, Download, CheckCircle, XCircle, Copy, AlertCircle, Trash2 } from 'lucide-react';
+import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
 import { manufacturingAPI, ManufacturingOrder } from '../../api/manufacturing';
 import NewManufacturingOrderModal from './components/NewManufacturingOrderModal';
 import EditManufacturingOrderModal from './components/EditManufacturingOrderModal';
 import { dialog } from '../../services/dialog.service';
-import Modal from '../../components/ui/Modal';
+import { Modal } from '../../components/ui/Modal';
+import { formatDate, truncateText } from '../../utils/formatters';
 
 const statusLabels = {
   pending: 'Pendiente',
@@ -35,147 +36,8 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800'
 } as const;
 
-// ✅ COMPONENTE DROPDOWN MENU - Replicado exactamente del patrón de reparación
-const DropdownMenu: React.FC<{
-  order: ManufacturingOrder;
-  anchorEl: HTMLElement | null;
-  onClose: () => void;
-  onViewDetails: (order: ManufacturingOrder) => void;
-  onDownloadPDF: (order: ManufacturingOrder) => void;
-  onChangeStatus: (order: ManufacturingOrder, status: string) => void;
-  onDeleteOrder: (order: ManufacturingOrder) => void;
-}> = ({ order, anchorEl, onClose, onViewDetails, onDownloadPDF, onChangeStatus, onDeleteOrder }) => {
-  if (!anchorEl) return null;
 
-  const rect = anchorEl.getBoundingClientRect();
-  const menuHeight = 240; // Ajustado para fabricación
-  const menuWidth = 224;
-  const padding = 10;
-  
-  const viewport = {
-    width: window.innerWidth,
-    height: window.innerHeight
-  };
-
-  // ✅ LÓGICA INTELIGENTE DE POSICIONAMIENTO - Idéntica a reparación
-  let top = rect.bottom + 5;
-  let left = rect.right - menuWidth;
-
-  if (top + menuHeight > viewport.height - padding) {
-    top = rect.top - menuHeight - 5;
-    if (top < padding) {
-      top = Math.max(padding, (viewport.height - menuHeight) / 2);
-    }
-  }
-
-  if (left < padding) {
-    left = rect.left;
-  } else if (left + menuWidth > viewport.width - padding) {
-    left = viewport.width - menuWidth - padding;
-  }
-
-  const style = {
-    position: 'fixed' as const,
-    top,
-    left,
-    zIndex: 9999,
-  };
-
-  return ReactDOM.createPortal(
-    <div 
-      className="bg-white rounded-lg shadow-xl border border-gray-200 w-56 max-h-[80vh] overflow-y-auto"
-      style={style}
-    >
-      <div className="py-1">
-        <button
-          type="button"
-          onClick={() => {
-            onViewDetails(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-        >
-          <Eye className="w-4 h-4 text-gray-400" />
-          Ver/Editar orden
-        </button>
-        
-        <button
-          type="button"
-          onClick={() => {
-            onDownloadPDF(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-        >
-          <Download className="w-4 h-4 text-gray-400" />
-          Imprimir PDF
-        </button>
-        
-        <div className="border-t border-gray-100 my-1"></div>
-        
-        {/* ✅ ESTADOS ESPECÍFICOS PARA FABRICACIÓN */}
-        {order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'delivered' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'in_progress');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <AlertCircle className="w-4 h-4" style={{ color: '#5487c0' }} />
-            Iniciar fabricación
-          </button>
-        )}
-        
-        {order.status !== 'completed' && order.status !== 'delivered' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'completed');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />
-            Marcar como completada
-          </button>
-        )}
-        
-        {order.status === 'completed' && (
-          <button
-            type="button"
-            onClick={() => {
-              onChangeStatus(order, 'delivered');
-              onClose();
-            }}
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-          >
-            <CheckCircle className="w-4 h-4" style={{ color: '#059669' }} />
-            Marcar como entregada
-          </button>
-        )}
-        
-        <div className="border-t border-gray-100 my-1"></div>
-        
-        <button
-          type="button"
-          onClick={() => {
-            onDeleteOrder(order);
-            onClose();
-          }}
-          className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors text-left"
-        >
-          <Trash2 className="w-4 h-4" style={{ color: '#5487c0' }} />
-          <span style={{ color: '#5487c0' }}>Eliminar orden</span>
-        </button>
-      </div>
-    </div>,
-    document.body
-  );
-};
-
-export default function ManufacturingOrdersPage() {
+export function ManufacturingOrdersPage() {
   const [orders, setOrders] = useState<ManufacturingOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -193,12 +55,6 @@ export default function ManufacturingOrdersPage() {
 
   // ✅ ESTADO PARA DROPDOWN - Idéntico a reparación
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
-
-  // ✅ FUNCIÓN HELPER PARA TRUNCADO - Idéntica a reparación
-  const truncateText = (text: string, maxLength: number = 30): string => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
-  };
 
   const loadOrders = async () => {
     try {
@@ -294,16 +150,6 @@ export default function ManufacturingOrdersPage() {
     setActiveDropdown(activeDropdown?.id === orderId ? null : {id: orderId, element});
   };
 
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-    return date.toLocaleDateString('es-ES', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
-    });
-  };
 
   return (
     <div className="p-6">
@@ -634,18 +480,25 @@ export default function ManufacturingOrdersPage() {
   </Modal>
 )}
 
-      {/* ✅ DROPDOWN MENU PORTAL - Idéntico a reparación */}
-      {activeDropdown && (
-        <DropdownMenu
-          order={orders.find(o => o.id === activeDropdown.id)!}
-          anchorEl={activeDropdown.element}
-          onClose={() => setActiveDropdown(null)}
-          onViewDetails={handleViewDetails}
-          onDownloadPDF={handleDownloadPDF}
-          onChangeStatus={handleChangeStatus}
-          onDeleteOrder={handleDeleteOrder}
-        />
-      )}
+      {activeDropdown && (() => {
+        const order = orders.find(o => o.id === activeDropdown.id)!;
+        const close = () => setActiveDropdown(null);
+        const statusActions: DropdownAction[] = [];
+        if (order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'delivered')
+          statusActions.push({ label: 'Iniciar fabricación', icon: <AlertCircle className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleChangeStatus(order, 'in_progress'); close(); } });
+        if (order.status !== 'completed' && order.status !== 'delivered')
+          statusActions.push({ label: 'Marcar como completada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />, onClick: () => { handleChangeStatus(order, 'completed'); close(); } });
+        if (order.status === 'completed')
+          statusActions.push({ label: 'Marcar como entregada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#059669' }} />, onClick: () => { handleChangeStatus(order, 'delivered'); close(); } });
+        if (statusActions.length > 0) statusActions[0].dividerBefore = true;
+        const actions: DropdownAction[] = [
+          { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },
+          { label: 'Imprimir PDF',     icon: <Download className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
+          ...statusActions,
+          { label: 'Eliminar orden', icon: <Trash2 className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#5487c0' }, dividerBefore: true },
+        ];
+        return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} menuHeight={240} />;
+      })()}
     </div>
   );
 }

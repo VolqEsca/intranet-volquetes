@@ -4,7 +4,7 @@ import {
   X, Save, User, Building2, Wrench, Calendar, AlertTriangle, AlertCircle,
   Zap, Paintbrush, Droplets, Check, FileText, Printer
 } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { apiClient } from '../../../api';

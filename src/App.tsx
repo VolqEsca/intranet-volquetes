@@ -7,7 +7,7 @@ import { ProfilePage } from "./pages/Profile/ProfilePage";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { OrdersPage } from './pages/Orders/OrdersPage';
-import ManufacturingOrdersPage from './pages/ManufacturingOrders/ManufacturingOrdersPage';
+import { ManufacturingOrdersPage } from './pages/ManufacturingOrders/ManufacturingOrdersPage';
 import { EmployeesPage } from './pages/Employees/EmployeesPage';
 import { VacationsPage } from './pages/Vacations/VacationsPage';
 

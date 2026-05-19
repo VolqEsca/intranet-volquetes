@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 $userId = $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $pdo->prepare("SELECT favorites FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT favorites FROM usuarios WHERE id = ?");
     $stmt->execute([$userId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $favoritesJson = json_encode($body['favorites']);
 
-    $stmt = $pdo->prepare("UPDATE users SET favorites = ? WHERE id = ?");
+    $stmt = $pdo->prepare("UPDATE usuarios SET favorites = ? WHERE id = ?");
     $stmt->execute([$favoritesJson, $userId]);
 
     echo json_encode(['success' => true, 'data' => $body['favorites']]);

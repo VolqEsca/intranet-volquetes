@@ -1,7 +1,7 @@
 // src/pages/Orders/components/ClientEditModal.tsx
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
 import { dialog } from '../../../services/dialog.service';

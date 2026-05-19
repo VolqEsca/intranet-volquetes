@@ -1,0 +1,38 @@
+<?php
+header('Access-Control-Allow-Origin: https://hcm7s3-5173.csb.app');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once __DIR__ . '/../../config.php';
+header('Content-Type: application/json');
+
+if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+    echo json_encode(['error' => 'No autorizado']);
+    http_response_code(401);
+    exit();
+}
+
+try {
+    $stmt = $pdo->prepare("SELECT id, username, email, nombre, apellidos, rol, created_at FROM usuarios ORDER BY created_at DESC");
+    $stmt->execute();
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($users as &$user) {
+        $user['email'] = $user['email'] ?? '';
+        $user['nombre'] = $user['nombre'] ?? '';
+        $user['apellidos'] = $user['apellidos'] ?? '';
+        $user['rol'] = $user['rol'] ?? 'Usuario';
+    }
+    
+    echo json_encode($users);
+} catch (PDOException $e) {
+    error_log("Error en list.php: " . $e->getMessage());
+    echo json_encode(['error' => 'Error al obtener usuarios']);
+    http_response_code(500);
+}

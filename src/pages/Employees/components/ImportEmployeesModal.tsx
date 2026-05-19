@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI } from '../../../api/employees';
 import { Upload, CheckCircle, AlertCircle, FileSpreadsheet } from 'lucide-react';

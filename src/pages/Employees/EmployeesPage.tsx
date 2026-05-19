@@ -11,6 +11,7 @@ import AlertDialog from '../../components/ui/AlertDialog';
 import { Plus, Upload, Edit, Trash2, Users, Search, FileText } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { dialog } from '../../services/dialog.service';
+import { formatDate } from '../../utils/formatters';
 
 export const EmployeesPage = () => {
   const { user } = useAuth();
@@ -127,16 +128,6 @@ export const EmployeesPage = () => {
     } finally {
       setIsDeleteConfirmOpen(false);
       setEmployeeToDelete(null);
-    }
-  };
-
-  // Función para formatear fechas
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '-';
-    try {
-      return new Date(dateString).toLocaleDateString('es-ES');
-    } catch {
-      return dateString;
     }
   };
 

@@ -1,0 +1,18 @@
+[21-Jul-2025 08:30:10 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/intranet.volquetesescalante.com/public_html/api/config.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/intranet.volquetesescalante.com/public_html/api/check-session.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/intranet.volquetesescalante.com/public_html/api/check-session.php on line 3
+[21-Jul-2025 08:39:29 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/customer/www/intranet.volquetesescalante.com/public_html/api/config.php' (include_path='.:/usr/local/php82/pear') in /home/customer/www/intranet.volquetesescalante.com/public_html/api/check-session.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/customer/www/intranet.volquetesescalante.com/public_html/api/check-session.php on line 3
+[04-Sep-2025 09:41:37 UTC] PHP Parse error:  syntax error, unexpected token "catch" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/login.php on line 55
+[04-Sep-2025 09:54:03 UTC] PHP Parse error:  syntax error, unexpected token "catch" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/login.php on line 55
+[04-Sep-2025 09:54:09 UTC] PHP Parse error:  syntax error, unexpected token "catch" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/login.php on line 55
+[04-Sep-2025 09:55:14 UTC] PHP Parse error:  syntax error, unexpected token "catch" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/login.php on line 55
+[04-Sep-2025 09:55:35 UTC] PHP Parse error:  syntax error, unexpected token "catch" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/login.php on line 55
+[21-Nov-2025 09:25:14 UTC] PHP Parse error:  syntax error, unexpected token "use" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/employees-generate-document.php on line 68
+[21-Nov-2025 09:32:44 UTC] PHP Parse error:  syntax error, unexpected token "use" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/employees-generate-document.php on line 82
+[21-Nov-2025 09:33:25 UTC] PHP Parse error:  syntax error, unexpected token "use" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/employees-generate-document.php on line 82
+[21-Nov-2025 09:40:20 UTC] PHP Parse error:  syntax error, unexpected token "use" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/employees-generate-document.php on line 81
+[21-Nov-2025 09:42:05 UTC] PHP Parse error:  syntax error, unexpected token "use" in /home/customer/www/intranet.volquetesescalante.com/public_html/api/employees-generate-document.php on line 81

@@ -1,6 +1,6 @@
 // src/pages/Employees/components/NewEmployeeModal.tsx - VERSIÓN CORPORATIVA CORREGIDA
 import React, { useState } from 'react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS } from '../../../api/employees';
 

@@ -1,7 +1,7 @@
 // src/pages/Orders/components/ClientsManagementModal.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, Upload, Search, Trash2, Edit2, Download, Users, FileSpreadsheet, AlertCircle, CheckCircle, Plus } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
 import { ClientEditModal } from './ClientEditModal';

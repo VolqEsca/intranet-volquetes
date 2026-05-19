@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Redirigir todas las peticiones a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?path=$1 [QSA,L]
+
+# Permitir métodos HTTP
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"

@@ -1,32 +1,8 @@
 // src/api/employees.ts
 import { apiClient as api } from './index';
 
-export interface Employee {
-  id: number;
-  employee_code?: string | null;
-  location: 'Nave 01' | 'Nave 02';
-  full_name: string;
-  dni_nie: string;
-  social_security_number: string;
-  hire_date: string;
-  rgpd_date?: string;
-  phone?: string | null;
-  email_primary: string;
-  email_secondary?: string | null;
-  birth_date?: string | null;
-  job_category: string;
-  gender?: 'Varón' | 'Mujer' | null;
-  contract_type: 'Indefinido' | 'Temporal';
-  contract_end_date?: string | null;
-  iban: string | null;
-  verso_user_id?: number | null;
-  status: 'active' | 'inactive';
-  created_at: string;
-  updated_at: string;
-  created_by_name?: string;
-  updated_by_name?: string;
-  verso_user_name?: string;
-}
+import type { EmployeeFull as Employee } from '../types/employee';
+export type { Employee };
 
 export interface EmployeeFormData {
   employee_code?: string;
@@ -224,4 +200,3 @@ export const employeesAPI = {
   }
 };
 
-export default employeesAPI;

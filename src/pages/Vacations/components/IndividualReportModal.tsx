@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Copy, User, Calendar, Calculator, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Employee, VacationBalance, Absence, vacationsAPI } from '../../../api/vacations';
 

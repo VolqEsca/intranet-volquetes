@@ -1,7 +1,7 @@
 // src/pages/ManufacturingOrders/components/NewManufacturingOrderModal.tsx
 import React, { useState } from 'react';
 import { X, ChevronRight, ChevronLeft, User, Car, FileText, Check, AlertTriangle, Wrench, FileEdit } from 'lucide-react';
-import Modal from '../../../components/ui/Modal';
+import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { manufacturingAPI, ManufacturingOrderFormData } from '../../../api/manufacturing';

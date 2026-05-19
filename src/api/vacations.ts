@@ -4,13 +4,8 @@ import { apiClient } from './index';
 // INTERFACES PRINCIPALES
 // ========================================
 
-export interface Employee {
-  id: number;
-  full_name: string;
-  location: string;
-  job_category: string;
-  status: 'active' | 'inactive';
-}
+import type { EmployeeSummary as Employee } from '../types/employee';
+export type { Employee };
 
 export interface VacationBalance {
   id: number;

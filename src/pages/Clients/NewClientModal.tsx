@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from '../../components/ui/Modal';
+import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
 
@@ -9,7 +9,7 @@ interface Props {
   onClientAdded: () => void;
 }
 
-export default function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
+export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
   const [nombre, setNombre] = useState('');
   const [cifNif, setCifNif] = useState('');
   const [contactPerson, setContactPerson] = useState('');
