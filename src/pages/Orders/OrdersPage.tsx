@@ -49,34 +49,29 @@ const DropdownMenu: React.FC<{
   if (!anchorEl) return null;
 
   const rect = anchorEl.getBoundingClientRect();
-  const menuHeight = 280; // Altura aproximada del menú completo
-  const menuWidth = 224;  // w-56 = 14rem = 224px
-  const padding = 10;     // Margen de seguridad desde bordes
-  
+  const menuHeight = 280;
+  const menuWidth = 224;
+  const padding = 10;
+
   const viewport = {
     width: window.innerWidth,
     height: window.innerHeight
   };
 
-  // ✅ LÓGICA INTELIGENTE: Calcular posición óptima
-  let top = rect.bottom + 5;  // Por defecto: debajo del botón
-  let left = rect.right - menuWidth; // Por defecto: alineado a la derecha
+  let top = rect.bottom + 5;
+  let left = rect.right - menuWidth;
 
-  // ✅ REPOSICIONAMIENTO VERTICAL: Si se sale por abajo, mostrarlo arriba
   if (top + menuHeight > viewport.height - padding) {
     top = rect.top - menuHeight - 5;
-    
-    // Si aún se sale por arriba, centrarlo verticalmente
     if (top < padding) {
       top = Math.max(padding, (viewport.height - menuHeight) / 2);
     }
   }
 
-  // ✅ REPOSICIONAMIENTO HORIZONTAL: Mantener dentro del viewport
   if (left < padding) {
-    left = rect.left; // Alinear a la izquierda del botón
+    left = rect.left;
   } else if (left + menuWidth > viewport.width - padding) {
-    left = viewport.width - menuWidth - padding; // Alinear al borde derecho
+    left = viewport.width - menuWidth - padding;
   }
 
   const style = {
@@ -87,7 +82,7 @@ const DropdownMenu: React.FC<{
   };
 
   return ReactDOM.createPortal(
-    <div 
+    <div
       className="bg-white rounded-lg shadow-xl border border-gray-200 w-56 max-h-[80vh] overflow-y-auto"
       style={style}
     >
@@ -103,7 +98,7 @@ const DropdownMenu: React.FC<{
           <Eye className="w-4 h-4 text-gray-400" />
           Ver/Editar orden
         </button>
-        
+
         <button
           type="button"
           onClick={() => {
@@ -115,9 +110,9 @@ const DropdownMenu: React.FC<{
           <Download className="w-4 h-4 text-gray-400" />
           Imprimir PDF
         </button>
-        
+
         <div className="border-t border-gray-100 my-1"></div>
-        
+
         {order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'cancelled' && (
           <button
             type="button"
@@ -131,7 +126,7 @@ const DropdownMenu: React.FC<{
             Marcar en progreso
           </button>
         )}
-        
+
         {order.status !== 'completed' && order.status !== 'cancelled' && (
           <button
             type="button"
@@ -145,7 +140,7 @@ const DropdownMenu: React.FC<{
             Marcar como completada
           </button>
         )}
-        
+
         {order.status !== 'cancelled' && order.status !== 'completed' && (
           <button
             type="button"
@@ -159,9 +154,9 @@ const DropdownMenu: React.FC<{
             Cancelar orden
           </button>
         )}
-        
+
         <div className="border-t border-gray-100 my-1"></div>
-        
+
         <button
           type="button"
           onClick={() => {
@@ -173,9 +168,9 @@ const DropdownMenu: React.FC<{
           <Copy className="w-4 h-4 text-gray-400" />
           Duplicar orden
         </button>
-        
+
         <div className="border-t border-gray-100 my-1"></div>
-        
+
         <button
           type="button"
           onClick={() => {
@@ -193,12 +188,18 @@ const DropdownMenu: React.FC<{
   );
 };
 
+const ORDERS_PER_PAGE = 20;
+
 export const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showClientsModal, setShowClientsModal] = useState(false);
@@ -206,15 +207,24 @@ export const OrdersPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ FUNCIÓN HELPER PARA TRUNCADO INTELIGENTE
   const truncateText = (text: string, maxLength: number = 30): string => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength).trim() + '...';
   };
 
+  // Debounce búsqueda 300ms y resetear página
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Cargar cuando cambien página, búsqueda o filtros
   useEffect(() => {
     loadOrders();
-  }, []);
+  }, [currentPage, debouncedSearch, filterStatus, filterPriority]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -234,8 +244,19 @@ export const OrdersPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiClient.get('/orders/');
+
+      const params: Record<string, string | number> = {
+        page: currentPage,
+        limit: ORDERS_PER_PAGE,
+      };
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (filterStatus !== 'all') params.status = filterStatus;
+      if (filterPriority !== 'all') params.priority = filterPriority;
+
+      const response = await apiClient.get('/orders/', { params });
       setOrders(response.data.data || []);
+      setTotalPages(response.data.pagination?.totalPages ?? 1);
+      setTotalOrders(response.data.pagination?.total ?? 0);
     } catch (err: any) {
       console.error('Error cargando órdenes:', err);
       setError(err.response?.data?.message || 'Error al cargar las órdenes de trabajo');
@@ -256,16 +277,12 @@ export const OrdersPage: React.FC = () => {
 
   const handleDownloadPDF = async (order: Order) => {
     try {
-      // Construir URL usando la configuración del apiClient
       let baseUrl = apiClient.defaults.baseURL;
       if (baseUrl && !baseUrl.endsWith('/')) {
         baseUrl += '/';
       }
       const pdfUrl = `${baseUrl}orders/pdf-tcpdf-adaptive.php?id=${order.id}`;
-      
       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-      
-      //dialog.success(`PDF de la orden ${order.order_number} abierto para imprimir`);
     } catch (error) {
       console.error('Error abriendo PDF:', error);
       dialog.error('Error al abrir el PDF');
@@ -298,7 +315,7 @@ export const OrdersPage: React.FC = () => {
 
     try {
       const response = await apiClient.post(`/orders/duplicate/${order.id}`);
-      
+
       if (response.data.success) {
         dialog.success('Orden duplicada correctamente');
         loadOrders();
@@ -319,7 +336,7 @@ export const OrdersPage: React.FC = () => {
 
     try {
       const response = await apiClient.delete(`/orders/${order.id}`);
-      
+
       if (response.data.success) {
         dialog.success('Orden eliminada correctamente');
         loadOrders();
@@ -334,25 +351,13 @@ export const OrdersPage: React.FC = () => {
     setActiveDropdown(activeDropdown?.id === orderId ? null : {id: orderId, element});
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = searchTerm === '' || 
-      order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.license_plate.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
-    const matchesPriority = filterPriority === 'all' || order.priority === filterPriority;
-
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
-
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   };
 
@@ -394,10 +399,13 @@ export const OrdersPage: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
             />
           </div>
-          
+
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setCurrentPage(1);
+            }}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           >
             <option value="all">Todos los estados</option>
@@ -409,7 +417,10 @@ export const OrdersPage: React.FC = () => {
 
           <select
             value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
+            onChange={(e) => {
+              setFilterPriority(e.target.value);
+              setCurrentPage(1);
+            }}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           >
             <option value="all">Todas las prioridades</option>
@@ -421,13 +432,13 @@ export const OrdersPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ✅ TABLA OPTIMIZADA CON TRUNCADO Y STICKY COLUMN */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
 
+      {/* Tabla */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -457,7 +468,6 @@ export const OrdersPage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Entrega Est.
                 </th>
-                {/* ✅ COLUMNA ACCIONES STICKY - Siempre visible */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 border-l border-gray-200 z-10">
                   Acciones
                 </th>
@@ -470,31 +480,30 @@ export const OrdersPage: React.FC = () => {
                     Cargando órdenes...
                   </td>
                 </tr>
-              ) : filteredOrders.length === 0 ? (
+              ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                     No se encontraron órdenes
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order) => (
+                orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {order.order_number}
                       </div>
                     </td>
-                    
-                    {/* ✅ CELDA CLIENTE CON TRUNCADO INTELIGENTE */}
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div 
-                        className="text-sm text-gray-900 max-w-[200px] sm:max-w-[250px] lg:max-w-[300px] truncate cursor-help" 
+                      <div
+                        className="text-sm text-gray-900 max-w-[200px] sm:max-w-[250px] lg:max-w-[300px] truncate cursor-help"
                         title={order.client_name}
                       >
                         {truncateText(order.client_name, 30)}
                       </div>
                     </td>
-                    
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         <div>{order.unit_type_name}</div>
@@ -526,8 +535,7 @@ export const OrdersPage: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(order.estimated_delivery)}
                     </td>
-                    
-                    {/* ✅ CELDA ACCIONES STICKY - Siempre accesible */}
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-gray-200 z-5">
                       <div className="relative dropdown-container">
                         <button
@@ -548,6 +556,61 @@ export const OrdersPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <Button
+                variant="secondary"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+              >
+                Siguiente
+              </Button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Página <span className="font-medium">{currentPage}</span> de{' '}
+                  <span className="font-medium">{totalPages}</span> ({totalOrders} órdenes totales)
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                  <Button
+                    variant="secondary"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage <= 1}
+                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Anterior
+                  </Button>
+
+                  <div className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    {currentPage} / {totalPages}
+                  </div>
+
+                  <Button
+                    variant="secondary"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Siguiente
+                  </Button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modal de nueva orden */}
@@ -567,9 +630,7 @@ export const OrdersPage: React.FC = () => {
         <ClientsManagementModal
           isOpen={showClientsModal}
           onClose={() => setShowClientsModal(false)}
-          onClientCreated={() => {
-            // Aquí podrías refrescar la lista de clientes si fuera necesario
-          }}
+          onClientCreated={() => {}}
         />
       )}
 
