@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkSession = async () => {
     try {
       const response = await apiClient.get("/check-session.php");
-      console.log("Check session response:", response.data); // Debug temporal
 
       if (response.data.authenticated && response.data.user) {
         // IMPORTANTE: Asegurarse de que se guarden TODOS los campos
@@ -96,7 +95,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user) {
       const newUser = { ...user, ...updatedUser };
       setUser(newUser);
-      console.log("Usuario actualizado en contexto:", newUser); // Debug
     }
   };
 

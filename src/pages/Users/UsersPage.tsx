@@ -57,7 +57,6 @@ export const UsersPage = () => {
       setLoading(true);
       setError("");
       const response = await apiClient.get("/users/list.php");
-      console.log("Usuarios recibidos:", response.data);
       setUsers(response.data || []);
     } catch (error) {
       console.error("Error al cargar usuarios:", error);
