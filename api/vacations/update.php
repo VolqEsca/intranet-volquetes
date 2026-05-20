@@ -1,11 +1,11 @@
 <?php
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../auth_check.php';
-require_once __DIR__ . '/../../config.php';
 
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     http_response_code(405);
     echo json_encode(['error' => 'Método no permitido']);
     exit;
