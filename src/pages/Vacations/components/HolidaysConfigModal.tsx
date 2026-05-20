@@ -3,14 +3,15 @@ import { Plus, Edit2, Trash2, Copy, Calendar, AlertCircle, Loader2, Settings } f
 import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
-import { 
-  vacationsAPI, 
-  holidaysAPI, 
-  Holiday, 
+import {
+  vacationsAPI,
+  holidaysAPI,
+  Holiday,
   HolidayFormData,
   HOLIDAY_TYPES,
-  HOLIDAY_TYPE_COLORS 
+  HOLIDAY_TYPE_COLORS
 } from '../../../api/vacations';
+import { dialog } from '../../../services/dialog.service';
 
 interface HolidaysConfigModalProps {
   isOpen: boolean;
@@ -112,9 +113,11 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
 
   // Eliminar festivo
   const handleDelete = async (id: number) => {
-    if (!window.confirm('⚠️ ¿Eliminar festivo?\n\nSi eliminas un festivo que afecta a vacaciones ya aprobadas, los días laborales se recalcularán automáticamente.')) {
-      return;
-    }
+    const confirmed = await dialog.confirm(
+      '¿Eliminar festivo?',
+      'Si eliminas un festivo que afecta a vacaciones ya aprobadas, los días laborales se recalcularán automáticamente.'
+    );
+    if (!confirmed) return;
 
     setIsSubmitting(true);
     try {
@@ -140,16 +143,11 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
 
   // ✅ SMART SEEDING: Copiar festivos estándar
   const handleCopyYear = async () => {
-    if (!window.confirm(
-      `¿Generar festivos de fecha fija para ${selectedYear}?\n\n` +
-      `Se crearán automáticamente los 12 festivos estándar:\n` +
-      `• 9 Nacionales (Año Nuevo, Reyes, Trabajo, etc.)\n` +
-      `• 1 Autonómico (Castilla y León)\n` +
-      `• 2 Locales Valladolid (San Pedro, Ntra. Sra.)\n\n` +
-      `Semana Santa y días de convenio deben añadirse manualmente.`
-    )) {
-      return;
-    }
+    const confirmed = await dialog.confirm(
+      `¿Generar festivos de fecha fija para ${selectedYear}?`,
+      'Se crearán automáticamente los 12 festivos estándar: 9 Nacionales, 1 Autonómico (Castilla y León) y 2 Locales Valladolid. Semana Santa y días de convenio deben añadirse manualmente.'
+    );
+    if (!confirmed) return;
 
     setIsSubmitting(true);
     try {

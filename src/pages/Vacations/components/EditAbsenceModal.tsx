@@ -3,16 +3,17 @@ import { AlertCircle, CheckCircle, Loader2, Calculator, Calendar, FileText, Tras
 import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
-import { 
-  vacationsAPI, 
+import {
+  vacationsAPI,
   Absence,
-  Employee, 
-  VacationBalance, 
+  Employee,
+  VacationBalance,
   ABSENCE_TYPES,
   WorkingDaysCalculation,
   detectConflicts,
   ConflictDetection
 } from '../../../api/vacations';
+import { dialog } from '../../../services/dialog.service';
 
 interface Props {
   isOpen: boolean;
@@ -218,9 +219,11 @@ export const EditAbsenceModal: React.FC<Props> = ({
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`¿Eliminar la ausencia de ${employee.full_name}?\n\nEl saldo se restaurará automáticamente.`)) {
-      return;
-    }
+    const confirmed = await dialog.confirm(
+      `¿Eliminar la ausencia de ${employee.full_name}?`,
+      'El saldo se restaurará automáticamente.'
+    );
+    if (!confirmed) return;
 
     try {
       const response = await vacationsAPI.deleteAbsence(absence.id);
