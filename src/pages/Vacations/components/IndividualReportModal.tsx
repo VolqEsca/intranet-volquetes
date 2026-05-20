@@ -39,7 +39,7 @@ export const IndividualReportModal: React.FC<Props> = ({
         
         console.log(`🔍 DEBUG Individual - Ausencias de ${employee.full_name}:`, employeeAbsences.length);
         setYearlyAbsences(employeeAbsences);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('❌ Error cargando ausencias individuales:', error);
         setYearlyAbsences([]);
         toast.error('Error al cargar detalle de vacaciones', {

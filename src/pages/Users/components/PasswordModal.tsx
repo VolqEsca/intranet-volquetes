@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Lock, Eye, EyeOff, Check, AlertCircle, Save } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
+import { apiErrorMessage } from '../../../utils/error';
 
 interface PasswordModalProps {
   isOpen: boolean;
@@ -88,10 +89,8 @@ export const PasswordModal = ({
     try {
       await onSave(password);
       onClose();
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message || "Error al cambiar la contraseña"
-      );
+    } catch (error: unknown) {
+      setError(apiErrorMessage(error, "Error al cambiar la contraseña"));
     } finally {
       setLoading(false);
     }

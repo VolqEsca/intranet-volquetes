@@ -9,10 +9,11 @@ import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { apiClient } from '../../../api';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface EditOrderModalProps {
   isOpen: boolean;
-  order: any;
+  order: any; // TODO: tipar correctamente (Sprint 5)
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -84,7 +85,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({
         let tasksText = '';
         if (orderData.tasks && Array.isArray(orderData.tasks)) {
           tasksText = orderData.tasks
-            .map((task: any) => task.description)
+            .map((task: { description: string }) => task.description)
             .join('\n');
         }
         
@@ -94,7 +95,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({
           brand: orderData.brand || '',
           model: orderData.model || '',
           license_plate: orderData.license_plate || '',
-          department_ids: orderData.departments?.map((d: any) => d.id) || [],
+          department_ids: orderData.departments?.map((d: { id: number }) => d.id) || [],
           status: orderData.status || 'pending',
           priority: orderData.priority || 'normal',
           entry_date: orderData.entry_date || '',
@@ -114,7 +115,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({
         brand: initialOrder.brand || '',
         model: initialOrder.model || '',
         license_plate: initialOrder.license_plate || '',
-        department_ids: initialOrder.departments?.map((d: any) => d.id) || [],
+        department_ids: initialOrder.departments?.map((d: { id: number }) => d.id) || [],
         status: initialOrder.status || 'pending',
         priority: initialOrder.priority || 'normal',
         entry_date: initialOrder.entry_date || '',
@@ -222,10 +223,10 @@ const orderData = {
         onSuccess();
         onClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating order:', error);
       await dialog.error(
-        error.response?.data?.error || 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.'),
         'Error al actualizar'
       );
     } finally {

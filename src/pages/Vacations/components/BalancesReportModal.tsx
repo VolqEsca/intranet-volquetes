@@ -42,7 +42,7 @@ export const BalancesReportModal: React.FC<Props> = ({
         
         console.log('🔍 DEBUG Modal - Ausencias anuales cargadas:', absencesData.length);
         setYearlyAbsences(absencesData);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('❌ Error cargando ausencias anuales:', error);
         setYearlyAbsences([]);
         toast.error('Error al cargar detalle de vacaciones', {

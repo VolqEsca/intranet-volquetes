@@ -92,7 +92,7 @@ export const EMPLOYEE_CONSTANTS = {
 // API calls para empleados
 export const employeesAPI = {
   // Listar empleados
-  list: (params: any = {}): Promise<{ data: EmployeesResponse }> => 
+  list: (params: Record<string, unknown> = {}): Promise<{ data: EmployeesResponse }> =>
     api.get('/employees/list.php', { params }),
 
   // Crear empleado

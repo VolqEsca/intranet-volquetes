@@ -12,6 +12,7 @@ import {
   HOLIDAY_TYPE_COLORS
 } from '../../../api/vacations';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface HolidaysConfigModalProps {
   isOpen: boolean;
@@ -92,9 +93,8 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
       resetForm();
       loadHolidays();
       onHolidaysUpdated();
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.error || 'Error al guardar el festivo';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(apiErrorMessage(error, 'Error al guardar el festivo'));
     } finally {
       setIsSubmitting(false);
     }
@@ -133,9 +133,8 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
       
       loadHolidays();
       onHolidaysUpdated();
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.error || 'Error al eliminar el festivo';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(apiErrorMessage(error, 'Error al eliminar el festivo'));
     } finally {
       setIsSubmitting(false);
     }
@@ -159,9 +158,8 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
       
       loadHolidays();
       onHolidaysUpdated();
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.error || 'Error al generar festivos';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(apiErrorMessage(error, 'Error al generar festivos'));
     } finally {
       setIsSubmitting(false);
     }

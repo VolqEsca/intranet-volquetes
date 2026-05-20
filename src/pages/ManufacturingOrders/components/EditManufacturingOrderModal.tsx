@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { manufacturingAPI } from '../../../api/manufacturing';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface EditManufacturingOrderModalProps {
   orderId: number;
@@ -126,10 +127,10 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
         priority: orderData.priority
       });
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error loading order data:', error);
       await dialog.error(
-        error.response?.data?.message || error.message || 'No se pudieron cargar los datos de la orden',
+        apiErrorMessage(error, 'No se pudieron cargar los datos de la orden'),
         'Error de Carga'
       );
     } finally {
@@ -186,10 +187,10 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
       );
       
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating manufacturing order:', error);
       await dialog.error(
-        error.response?.data?.message || 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.'),
         'Error al actualizar la orden'
       );
     } finally {

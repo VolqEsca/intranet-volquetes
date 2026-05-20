@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { apiClient } from '../../../api';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface NewOrderModalProps {
   isOpen: boolean;
@@ -511,12 +512,10 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
       onOrderCreated();
       onClose();
       resetForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating order:', error);
-      console.error('Response data:', error.response?.data); // Debug adicional
-      
       await dialog.error(
-        error.response?.data?.error || 'No se pudo crear la orden. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo crear la orden. Por favor, inténtalo de nuevo.'),
         'Error al crear la orden'
       );
     } finally {
@@ -567,10 +566,10 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
         `Cliente "${newClientData.name}" creado y seleccionado correctamente.`,
         'Cliente Creado'
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating client:', error);
       await dialog.error(
-        error.response?.data?.error || 'No se pudo crear el cliente. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo crear el cliente. Por favor, inténtalo de nuevo.'),
         'Error al crear cliente'
       );
     } finally {

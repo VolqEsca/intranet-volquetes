@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button'; // ← CORRECCIÓN: Named export
 import { apiClient } from '../../api'; // ← CORRECCIÓN: Named export
+import { apiErrorMessage } from '../../utils/error';
 
 interface Props {
   isOpen: boolean;
@@ -41,8 +42,8 @@ export default function ImportClientsModal({ isOpen, onClose, onImportSuccess }:
       });
       onImportSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al importar el archivo.');
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, 'Error al importar el archivo.'));
     } finally {
       setLoading(false);
     }

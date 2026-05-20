@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI } from '../../../api/employees';
+import { apiErrorMessage, apiErrorList } from '../../../utils/error';
 import { Upload, CheckCircle, AlertCircle, FileSpreadsheet } from 'lucide-react';
 
 interface ImportEmployeesModalProps {
@@ -60,14 +61,9 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
         const errorMsg = response.data.errors?.[0] || 'Error en la importación';
         throw new Error(errorMsg);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error en importación:', err);
-      // ✅ CORRECCIÓN LÍNEA 59: Manejar correctamente tanto 'error' como 'errors'
-      const errorMessage = 
-        err.response?.data?.errors?.[0] ||     // Primer error del array (ImportResult)
-        err.response?.data?.error ||           // Error string (otros endpoints)
-        err.message ||                         // Error de la excepción
-        'Error al importar el archivo.';       // Fallback
+      const errorMessage = apiErrorList(err)[0] ?? apiErrorMessage(err, 'Error al importar el archivo.');
       setError(errorMessage);
     } finally {
       setLoading(false);

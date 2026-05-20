@@ -68,7 +68,7 @@ export const Sidebar = () => {
     .filter(item => item && item.roles.includes(user?.rol || "viewer")) as typeof allModules;
 
   // Helper para renderizar items con paleta VERSO estricta
-  const renderNavItem = (item: any) => {
+  const renderNavItem = (item: { path: string; label: string; icon: React.ElementType; roles: string[] }) => {
     const Icon = item.icon;
     return (
       <NavLink

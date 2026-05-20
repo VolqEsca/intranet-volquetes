@@ -17,6 +17,7 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { apiErrorMessage } from '../../utils/error';
 import { dialog } from "../../services/dialog.service";
 
 export const ProfilePage = () => {
@@ -96,9 +97,9 @@ export const ProfilePage = () => {
       });
 
       await dialog.success('Tu perfil ha sido actualizado correctamente', '✅ Perfil Actualizado');
-    } catch (error: any) {
+    } catch (error: unknown) {
       await dialog.error(
-        error.response?.data?.error || 'No se pudo actualizar tu perfil. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo actualizar tu perfil. Por favor, inténtalo de nuevo.'),
         'Error al actualizar perfil'
       );
     } finally {
@@ -138,9 +139,9 @@ export const ProfilePage = () => {
         'Tu contraseña ha sido actualizada exitosamente. Recuerda usar la nueva contraseña en tu próximo inicio de sesión.',
         '✅ Contraseña Actualizada'
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       await dialog.error(
-        error.response?.data?.error || 'No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.',
+        apiErrorMessage(error, 'No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.'),
         'Error al cambiar contraseña'
       );
     } finally {

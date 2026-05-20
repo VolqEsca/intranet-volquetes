@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, User, Mail, Shield, Lock, Save, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { ROLES_OPTIONS } from "../../../config/roles";
+import { apiErrorMessage } from '../../../utils/error';
 
 interface User {
   id: number;
@@ -69,7 +70,7 @@ export const UserModal = ({
     setLoading(true);
 
     try {
-      const dataToSave: any = {
+      const dataToSave: Record<string, unknown> = {
         username: formData.username,
         email: formData.email || null,
         nombre: formData.nombre || null,
@@ -83,8 +84,8 @@ export const UserModal = ({
 
       await onSave(dataToSave);
       onClose();
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Error al guardar el usuario");
+    } catch (error: unknown) {
+      setError(apiErrorMessage(error, "Error al guardar el usuario"));
     } finally {
       setLoading(false);
     }

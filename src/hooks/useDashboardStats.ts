@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../api'; // ✅ Usar el cliente configurado existente
 import { DashboardData, DashboardResponse } from '../types/dashboard';
+import { apiErrorStatus } from '../utils/error';
 
 export const useDashboardStats = () => {
   const [stats, setStats] = useState<DashboardData | null>(null);
@@ -20,9 +21,9 @@ export const useDashboardStats = () => {
       } else {
         setError('Error en el formato de respuesta del servidor');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching dashboard stats:', err);
-      setError(err.response?.status === 401 ? 'Sesión expirada' : 'No se pudieron cargar las estadísticas');
+      setError(apiErrorStatus(err) === 401 ? 'Sesión expirada' : 'No se pudieron cargar las estadísticas');
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, Employee } from '../../../api/employees';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface GenerateDocumentsModalProps {
   isOpen: boolean;
@@ -75,10 +76,9 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
           await new Promise(resolve => setTimeout(resolve, 500));
         }
         
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(`Error generando ${docType}:`, err);
-        const errorMsg = err?.response?.data?.error || `Error generando ${docType}`;
-        errorMessages.push(errorMsg);
+        errorMessages.push(apiErrorMessage(err, `Error generando ${docType}`));
       }
     }
 

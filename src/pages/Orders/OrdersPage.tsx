@@ -13,6 +13,7 @@ import { dialog } from '../../services/dialog.service';
 import EditOrderModal from './components/EditOrderModal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromCamel } from '../../types/pagination';
+import { apiErrorMessage } from '../../utils/error';
 
 interface Order {
   id: number;
@@ -105,9 +106,9 @@ export const OrdersPage: React.FC = () => {
       const pg = fromCamel(response.data.pagination ?? {});
       setTotalPages(pg.totalPages);
       setTotalOrders(pg.total);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error cargando órdenes:', err);
-      setError(err.response?.data?.message || 'Error al cargar las órdenes de trabajo');
+      setError(apiErrorMessage(err, 'Error al cargar las órdenes de trabajo'));
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
 import { ClientEditModal } from './ClientEditModal';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface Client {
   id: number;
@@ -245,11 +246,10 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
           }, 2000);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error completo:', error);
-      console.error('Respuesta de error:', error.response);
       await dialog.error(
-        error.response?.data?.error || 'Error desconocido al importar el archivo',
+        apiErrorMessage(error, 'Error desconocido al importar el archivo'),
         '❌ Error de Importación'
       );
     } finally {

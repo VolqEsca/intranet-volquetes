@@ -5,6 +5,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
 import { dialog } from '../../../services/dialog.service';
+import { isAxiosError } from 'axios';
 
 interface Client {
   id: number;
@@ -73,17 +74,21 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
       }
       
       onSave();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error guardando cliente:', error);
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
-      } else if (error.response?.data?.error) {
-        // Si el error es por CIF/NIF duplicado
-        if (error.response.data.error.includes('CIF/NIF')) {
-          setErrors({ cif_nif: error.response.data.error });
+      if (isAxiosError(error)) {
+        const data = error.response?.data as Record<string, unknown> | undefined;
+        if (data?.errors) {
+          setErrors(data.errors as Record<string, string>);
+        } else if (typeof data?.error === 'string') {
+          if (data.error.includes('CIF/NIF')) {
+            setErrors({ cif_nif: data.error });
+          } else {
+            await dialog.error(data.error, 'Error al guardar');
+          }
         } else {
           await dialog.error(
-            error.response.data.error,
+            `No se pudo ${isCreating ? 'crear' : 'actualizar'} el cliente. Por favor, inténtalo de nuevo.`,
             'Error al guardar'
           );
         }

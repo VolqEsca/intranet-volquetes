@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
+import { apiErrorMessage } from '../../utils/error';
 
 interface Props {
   isOpen: boolean;
@@ -31,12 +32,8 @@ export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
       });
       onClientAdded(); // Llama a la función para refrescar la tabla
       onClose(); // Cierra el modal
-    } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
-      } else {
-        setError('Error al crear el cliente.');
-      }
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, 'Error al crear el cliente.'));
     } finally {
       setLoading(false);
     }

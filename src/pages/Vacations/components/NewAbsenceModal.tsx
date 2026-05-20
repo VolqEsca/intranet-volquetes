@@ -3,15 +3,18 @@ import { AlertCircle, CheckCircle, Loader2, Calculator, Calendar, FileText, User
 import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
-import { 
-  vacationsAPI, 
-  Employee, 
-  VacationBalance, 
+import {
+  vacationsAPI,
+  Employee,
+  VacationBalance,
+  Absence,
   ABSENCE_TYPES,
   WorkingDaysCalculation,
   detectConflicts,
   ConflictDetection
 } from '../../../api/vacations';
+import { isAxiosError } from 'axios';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface Props {
   isOpen: boolean;
@@ -19,7 +22,7 @@ interface Props {
   onSuccess: () => void;
   employees: Employee[];
   balances: Record<number, VacationBalance>;
-  calendarData: any;
+  calendarData: any; // TODO: tipar correctamente (Sprint 5)
   // ✅ NUEVO: Props para click-to-create
   prefilledDate?: string | null;
   prefilledEmployeeId?: number | null;
@@ -52,7 +55,7 @@ export const NewAbsenceModal: React.FC<Props> = ({
   const [overlapDetection, setOverlapDetection] = useState<{
     hasOverlap: boolean;
     message: string;
-    existingAbsence?: any;
+    existingAbsence?: Absence;
   } | null>(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +89,7 @@ export const NewAbsenceModal: React.FC<Props> = ({
 
         // Buscar ausencias existentes de este empleado que se solapen
         // Lógica: (StartA <= EndB) AND (EndA >= StartB)
-        const overlappingAbsence = calendarData.absences.find((abs: any) => {
+        const overlappingAbsence = calendarData.absences.find((abs: { employee_id: number; status: string; start_date: string; end_date: string }) => {
           if (abs.employee_id !== empId) return false;
           if (abs.status === 'rejected') return false; // Ignorar rechazadas
           
@@ -218,17 +221,21 @@ export const NewAbsenceModal: React.FC<Props> = ({
         setSubmitError(errorMessage);
         toast.error('No se pudo crear la ausencia', { description: errorMessage });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creando ausencia:', error);
       let errorMessage = 'Error al crear la ausencia';
-      
-      // Manejo específico de errores de solapamiento del backend
-      if (error.response?.status === 409) {
-        errorMessage = error.response.data.details || 'Conflicto de fechas detectado';
+
+      if (isAxiosError(error)) {
+        const data = error.response?.data as Record<string, string> | undefined;
+        if (error.response?.status === 409) {
+          errorMessage = data?.details || 'Conflicto de fechas detectado';
+        } else {
+          errorMessage = data?.error || errorMessage;
+        }
       } else {
-        errorMessage = error.response?.data?.error || errorMessage;
+        errorMessage = apiErrorMessage(error, errorMessage);
       }
-      
+
       setSubmitError(errorMessage);
       toast.error('Error al crear la ausencia', { description: errorMessage });
     } finally {

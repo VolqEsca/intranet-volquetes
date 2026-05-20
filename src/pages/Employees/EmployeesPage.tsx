@@ -10,6 +10,7 @@ import { ImportEmployeesModal } from './components/ImportEmployeesModal';
 import { GenerateDocumentsModal } from './components/GenerateDocumentsModal';
 import AlertDialog from '../../components/ui/AlertDialog';
 import { Plus, Upload, Edit, Trash2, Users, Search, FileText } from 'lucide-react';
+import { apiErrorMessage } from '../../utils/error';
 import { useAuth } from '../../hooks/useAuth';
 import { dialog } from '../../services/dialog.service';
 import { formatDate } from '../../utils/formatters';
@@ -49,7 +50,7 @@ export const EmployeesPage = () => {
     setError(null);
     
     try {
-      const params: any = { page, limit };
+      const params: Record<string, unknown> = { page, limit };
       if (searchTerm.trim()) params.search = searchTerm.trim();
       if (locationFilter) params.location = locationFilter;
       if (contractFilter) params.contract_type = contractFilter;
@@ -57,10 +58,9 @@ export const EmployeesPage = () => {
       const response = await employeesAPI.list(params);
       setEmployees(response.data.employees);
       setPagination(fromSnake(response.data.pagination));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al cargar empleados:", err);
-      const errorMessage = err?.response?.data?.message || "No se pudieron cargar los empleados.";
-      setError(errorMessage);
+      setError(apiErrorMessage(err, "No se pudieron cargar los empleados."));
       setEmployees([]);
       setPagination({ currentPage: 1, totalPages: 1, total: 0, limit: 100 });
     } finally {
@@ -122,10 +122,9 @@ export const EmployeesPage = () => {
       await employeesAPI.delete(employeeToDelete.id);
       await fetchEmployees(pagination.currentPage, pagination.limit);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al eliminar empleado:", err);
-      const errorMessage = err?.response?.data?.message || "No se pudo eliminar el empleado.";
-      setError(errorMessage);
+      setError(apiErrorMessage(err, "No se pudo eliminar el empleado."));
     } finally {
       setIsDeleteConfirmOpen(false);
       setEmployeeToDelete(null);

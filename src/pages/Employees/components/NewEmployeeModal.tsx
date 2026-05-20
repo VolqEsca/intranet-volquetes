@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS } from '../../../api/employees';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface NewEmployeeModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export const NewEmployeeModal: React.FC<NewEmployeeModalProps> = ({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (field: keyof EmployeeFormData, value: any) => {
+  const handleChange = (field: keyof EmployeeFormData, value: string | number | boolean | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: '' }));
     if (submitError) setSubmitError(null);
@@ -105,13 +106,9 @@ export const NewEmployeeModal: React.FC<NewEmployeeModalProps> = ({
         iban: '',
       });
       setErrors({});
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error al crear empleado:', err);
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        'No se pudo crear el empleado.';
-      setSubmitError(msg);
+      setSubmitError(apiErrorMessage(err, 'No se pudo crear el empleado.'));
     } finally {
       setIsSubmitting(false);
     }

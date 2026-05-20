@@ -5,6 +5,7 @@ import { Lock, Save, AlertCircle, Eye, EyeOff, Check, X } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { apiClient } from "../../api";
 import { useNavigate } from "react-router-dom";
+import { apiErrorMessage } from '../../utils/error';
 
 // Función para evaluar la fortaleza de la contraseña
 const evaluatePasswordStrength = (password: string) => {
@@ -118,8 +119,8 @@ export const ChangePasswordPage = () => {
       setTimeout(() => {
         navigate("/perfil");
       }, 2000);
-    } catch (error: any) {
-      setError(error.response?.data?.error || "Error al cambiar la contraseña");
+    } catch (error: unknown) {
+      setError(apiErrorMessage(error, "Error al cambiar la contraseña"));
     } finally {
       setLoading(false);
     }

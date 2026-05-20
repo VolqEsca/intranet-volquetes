@@ -11,6 +11,7 @@ import { dialog } from '../../services/dialog.service';
 import { Modal } from '../../components/ui/Modal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromSnake } from '../../types/pagination';
+import { apiErrorMessage } from '../../utils/error';
 
 const statusLabels = {
   pending: 'Pendiente',
@@ -82,8 +83,8 @@ export function ManufacturingOrdersPage() {
       const pg = fromSnake(response.data.pagination);
       setTotalPages(pg.totalPages);
       setTotalRecords(pg.total);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al cargar órdenes de fabricación');
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, 'Error al cargar órdenes de fabricación'));
     } finally {
       setLoading(false);
     }
@@ -129,9 +130,9 @@ export function ManufacturingOrdersPage() {
       await manufacturingAPI.updateStatus(order.id, newStatus as any);
       await dialog.success('Estado actualizado correctamente');
       loadOrders();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error cambiando estado:', error);
-      await dialog.error(error.response?.data?.message || 'Error al cambiar el estado');
+      await dialog.error(apiErrorMessage(error, 'Error al cambiar el estado'));
     }
   };
 
@@ -147,9 +148,9 @@ export function ManufacturingOrdersPage() {
       await manufacturingAPI.delete(order.id);
       await dialog.success(`Orden ${order.order_number} eliminada correctamente`);
       loadOrders();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error eliminando orden:', error);
-      await dialog.error(error.response?.data?.message || 'Error al eliminar la orden');
+      await dialog.error(apiErrorMessage(error, 'Error al eliminar la orden'));
     }
   };
 

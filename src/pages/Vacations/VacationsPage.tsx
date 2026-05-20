@@ -11,6 +11,7 @@ import { MonthlyReportModal } from './components/MonthlyReportModal';
 import { BalancesReportModal } from './components/BalancesReportModal';
 import { IndividualReportModal } from './components/IndividualReportModal';
 import HolidaysConfigModal from './components/HolidaysConfigModal';
+import { apiErrorMessage } from '../../utils/error';
 
 const MONTH_NAMES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -60,9 +61,9 @@ export const VacationsPage: React.FC = () => {
     try {
       const response = await vacationsAPI.getCalendar(year, month);
       setCalendarData(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error cargando calendario:', err);
-      setError(err.response?.data?.error || 'Error al cargar el calendario');
+      setError(apiErrorMessage(err, 'Error al cargar el calendario'));
       toast.error('Error al cargar datos', {
         description: 'No se pudieron cargar los datos del calendario'
       });

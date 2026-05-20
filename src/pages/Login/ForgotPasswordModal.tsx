@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { apiClient } from "../../api";
+import { apiErrorMessage } from '../../utils/error';
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -29,8 +30,8 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
       if (response.data.success) {
         setSuccess(true);
       }
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Error al procesar la solicitud");
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, "Error al procesar la solicitud"));
     } finally {
       setLoading(false);
     }

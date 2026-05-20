@@ -2,6 +2,7 @@ import React, { useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../api";
 import { AuthContext, LoginResult } from "../hooks/useAuth";
+import { isAxiosError } from 'axios';
 
 interface User {
   id: number;
@@ -71,9 +72,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { success: true };
       }
       return { success: false, errorType: 'credentials' };
-    } catch (error: any) {
+    } catch (error: unknown) {
       setUser(null);
-      if (!error.response) {
+      if (!isAxiosError(error) || !error.response) {
         return { success: false, errorType: 'network' };
       }
       if (error.response.status === 401 || error.response.status === 403) {

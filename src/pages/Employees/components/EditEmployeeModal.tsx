@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS, Employee } from '../../../api/employees';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
     }
   }, [employee, isOpen]);
 
-  const handleChange = (field: keyof EmployeeFormData, value: any) => {
+  const handleChange = (field: keyof EmployeeFormData, value: string | number | boolean | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: '' }));
     if (submitError) setSubmitError(null);
@@ -115,13 +116,9 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
       await employeesAPI.update(employee.id, formData);
       onEmployeeUpdated(); // Refrescar listado en EmployeesPage
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error al actualizar empleado:', err);
-      const msg =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        'No se pudo actualizar el empleado.';
-      setSubmitError(msg);
+      setSubmitError(apiErrorMessage(err, 'No se pudo actualizar el empleado.'));
     } finally {
       setIsSubmitting(false);
     }

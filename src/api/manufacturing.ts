@@ -53,7 +53,7 @@ export interface ManufacturingOrdersResponse {
 // API calls para fabricación
 export const manufacturingAPI = {
   // Listar órdenes con filtros
-  list: (params: any = {}): Promise<{ data: ManufacturingOrdersResponse }> => 
+  list: (params: Record<string, unknown> = {}): Promise<{ data: ManufacturingOrdersResponse }> =>
     api.get('/manufacturing-orders/list.php', { params }),
 
   // ✅ MÉTODO CREATE SIMPLIFICADO: Ya no necesita conversión de fechas

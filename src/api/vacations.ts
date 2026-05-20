@@ -139,6 +139,15 @@ export interface CopyYearResponse {
   errors?: string[];
 }
 
+export interface UpdateBalanceData {
+  employee_id: number;
+  year: number;
+  annual_days: number;
+  carried_over_days: number;
+  manual_adjustments: number;
+  adjustment_reason: string;
+}
+
 // ========================================
 // CONSTANTES Y UTILIDADES
 // ========================================
@@ -238,7 +247,7 @@ export const vacationsAPI = {
   deleteAbsence: (id: number) => 
     apiClient.delete(`/vacations/delete.php?id=${id}`),
 
-  updateBalance: (data: any) => 
+  updateBalance: (data: UpdateBalanceData) =>
     apiClient.post('/vacations/update-balance.php', data),
     
   // ✅ CORRECCIÓN CRÍTICA: Tipado correcto según respuesta backend

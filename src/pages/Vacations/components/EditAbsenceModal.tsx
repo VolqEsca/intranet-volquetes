@@ -14,6 +14,7 @@ import {
   ConflictDetection
 } from '../../../api/vacations';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface Props {
   isOpen: boolean;
@@ -22,7 +23,7 @@ interface Props {
   absence: Absence | null;
   employee: Employee | null;
   balance: VacationBalance | null;
-  calendarData: any;
+  calendarData: any; // TODO: tipar correctamente (Sprint 5)
 }
 
 export const EditAbsenceModal: React.FC<Props> = ({ 
@@ -204,13 +205,13 @@ export const EditAbsenceModal: React.FC<Props> = ({
           duration: 7000,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error actualizando ausencia:', error);
-      const errorMessage = error.response?.data?.error || 'Error al actualizar la ausencia';
+      const errorMessage = apiErrorMessage(error, 'Error al actualizar la ausencia');
       setSubmitError(errorMessage);
-      
+
       toast.error('Error al actualizar la ausencia', {
-        description: errorMessage || 'Error de conexión con el servidor. Intenta nuevamente.',
+        description: errorMessage,
         duration: 8000,
       });
     } finally {
@@ -237,9 +238,9 @@ export const EditAbsenceModal: React.FC<Props> = ({
         onSuccess();
         onClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Error al eliminar ausencia', {
-        description: error.response?.data?.error || 'Error de conexión con el servidor',
+        description: apiErrorMessage(error, 'Error de conexión con el servidor'),
         duration: 8000,
       });
     }

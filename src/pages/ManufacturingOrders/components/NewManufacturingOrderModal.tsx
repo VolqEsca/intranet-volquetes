@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { manufacturingAPI, ManufacturingOrderFormData } from '../../../api/manufacturing';
 import { dialog } from '../../../services/dialog.service';
+import { apiErrorMessage } from '../../../utils/error';
 
 interface NewManufacturingOrderModalProps {
   isOpen: boolean;
@@ -140,12 +141,10 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
       onOrderCreated();
       onClose();
       resetForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating manufacturing order:', error);
-      console.error('Response data:', error.response?.data);
-      
       await dialog.error(
-        error.response?.data?.message || 'No se pudo crear la orden. Por favor, inténtalo de nuevo.',
+        apiErrorMessage(error, 'No se pudo crear la orden. Por favor, inténtalo de nuevo.'),
         'Error al crear la orden'
       );
     } finally {
