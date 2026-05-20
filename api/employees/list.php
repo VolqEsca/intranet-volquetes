@@ -1,45 +1,7 @@
 <?php
-// NO incluir auth_check.php para evitar problemas de sesión
-
-// --- CORS DINÁMICO MEJORADO (basado en patrón clientes) ---
-$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = [
-    'https://intranet.volquetesescalante.com'
-];
-
-// Verificar si es origen permitido estático o StackBlitz dinámico
-$isOriginAllowed = false;
-if (in_array($requestOrigin, $allowedOrigins)) {
-    $isOriginAllowed = true;
-} elseif (preg_match('/^https:\/\/.*\.webcontainer\.io$/', $requestOrigin)) {
-    // Patrón dinámico para StackBlitz
-    $isOriginAllowed = true;
-}
-
-// Configurar headers CORS (patrón clientes mejorado)
-if ($isOriginAllowed && $requestOrigin) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} else {
-    // Fallback para producción
-    header("Access-Control-Allow-Origin: https://intranet.volquetesescalante.com");
-}
-
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit(0);
-}
-
-// Verificar autenticación manualmente (igual que clientes)
-if (!isset($_SESSION['user']['id'])) {
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'No autorizado']);
-    exit;
-}
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 
 // Configuración de BD directa (igual que clientes)
 $DB_HOST = 'localhost';
