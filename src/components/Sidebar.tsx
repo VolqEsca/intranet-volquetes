@@ -136,10 +136,12 @@ export const Sidebar = () => {
             </div>
           )}
 
-          {/* ✅ 3. Configuración (siempre al final y fijo) */}
-          <div className="pt-3 mt-3 border-t border-[#e2e8f0]">
-            {renderNavItem(fixedItems.config)}
-          </div>
+          {/* ✅ 3. Configuración (solo admin) */}
+          {user?.rol === 'admin' && (
+            <div className="pt-3 mt-3 border-t border-[#e2e8f0]">
+              {renderNavItem(fixedItems.config)}
+            </div>
+          )}
 
         </div>
       </nav>
