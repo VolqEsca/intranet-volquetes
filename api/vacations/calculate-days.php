@@ -5,11 +5,6 @@ require_once __DIR__ . '/../auth_check.php';
 
 header('Content-Type: application/json');
 
-$DB_HOST = 'localhost';
-$DB_USER = 'verso';
-$DB_PASS = 'verso_dev_2026';
-$DB_NAME = 'verso_dev';
-
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
     echo json_encode(['error' => 'Método no permitido']);
@@ -36,28 +31,17 @@ try {
         throw new Exception('Fecha inicio no puede ser posterior a fecha fin');
     }
 
-    $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-    if ($conn->connect_error) {
-        throw new Exception('Error de conexión BD');
-    }
-    $conn->set_charset("utf8mb4");
-
     // SOLUCIÓN: Obtener festivos por rango de fechas, no por año
     $holidays = [];
-    $sqlHol = "SELECT holiday_date 
-               FROM holidays 
-               WHERE holiday_date BETWEEN ? AND ? 
+    $sqlHol = "SELECT holiday_date
+               FROM holidays
+               WHERE holiday_date BETWEEN ? AND ?
                  AND is_active = TRUE";
-    $stmtHol = $conn->prepare($sqlHol);
-    $stmtHol->bind_param("ss", $startDate, $endDate);
-    $stmtHol->execute();
-    $resHol = $stmtHol->get_result();
-    while ($row = $resHol->fetch_assoc()) {
+    $stmtHol = $pdo->prepare($sqlHol);
+    $stmtHol->execute([$startDate, $endDate]);
+    while ($row = $stmtHol->fetch(PDO::FETCH_ASSOC)) {
         $holidays[] = $row['holiday_date'];
     }
-    $stmtHol->close();
-
-    $conn->close();
 
     // ALGORITMO DE CÁLCULO DÍAS LABORALES
     $workingDays = 0;

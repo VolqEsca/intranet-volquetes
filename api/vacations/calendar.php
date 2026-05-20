@@ -1,39 +1,10 @@
 <?php
 // ✅ VERSO v14.2.2 - Calendar API con Lógica Consistente de Arrastres
-session_start();
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 
-if (!isset($_SESSION['user']['id'])) {
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'No autorizado']);
-    exit;
-}
-
-// CORS (mismo patrón employees)
-$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = ['https://intranet.volquetesescalante.com'];
-
-if (in_array($requestOrigin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} elseif (preg_match('/^https:\/\/.*\.webcontainer\.io$/', $requestOrigin)) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} else {
-    header('Access-Control-Allow-Origin: *');
-}
-
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
-}
-
-$DB_HOST = 'localhost';
-$DB_USER = 'verso';
-$DB_PASS = 'verso_dev_2026';
-$DB_NAME = 'verso_dev';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -76,39 +47,29 @@ function calculateProportionalAnnualDays($hireDateStr, $year) {
 try {
     $year = intval($_GET['year'] ?? date('Y'));
     $previousYear = $year - 1;
-    
+
     $isMonthlyMode = isset($_GET['month']);
     $month = $isMonthlyMode ? intval($_GET['month']) : null;
 
     if ($year <= 0) {
         throw new Exception('Parámetro year inválido');
     }
-    
+
     if ($isMonthlyMode && ($month < 1 || $month > 12)) {
         throw new Exception('Parámetro month inválido');
     }
-
-    $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-    if ($conn->connect_error) {
-        throw new Exception('Error de conexión BD: ' . $conn->connect_error);
-    }
-    $conn->set_charset("utf8mb4");
 
     // ========================================
     // 1. EMPLEADOS ACTIVOS CON FECHA DE ALTA
     // ========================================
     $employees = [];
     $sqlEmp = "SELECT id, full_name, job_category, location, hire_date, status
-               FROM employees 
-               WHERE status = 'active' 
+               FROM employees
+               WHERE status = 'active'
                ORDER BY full_name ASC";
-    $resEmp = $conn->query($sqlEmp);
-    
-    if (!$resEmp) {
-        throw new Exception('Error al obtener empleados: ' . $conn->error);
-    }
+    $resEmp = $pdo->query($sqlEmp);
 
-    while ($row = $resEmp->fetch_assoc()) {
+    while ($row = $resEmp->fetch(PDO::FETCH_ASSOC)) {
         $employees[] = [
             'id' => (int)$row['id'],
             'full_name' => $row['full_name'],
@@ -123,70 +84,56 @@ try {
     // 2. SALDOS EXISTENTES (Año actual + Anterior)
     // ========================================
     $rawBalances = [];
-    $sqlBal = "SELECT 
+    $sqlBal = "SELECT
                    employee_id, year,
                    carried_over_days, consumed_days, manual_adjustments
-               FROM vacation_balances 
+               FROM vacation_balances
                WHERE year IN (?, ?)
                ORDER BY year ASC";
-               
-    $stmtBal = $conn->prepare($sqlBal);
-    if (!$stmtBal) {
-        throw new Exception('Error preparando consulta saldos: ' . $conn->error);
-    }
-    
-    $stmtBal->bind_param("ii", $year, $previousYear);
-    $stmtBal->execute();
-    $resBal = $stmtBal->get_result();
-    
-    while ($row = $resBal->fetch_assoc()) {
+
+    $stmtBal = $pdo->prepare($sqlBal);
+    $stmtBal->execute([$year, $previousYear]);
+
+    while ($row = $stmtBal->fetch(PDO::FETCH_ASSOC)) {
         $empId = (int)$row['employee_id'];
         $balYear = (int)$row['year'];
-        
+
         if (!isset($rawBalances[$empId])) {
             $rawBalances[$empId] = [];
         }
-        
+
         $rawBalances[$empId][$balYear] = [
             'carried_over_days' => (float)$row['carried_over_days'],
             'consumed_days' => (float)$row['consumed_days'],
             'manual_adjustments' => (float)($row['manual_adjustments'] ?? 0)
         ];
     }
-    $stmtBal->close();
 
     // ========================================
     // 3. ✅ RED DE SEGURIDAD: AUSENCIAS REALES AÑO ANTERIOR
     // ========================================
     $prevYearRealConsumption = [];
-    $sqlPrevAbs = "SELECT 
-                       employee_id, 
+    $sqlPrevAbs = "SELECT
+                       employee_id,
                        SUM(working_days_count) as total_consumed
-                   FROM employee_absences 
-                   WHERE year = ? 
-                     AND absence_type = 'vacation' 
+                   FROM employee_absences
+                   WHERE year = ?
+                     AND absence_type = 'vacation'
                      AND status != 'rejected'
                    GROUP BY employee_id";
-                   
-    $stmtPrevAbs = $conn->prepare($sqlPrevAbs);
-    if (!$stmtPrevAbs) {
-        throw new Exception('Error preparando consulta ausencias año anterior: ' . $conn->error);
-    }
-    
-    $stmtPrevAbs->bind_param("i", $previousYear);
-    $stmtPrevAbs->execute();
-    $resPrevAbs = $stmtPrevAbs->get_result();
-    
-    while ($row = $resPrevAbs->fetch_assoc()) {
+
+    $stmtPrevAbs = $pdo->prepare($sqlPrevAbs);
+    $stmtPrevAbs->execute([$previousYear]);
+
+    while ($row = $stmtPrevAbs->fetch(PDO::FETCH_ASSOC)) {
         $prevYearRealConsumption[(int)$row['employee_id']] = (float)$row['total_consumed'];
     }
-    $stmtPrevAbs->close();
 
     // ========================================
     // 4. CONSTRUCCIÓN DE SALDOS CON RED DE SEGURIDAD
     // ========================================
     $balances = [];
-    
+
     foreach ($employees as $emp) {
         $empId = $emp['id'];
         $hireDate = $emp['hire_date'];
@@ -196,12 +143,12 @@ try {
 
         // ✅ LÓGICA DE HERENCIA CON RED DE SEGURIDAD
         $calculatedCarryOver = 0.0;
-        
+
         if (isset($rawBalances[$empId][$previousYear])) {
             // CASO A: Existe registro explícito del año anterior → USAR ESE DATO
             $prevB = $rawBalances[$empId][$previousYear];
             $annualDaysPrevious = calculateProportionalAnnualDays($hireDate, $previousYear);
-            
+
             // =========================================================
             // ✅ CORRECCIÓN v14.2.2: LÓGICA CONSISTENTE DE ARRASTRES
             // Aplica la MISMA lógica de ajustes +/- que el año actual
@@ -209,7 +156,7 @@ try {
             $prevManual = (float)$prevB['manual_adjustments'];
             $prevCarried = (float)$prevB['carried_over_days'];
             $prevConsumed = (float)$prevB['consumed_days'];
-            
+
             if ($prevManual < 0) {
                 // Ajustes negativos = vacaciones pagadas (cuentan como consumidas)
                 $prevTotalGenerated = $annualDaysPrevious + $prevCarried;
@@ -219,18 +166,18 @@ try {
                 $prevTotalGenerated = $annualDaysPrevious + $prevCarried + $prevManual;
                 $prevTotalConsumed = $prevConsumed;
             }
-            
+
             // Disponible año anterior = Arrastre para este año
             $calculatedCarryOver = $prevTotalGenerated - $prevTotalConsumed;
-            
+
         } else {
             // CASO B: NO existe registro → RED DE SEGURIDAD (Consultar ausencias reales)
             $realConsumption = $prevYearRealConsumption[$empId] ?? 0.0;
-            
+
             if ($realConsumption > 0) {
                 // Empleado SÍ tuvo ausencias el año anterior, calcular saldo real
                 $annualDaysPrevious = calculateProportionalAnnualDays($hireDate, $previousYear);
-                
+
                 // ✅ FÓRMULA: Días Base - Días Realmente Consumidos = Saldo Real
                 $calculatedCarryOver = $annualDaysPrevious - $realConsumption;
             }
@@ -244,7 +191,7 @@ try {
             // Registro explícito existe - RESPETAR datos de BD configurados manualmente
             $b = $rawBalances[$empId][$year];
             $manual = $b['manual_adjustments'];
-            
+
             // ✅ LÓGICA DE PRECEDENCIA ROBUSTA: BD primero, cálculo como fallback
             if (isset($b['carried_over_days']) && abs((float)$b['carried_over_days']) > 0.01) {
                 // Existe arrastre explícito en BD → USAR ESE
@@ -253,14 +200,14 @@ try {
                 // No hay arrastre explícito o es 0 → usar cálculo dinámico
                 $carriedOver = $calculatedCarryOver;
             }
-            
+
             // ✅ LÓGICA DIFERENCIADA POR SIGNO DEL AJUSTE
             if ($manual < 0) {
                 // AJUSTES NEGATIVOS = Vacaciones pagadas (cuentan como consumidas)
                 $consumed = $b['consumed_days'] + abs($manual);
                 $totalGenerated = $annualDaysCalculated + $carriedOver;
             } else {
-                // AJUSTES POSITIVOS = Arrastres extra, días adicionales  
+                // AJUSTES POSITIVOS = Arrastres extra, días adicionales
                 $consumed = $b['consumed_days'];
                 $totalGenerated = $annualDaysCalculated + $carriedOver + $manual;
             }
@@ -288,48 +235,35 @@ try {
     // 5. ✅ AUSENCIAS - CORRECCIÓN CRÍTICA MULTI-MES
     // ========================================
     $absences = [];
-    
+
     if ($isMonthlyMode) {
         $firstDay = sprintf('%04d-%02d-01', $year, $month);
         $lastDay = date('Y-m-t', strtotime($firstDay));
 
         // ✅ Filtrado por CRUCE DE FECHAS (no solo por año)
-        $sqlAbs = "SELECT 
-                       id, employee_id, absence_type, start_date, end_date, 
+        $sqlAbs = "SELECT
+                       id, employee_id, absence_type, start_date, end_date,
                        working_days_count, notes
                    FROM employee_absences
                    WHERE (start_date <= ? AND end_date >= ?)
                    ORDER BY start_date ASC";
-                   
-        $stmtAbs = $conn->prepare($sqlAbs);
-        
-        if (!$stmtAbs) {
-            throw new Exception('Error preparando consulta ausencias mensuales: ' . $conn->error);
-        }
 
-        $stmtAbs->bind_param("ss", $lastDay, $firstDay);
-        
+        $stmtAbs = $pdo->prepare($sqlAbs);
+        $stmtAbs->execute([$lastDay, $firstDay]);
+
     } else {
         // Modo anual (mantener filtro por año fiscal para rendimiento)
-        $sqlAbs = "SELECT 
-                       id, employee_id, absence_type, start_date, end_date, 
+        $sqlAbs = "SELECT
+                       id, employee_id, absence_type, start_date, end_date,
                        working_days_count, notes
                    FROM employee_absences
                    WHERE year = ?
                    ORDER BY start_date ASC";
-        $stmtAbs = $conn->prepare($sqlAbs);
-        
-        if (!$stmtAbs) {
-            throw new Exception('Error preparando consulta ausencias anuales: ' . $conn->error);
-        }
-
-        $stmtAbs->bind_param("i", $year);
+        $stmtAbs = $pdo->prepare($sqlAbs);
+        $stmtAbs->execute([$year]);
     }
 
-    $stmtAbs->execute();
-    $resAbs = $stmtAbs->get_result();
-    
-    while ($row = $resAbs->fetch_assoc()) {
+    while ($row = $stmtAbs->fetch(PDO::FETCH_ASSOC)) {
         $absences[] = [
             'id' => (int)$row['id'],
             'employee_id' => (int)$row['employee_id'],
@@ -340,53 +274,36 @@ try {
             'notes' => $row['notes']
         ];
     }
-    $stmtAbs->close();
 
     // ========================================
     // 6. FESTIVOS - LÓGICA CONDICIONAL POR MODO
     // ========================================
     $holidays = [];
-    
+
     if ($isMonthlyMode) {
-        $sqlHol = "SELECT holiday_date, description, type 
-                   FROM holidays 
+        $sqlHol = "SELECT holiday_date, description, type
+                   FROM holidays
                    WHERE year = ? AND MONTH(holiday_date) = ? AND is_active = TRUE
                    ORDER BY holiday_date ASC";
-        $stmtHol = $conn->prepare($sqlHol);
-        
-        if (!$stmtHol) {
-            throw new Exception('Error preparando consulta festivos mensuales: ' . $conn->error);
-        }
+        $stmtHol = $pdo->prepare($sqlHol);
+        $stmtHol->execute([$year, $month]);
 
-        $stmtHol->bind_param("ii", $year, $month);
-        
     } else {
-        $sqlHol = "SELECT holiday_date, description, type 
-                   FROM holidays 
+        $sqlHol = "SELECT holiday_date, description, type
+                   FROM holidays
                    WHERE year = ? AND is_active = TRUE
                    ORDER BY holiday_date ASC";
-        $stmtHol = $conn->prepare($sqlHol);
-        
-        if (!$stmtHol) {
-            throw new Exception('Error preparando consulta festivos anuales: ' . $conn->error);
-        }
-
-        $stmtHol->bind_param("i", $year);
+        $stmtHol = $pdo->prepare($sqlHol);
+        $stmtHol->execute([$year]);
     }
-    
-    $stmtHol->execute();
-    $resHol = $stmtHol->get_result();
-    
-    while ($row = $resHol->fetch_assoc()) {
+
+    while ($row = $stmtHol->fetch(PDO::FETCH_ASSOC)) {
         $holidays[] = [
             'holiday_date' => $row['holiday_date'],
             'description' => $row['description'],
             'type' => $row['type']
         ];
     }
-    $stmtHol->close();
-
-    $conn->close();
 
     echo json_encode([
         'success' => true,
