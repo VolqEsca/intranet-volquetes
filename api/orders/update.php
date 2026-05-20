@@ -1,8 +1,8 @@
 <?php
 // api/orders/update.php - SOLUCIÓN DEFINITIVA HÍBRIDA VERSO
-require_once __DIR__ . "/../cors.php";
-// Combina: extracción robusta de ID + manejo seguro de sesiones + soporte completo para contactos del cliente
 require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 
 header('Content-Type: application/json');
 
@@ -146,6 +146,12 @@ try {
         $sql = "UPDATE work_orders SET " . implode(', ', $updateFields) . " WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
+    }
+
+    // Si se completa → setear completion_date
+    if (isset($data['status']) && $data['status'] === 'completed') {
+        $stmt = $pdo->prepare("UPDATE work_orders SET completion_date = CURDATE() WHERE id = ?");
+        $stmt->execute([$id]);
     }
 
     // ✅ PASO 3: ACTUALIZAR DEPARTAMENTOS
