@@ -70,8 +70,8 @@ export const UserModal = ({
         password: "",
       });
 
-      // Cargar permisos actuales si es operador
-      if (user.rol !== 'admin') {
+      // Cargar permisos actuales si es operador (excluye ambos formatos de admin)
+      if (user.rol !== 'admin' && user.rol !== 'Administrador') {
         setLoadingPerms(true);
         apiClient
           .get<{ success: boolean; permissions: { module: string; action: string }[] }>(
@@ -122,8 +122,8 @@ export const UserModal = ({
 
       await onSave(dataToSave);
 
-      // Guardar permisos solo en modo edición y para operadores
-      if (!isCreating && user && formData.rol !== 'admin') {
+      // Guardar permisos solo en modo edición y para operadores (excluye ambos formatos de admin)
+      if (!isCreating && user && formData.rol !== 'admin' && formData.rol !== 'Administrador') {
         const grants = grantedModules.map(slug => ({ module: slug, action: 'access' }));
         await apiClient.put(`/users/permissions.php?user_id=${user.id}`, { grants });
       }

@@ -20,9 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
         
         if ($user && password_verify($data['password'], $user['password'])) {
+            // Normalizar rol legacy 'Administrador' → 'admin'
+            $rolNorm = ($user['rol'] === 'Administrador') ? 'admin' : $user['rol'];
+
             // Cargar permisos de módulo (solo para no-admin; admin tiene acceso total)
             $permissions = [];
-            if ($user['rol'] !== 'admin') {
+            if ($rolNorm !== 'admin') {
                 $permStmt = $pdo->prepare(
                     "SELECT CONCAT(module, ':', action) as perm
                      FROM user_module_permissions
@@ -35,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user'] = [
                 'id'          => $user['id'],
                 'username'    => $user['username'],
-                'rol'         => $user['rol'],
+                'rol'         => $rolNorm,
                 'email'       => $user['email'],
                 'nombre'      => $user['nombre'],
                 'apellidos'   => $user['apellidos'],

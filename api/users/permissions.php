@@ -5,8 +5,9 @@ require_once __DIR__ . '/../auth_check.php';
 
 header('Content-Type: application/json');
 
-// Solo administradores pueden gestionar permisos
-if ($_SESSION['user']['rol'] !== 'admin') {
+// Solo administradores pueden gestionar permisos (acepta 'admin' y 'Administrador' legacy)
+$sessionRol = $_SESSION['user']['rol'] ?? '';
+if ($sessionRol !== 'admin' && $sessionRol !== 'Administrador') {
     http_response_code(403);
     echo json_encode(['error' => 'Solo administradores pueden gestionar permisos']);
     exit;
@@ -61,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     // Admins no tienen filas en la tabla — su acceso es incondicional
-    if ($targetUser['rol'] === 'admin') {
+    if ($targetUser['rol'] === 'admin' || $targetUser['rol'] === 'Administrador') {
         echo json_encode(['success' => true, 'message' => 'Admin tiene acceso total — sin cambios']);
         exit;
     }

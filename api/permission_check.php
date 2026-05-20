@@ -9,8 +9,8 @@ function require_module_permission(string $module, string $action = 'access'): v
 
     $rol = $_SESSION['user']['rol'] ?? '';
 
-    // Admin siempre tiene acceso completo
-    if ($rol === 'admin') return;
+    // Admin siempre tiene acceso completo (acepta 'admin' y 'Administrador' legacy)
+    if ($rol === 'admin' || $rol === 'Administrador') return;
 
     $userId = (int)($_SESSION['user']['id'] ?? 0);
 
