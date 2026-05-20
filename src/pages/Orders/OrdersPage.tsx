@@ -12,6 +12,7 @@ import { ClientsManagementModal } from './components/ClientsManagementModal';
 import { dialog } from '../../services/dialog.service';
 import EditOrderModal from './components/EditOrderModal';
 import { formatDate, truncateText } from '../../utils/formatters';
+import { fromCamel } from '../../types/pagination';
 
 interface Order {
   id: number;
@@ -101,8 +102,9 @@ export const OrdersPage: React.FC = () => {
 
       const response = await apiClient.get('/orders/', { params });
       setOrders(response.data.data || []);
-      setTotalPages(response.data.pagination?.totalPages ?? 1);
-      setTotalOrders(response.data.pagination?.total ?? 0);
+      const pg = fromCamel(response.data.pagination ?? {});
+      setTotalPages(pg.totalPages);
+      setTotalOrders(pg.total);
     } catch (err: any) {
       console.error('Error cargando órdenes:', err);
       setError(err.response?.data?.message || 'Error al cargar las órdenes de trabajo');

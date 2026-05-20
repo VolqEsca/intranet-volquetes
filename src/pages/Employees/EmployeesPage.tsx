@@ -1,6 +1,7 @@
 // src/pages/Employees/EmployeesPage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { employeesAPI, Employee, EmployeesResponse, PaginationData } from '../../api/employees';
+import { employeesAPI, Employee, EmployeesResponse } from '../../api/employees';
+import { PaginationData, fromSnake } from '../../types/pagination';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { NewEmployeeModal } from './components/NewEmployeeModal';
@@ -17,9 +18,9 @@ export const EmployeesPage = () => {
   const { user } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
-    current_page: 1, 
-    total_pages: 1, 
-    total_records: 0, 
+    currentPage: 1,
+    totalPages: 1,
+    total: 0,
     limit: 100
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -55,13 +56,13 @@ export const EmployeesPage = () => {
 
       const response = await employeesAPI.list(params);
       setEmployees(response.data.employees);
-      setPagination(response.data.pagination);
+      setPagination(fromSnake(response.data.pagination));
     } catch (err: any) {
       console.error("Error al cargar empleados:", err);
       const errorMessage = err?.response?.data?.message || "No se pudieron cargar los empleados.";
       setError(errorMessage);
       setEmployees([]);
-      setPagination({ current_page: 1, total_pages: 1, total_records: 0, limit: 100 });
+      setPagination({ currentPage: 1, totalPages: 1, total: 0, limit: 100 });
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +120,7 @@ export const EmployeesPage = () => {
 
     try {
       await employeesAPI.delete(employeeToDelete.id);
-      await fetchEmployees(pagination.current_page, pagination.limit);
+      await fetchEmployees(pagination.currentPage, pagination.limit);
       setError(null);
     } catch (err: any) {
       console.error("Error al eliminar empleado:", err);
@@ -149,9 +150,9 @@ export const EmployeesPage = () => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <h2 className="text-xl font-semibold text-gray-700">
             Listado de Empleados
-            {pagination.total_records > 0 && (
+            {pagination.total > 0 && (
               <span className="text-sm font-normal text-gray-500 ml-2">
-                ({pagination.total_records} empleado{pagination.total_records !== 1 ? 's' : ''})
+                ({pagination.total} empleado{pagination.total !== 1 ? 's' : ''})
               </span>
             )}
           </h2>
@@ -397,7 +398,7 @@ export const EmployeesPage = () => {
           <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
               <span className="text-sm text-gray-700">
-                Página {pagination.current_page} de {pagination.total_pages}
+                Página {pagination.currentPage} de {pagination.totalPages}
               </span>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
@@ -406,13 +407,13 @@ export const EmployeesPage = () => {
                   Mostrando{' '}
                   <span className="font-medium">{employees.length}</span>
                   {' '}de{' '}
-                  <span className="font-medium">{pagination.total_records}</span>
-                  {' '}empleado{pagination.total_records !== 1 ? 's' : ''}
+                  <span className="font-medium">{pagination.total}</span>
+                  {' '}empleado{pagination.total !== 1 ? 's' : ''}
                 </p>
               </div>
               <div>
                 <span className="text-sm text-gray-700">
-                  Página {pagination.current_page} de {pagination.total_pages}
+                  Página {pagination.currentPage} de {pagination.totalPages}
                 </span>
               </div>
             </div>
@@ -425,7 +426,7 @@ export const EmployeesPage = () => {
         isOpen={isNewModalOpen}
         onClose={() => setIsNewModalOpen(false)}
         onEmployeeAdded={() => {
-          fetchEmployees(pagination.current_page, pagination.limit);
+          fetchEmployees(pagination.currentPage, pagination.limit);
         }}
       />
 
@@ -435,7 +436,7 @@ export const EmployeesPage = () => {
           onClose={() => setIsEditModalOpen(false)}
           employee={selectedEmployee}
           onEmployeeUpdated={() => {
-            fetchEmployees(pagination.current_page, pagination.limit);
+            fetchEmployees(pagination.currentPage, pagination.limit);
           }}
         />
       )}

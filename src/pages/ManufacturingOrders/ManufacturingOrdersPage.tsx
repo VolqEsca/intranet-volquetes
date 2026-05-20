@@ -10,6 +10,7 @@ import EditManufacturingOrderModal from './components/EditManufacturingOrderModa
 import { dialog } from '../../services/dialog.service';
 import { Modal } from '../../components/ui/Modal';
 import { formatDate, truncateText } from '../../utils/formatters';
+import { fromSnake } from '../../types/pagination';
 
 const statusLabels = {
   pending: 'Pendiente',
@@ -78,8 +79,9 @@ export function ManufacturingOrdersPage() {
 
       const response = await manufacturingAPI.list(params);
       setOrders(response.data.orders);
-      setTotalPages(response.data.pagination.total_pages);
-      setTotalRecords(response.data.pagination.total_records);
+      const pg = fromSnake(response.data.pagination);
+      setTotalPages(pg.totalPages);
+      setTotalRecords(pg.total);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al cargar órdenes de fabricación');
     } finally {
