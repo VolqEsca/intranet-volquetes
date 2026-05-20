@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             
         } else {
             // Admin cambiando contraseña de otro usuario
-            if ($userRole !== 'Administrador') {
-                echo json_encode(['error' => 'Sin permisos']);
+            if ($userRole !== 'Administrador' && $userRole !== 'admin') {
                 http_response_code(403);
+                echo json_encode(['error' => 'Sin permisos']);
                 exit();
             }
             
