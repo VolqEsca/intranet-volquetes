@@ -8,6 +8,7 @@ interface User {
   nombre?: string;
   apellidos?: string;
   created_at?: string;
+  permissions: string[]; // ["orders:access", "employees:access", ...]
 }
 
 export type LoginResult =

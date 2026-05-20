@@ -1,6 +1,10 @@
 <?php
 // api/orders/delete.php - SOLUCIÓN DEFINITIVA VERSO
 require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../permission_check.php';
+require_module_permission('orders');
 
 // Extraer ID de la orden de múltiples fuentes posibles
 $orderId = null;

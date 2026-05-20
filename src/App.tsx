@@ -1,11 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import { Toaster } from 'sonner'; // ✅ NUEVO IMPORT
+import { Toaster } from 'sonner';
 import { LoginPage } from "./pages/Login/LoginPage";
 import { DashboardPage } from "./pages/Dashboard/DashboardPage";
 import { ConfigPage } from "./pages/Config/ConfigPage";
 import { ProfilePage } from "./pages/Profile/ProfilePage";
+import { ForbiddenPage } from "./pages/Forbidden/ForbiddenPage";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ModuleRoute } from "./components/ModuleRoute";
 import { OrdersPage } from './pages/Orders/OrdersPage';
 import { ManufacturingOrdersPage } from './pages/ManufacturingOrders/ManufacturingOrdersPage';
 import { EmployeesPage } from './pages/Employees/EmployeesPage';
@@ -44,12 +46,13 @@ function App() {
           }
         >
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/manufacturing-orders" element={<ManufacturingOrdersPage />} />
-          <Route path="/employees" element={<EmployeesPage />} />
+          <Route path="/orders" element={<ModuleRoute module="orders"><OrdersPage /></ModuleRoute>} />
+          <Route path="/manufacturing-orders" element={<ModuleRoute module="manufacturing-orders"><ManufacturingOrdersPage /></ModuleRoute>} />
+          <Route path="/employees" element={<ModuleRoute module="employees"><EmployeesPage /></ModuleRoute>} />
+          <Route path="/vacations" element={<ModuleRoute module="vacations"><VacationsPage /></ModuleRoute>} />
           <Route path="/configuracion" element={<ConfigPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
-          <Route path="/vacations" element={<VacationsPage />} />
+          <Route path="/sin-acceso" element={<ForbiddenPage />} />
         </Route>
       </Routes>
     </>

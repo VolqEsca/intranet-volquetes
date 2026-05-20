@@ -1,109 +1,89 @@
-// src/components/Sidebar.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  ChevronRight, 
-  Wrench, 
-  Factory, 
-  Users, 
+import {
+  LayoutDashboard,
+  Settings,
+  ChevronRight,
+  Wrench,
+  Factory,
+  Users,
   Calendar,
-  Star 
+  Star,
+  Grid3X3,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useFavorites } from "../hooks/useFavorites";
 
-// ✅ Catálogo completo de módulos (solo para mapear favoritos)
-const allModules = [
-  {
-    path: "/orders",
-    label: "Órdenes de Reparación",
-    icon: Wrench,
-    roles: ["admin", "operador", "viewer"],
-  },
-  {
-    path: "/manufacturing-orders",
-    label: "Órdenes de Fabricación",
-    icon: Factory,
-    roles: ["admin", "operador", "viewer"],
-  },
-  {
-    path: "/employees",
-    label: "Empleados",
-    icon: Users,
-    roles: ["admin", "operador", "viewer"],
-  },
-  {
-    path: "/vacations",
-    label: "Gestión de Vacaciones",
-    icon: Calendar,
-    roles: ["admin", "operador", "viewer"],
-  },
+interface ModuleDefinition {
+  path: string;
+  label: string;
+  icon: React.ElementType;
+  module: string;
+}
+
+const allModules: ModuleDefinition[] = [
+  { path: "/orders",               label: "Órdenes de Reparación",  icon: Wrench,   module: "orders" },
+  { path: "/manufacturing-orders", label: "Órdenes de Fabricación", icon: Factory,  module: "manufacturing-orders" },
+  { path: "/employees",            label: "Empleados",              icon: Users,    module: "employees" },
+  { path: "/vacations",            label: "Gestión de Vacaciones",  icon: Calendar, module: "vacations" },
 ];
 
-// ✅ Items fijos (siempre visibles)
-const fixedItems = {
-  dashboard: {
-    path: "/",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    roles: ["admin", "operador", "viewer"],
-  },
-  config: {
-    path: "/configuracion",
-    label: "Configuración", 
-    icon: Settings,
-    roles: ["admin", "operador", "viewer"],
-  }
+const fixedDashboard = { path: "/", label: "Dashboard",       icon: LayoutDashboard };
+const fixedConfig    = { path: "/configuracion", label: "Configuración", icon: Settings };
+
+type NavItem = { path: string; label: string; icon: React.ElementType };
+
+const renderNavItem = (item: NavItem) => {
+  const Icon = item.icon;
+  return (
+    <NavLink
+      key={item.path}
+      to={item.path}
+      end={item.path === "/"}
+      className={({ isActive }) =>
+        `group flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm
+         transition-all duration-200 relative
+         ${isActive
+           ? "bg-[#1162a6] text-white shadow-md"
+           : "text-gray-600 hover:bg-[#f8fafc] hover:text-[#1162a6]"
+         }`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <Icon
+            size={20}
+            className={isActive ? "text-white" : "text-gray-400 group-hover:text-[#1162a6] transition-colors"}
+          />
+          <span className="flex-1">{item.label}</span>
+          {isActive && <ChevronRight size={16} className="text-white/70" />}
+        </>
+      )}
+    </NavLink>
+  );
 };
 
 export const Sidebar = () => {
   const { user } = useAuth();
-  const { favorites } = useFavorites(); // ✅ Hook sincronizado v14.3.1
+  const { favorites } = useFavorites();
 
-  // ✅ Mantener orden FIFO (orden de marcado) usando el array favorites como referencia
-  const favoriteItems = favorites
-    .map(favPath => allModules.find(m => m.path === favPath))
-    .filter(item => item && item.roles.includes(user?.rol || "viewer")) as typeof allModules;
-
-  // Helper para renderizar items con paleta VERSO estricta
-  const renderNavItem = (item: { path: string; label: string; icon: React.ElementType; roles: string[] }) => {
-    const Icon = item.icon;
-    return (
-      <NavLink
-        key={item.path}
-        to={item.path}
-        end={item.path === "/"}
-        className={({ isActive }) => `
-          group flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm
-          transition-all duration-200 relative
-          ${
-            isActive
-              ? "bg-[#1162a6] text-white shadow-md" // ✅ Paleta VERSO Primary
-              : "text-gray-600 hover:bg-[#f8fafc] hover:text-[#1162a6]"
-          }
-        `}
-      >
-        {({ isActive }) => (
-          <>
-            <Icon
-              size={20}
-              className={
-                isActive
-                  ? "text-white"
-                  : "text-gray-400 group-hover:text-[#1162a6] transition-colors"
-              }
-            />
-            <span className="flex-1">{item.label}</span>
-            {isActive && (
-              <ChevronRight size={16} className="text-white/70" />
-            )}
-          </>
-        )}
-      </NavLink>
-    );
+  // Función pura (no hook) que comprueba permiso usando el user del contexto
+  const hasPermission = (module: string): boolean => {
+    if (!user) return false;
+    if (user.rol === 'admin') return true;
+    return user.permissions.includes(`${module}:access`);
   };
+
+  const accessibleModules = allModules.filter(m => hasPermission(m.module));
+
+  const favoriteItems = favorites
+    .map(favPath => accessibleModules.find(m => m.path === favPath))
+    .filter((item): item is ModuleDefinition => item !== undefined);
+
+  // Módulos accesibles no marcados como favorito
+  const nonFavoriteModules = accessibleModules.filter(
+    m => !favorites.includes(m.path)
+  );
 
   return (
     <div className="flex flex-col w-64 bg-white border-r border-[#e2e8f0]">
@@ -117,13 +97,13 @@ export const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6">
+      <nav className="flex-1 px-4 py-6 overflow-y-auto">
         <div className="space-y-1">
-          
-          {/* ✅ 1. Dashboard (siempre primero y fijo) */}
-          {renderNavItem(fixedItems.dashboard)}
 
-          {/* ✅ 2. Sección favoritos (solo si hay favoritos) */}
+          {/* 1. Dashboard — siempre visible */}
+          {renderNavItem(fixedDashboard)}
+
+          {/* 2. Favoritos — accesibles y marcados por el usuario */}
           {favoriteItems.length > 0 && (
             <div className="py-3">
               <div className="px-4 text-xs font-semibold text-[#1162a6] uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -136,17 +116,30 @@ export const Sidebar = () => {
             </div>
           )}
 
-          {/* ✅ 3. Configuración (solo admin) */}
+          {/* 3. Módulos disponibles — accesibles y no en favoritos */}
+          {nonFavoriteModules.length > 0 && (
+            <div className="py-3">
+              <div className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <Grid3X3 size={12} />
+                <span>Módulos</span>
+              </div>
+              <div className="space-y-1">
+                {nonFavoriteModules.map(item => renderNavItem(item))}
+              </div>
+            </div>
+          )}
+
+          {/* 4. Configuración — solo admin */}
           {user?.rol === 'admin' && (
             <div className="pt-3 mt-3 border-t border-[#e2e8f0]">
-              {renderNavItem(fixedItems.config)}
+              {renderNavItem(fixedConfig)}
             </div>
           )}
 
         </div>
       </nav>
 
-      {/* ✅ Footer actualizado v14.3.1 */}
+      {/* Footer */}
       <div className="p-4 border-t border-[#e2e8f0]">
         <div className="px-4 py-3 bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
           <p className="text-xs font-medium text-[#1162a6]">VERSO v14.3.1</p>

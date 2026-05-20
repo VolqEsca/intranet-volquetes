@@ -12,6 +12,7 @@ interface User {
   nombre?: string;
   apellidos?: string;
   created_at?: string;
+  permissions: string[];
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           nombre: userData.nombre || "",
           apellidos: userData.apellidos || "",
           created_at: userData.created_at || "",
+          permissions: Array.isArray(userData.permissions) ? userData.permissions : [],
         });
       } else {
         setUser(null);
@@ -67,6 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           nombre: userData.nombre || "",
           apellidos: userData.apellidos || "",
           created_at: userData.created_at || "",
+          permissions: Array.isArray(userData.permissions) ? userData.permissions : [],
         });
         navigate("/", { replace: true });
         return { success: true };

@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../permission_check.php';
+require_module_permission('manufacturing-orders');
 
 $order_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
