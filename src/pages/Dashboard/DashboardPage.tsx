@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Wrench, Factory, Users, Calendar as CalendarIcon, Settings, RefreshCw, AlertCircle, ArrowRight, ExternalLink } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { usePermission } from "../../hooks/usePermission";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 import { useNavigate } from "react-router-dom";
 import { ModuleCard } from "../../components/dashboard/ModuleCard";
@@ -8,6 +9,11 @@ import { ModuleCard } from "../../components/dashboard/ModuleCard";
 export const DashboardPage = () => {
   const { user } = useAuth();
   const { stats, loading, error, refresh } = useDashboardStats();
+  const canAccessOrders = usePermission('orders');
+  const canAccessManufacturing = usePermission('manufacturing-orders');
+  const canAccessEmployees = usePermission('employees');
+  const canAccessVacations = usePermission('vacations');
+  const isAdmin = user?.rol === 'admin' || user?.rol === 'Administrador';
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
 
@@ -181,67 +187,72 @@ export const DashboardPage = () => {
 
             {/* 🆕 Grid Cards Inteligentes v14.3.2 con navegación dual */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              
-              {/* Card 1: Órdenes de Reparación - SIN CAMBIOS */}
-              <ModuleCard 
-                title="Órdenes de Reparación" 
-                description="Gestión de taller y mecánica" 
-                icon={Wrench} 
-                path="/orders" 
-                kpiValue={stats.kpis.or_active} 
-                kpiLabel="ACTIVAS"
-                context={[
-                  `${stats.kpis.or_critical} críticas ${stats.kpis.or_critical > 0 ? '⚠️' : ''}`,
-                  `${stats.kpis.or_in_progress} en progreso`
-                ]}
-              />
 
-              {/* Card 2: Órdenes de Fabricación - SIN CAMBIOS */}
-              <ModuleCard 
-                title="Órdenes de Fabricación" 
-                description="Carrocería y proyectos" 
-                icon={Factory} 
-                path="/manufacturing-orders" 
-                kpiValue={stats.kpis.of_active} 
-                kpiLabel="ACTIVAS"
-                context={[
-                  `${stats.kpis.of_pending} pendientes`,
-                  `${stats.kpis.of_in_progress} en progreso`
-                ]}
-              />
+              {canAccessOrders && (
+                <ModuleCard
+                  title="Órdenes de Reparación"
+                  description="Gestión de taller y mecánica"
+                  icon={Wrench}
+                  path="/orders"
+                  kpiValue={stats.kpis.or_active}
+                  kpiLabel="ACTIVAS"
+                  context={[
+                    `${stats.kpis.or_critical} críticas ${stats.kpis.or_critical > 0 ? '⚠️' : ''}`,
+                    `${stats.kpis.or_in_progress} en progreso`
+                  ]}
+                />
+              )}
 
-              {/* 🆕 Card 3: Empleados con navegación dual inteligente */}
-              <ModuleCard 
-                title="Empleados" 
-                description="Plantilla activa" 
-                icon={Users} 
-                path="/employees"
-                kpiValue={stats.kpis.employees_total} 
-                kpiLabel="ACTIVOS"
-                context={getEmployeesContext()}
-              />
+              {canAccessManufacturing && (
+                <ModuleCard
+                  title="Órdenes de Fabricación"
+                  description="Carrocería y proyectos"
+                  icon={Factory}
+                  path="/manufacturing-orders"
+                  kpiValue={stats.kpis.of_active}
+                  kpiLabel="ACTIVAS"
+                  context={[
+                    `${stats.kpis.of_pending} pendientes`,
+                    `${stats.kpis.of_in_progress} en progreso`
+                  ]}
+                />
+              )}
 
-              {/* 🆕 Card 4: Vacaciones con descripción limpia */}
-              <ModuleCard 
-                title="Gestión de Vacaciones" 
-                description="Calendario y ausencias" 
-                icon={CalendarIcon} 
-                path="/vacations"
-                kpiValue={stats.kpis.employees_absent_today}
-                kpiLabel="HOY"
-                context={[
-                  `${stats.kpis.employees_negative_balance} saldos negativos`,
-                  `${stats.kpis.vacations_historical_total} históricas`
-                ]}
-              />
+              {canAccessEmployees && (
+                <ModuleCard
+                  title="Empleados"
+                  description="Plantilla activa"
+                  icon={Users}
+                  path="/employees"
+                  kpiValue={stats.kpis.employees_total}
+                  kpiLabel="ACTIVOS"
+                  context={getEmployeesContext()}
+                />
+              )}
 
-              {/* Card 5: Configuración - SIN CAMBIOS */}
-              <ModuleCard 
-                title="Configuración" 
-                description="Ajustes del sistema" 
-                icon={Settings} 
-                path="/configuracion" 
-              />
+              {canAccessVacations && (
+                <ModuleCard
+                  title="Gestión de Vacaciones"
+                  description="Calendario y ausencias"
+                  icon={CalendarIcon}
+                  path="/vacations"
+                  kpiValue={stats.kpis.employees_absent_today}
+                  kpiLabel="HOY"
+                  context={[
+                    `${stats.kpis.employees_negative_balance} saldos negativos`,
+                    `${stats.kpis.vacations_historical_total} históricas`
+                  ]}
+                />
+              )}
+
+              {isAdmin && (
+                <ModuleCard
+                  title="Configuración"
+                  description="Ajustes del sistema"
+                  icon={Settings}
+                  path="/configuracion"
+                />
+              )}
 
             </div>
           </div>
