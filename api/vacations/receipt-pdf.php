@@ -2,9 +2,9 @@
 // ✅ VERSO v13.1.4 - SISTEMA DE RECIBOS PDF CON ARRASTRE DINÁMICO
 // Corrección crítica: Coherencia total con calendario web mediante cálculo interanual
 
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../auth_check.php';
-require_once __DIR__ . '/../../config.php';
 
 // Validación
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
