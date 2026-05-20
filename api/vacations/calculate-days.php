@@ -1,32 +1,9 @@
 <?php
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 
-if (!isset($_SESSION['user']['id'])) {
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'No autorizado']);
-    exit;
-}
-
-// CORS (mismo patrón)
-$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = ['https://intranet.volquetesescalante.com'];
-
-if (in_array($requestOrigin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} elseif (preg_match('/^https:\/\/.*\.webcontainer\.io$/', $requestOrigin)) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} else {
-    header('Access-Control-Allow-Origin: *');
-}
-
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
-}
 
 $DB_HOST = 'localhost';
 $DB_USER = 'verso';
