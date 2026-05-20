@@ -35,6 +35,13 @@ Docs completos: @docs/business-rules.md | @docs/forbidden.md | @docs/deploy.md |
 - Estado servidor: hooks personalizados con apiClient.
 - PHP: PDO únicamente, nunca mysqli. Backticks en queries con year_month.
 
+## Verificación previa obligatoria — Sprints que tocan autenticación o roles
+
+Antes de escribir código que dependa de valores de la columna `rol` en `usuarios`:
+1. Ejecutar: `SELECT DISTINCT rol FROM usuarios;`
+2. Verificar que el código nuevo maneja TODOS los valores existentes — no asumir que solo existe 'admin'
+3. Si hay valores legacy (ej: 'Administrador'), normalizar en login.php Y aceptar ambos en el código nuevo
+
 ## Antes de cada tarea
 
 1. Leer el plan en @docs/plan-activo.md si existe
