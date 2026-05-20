@@ -3,24 +3,10 @@
 // Balance perfecto entre compactación y legibilidad profesional
 // ✅ INCLUYE LIMPIEZA AUTOMÁTICA DE MENSAJES FANTASMA
 
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
-
-// CONEXIÓN BD INDEPENDIENTE - CRÍTICO para evitar Error 500
-try {
-    $db_host = 'localhost';
-    $db_name = 'verso_dev';
-    $db_user = 'verso';
-    $db_pass = 'verso_dev_2026';
-    
-    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
-} catch (PDOException $e) {
-    http_response_code(500);
-    exit('Error de conexión a base de datos');
-}
 
 use TCPDF;
 

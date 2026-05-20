@@ -1,51 +1,7 @@
 <?php
-// NO incluir auth_check.php para evitar problemas de sesión
-
-// --- CORS DINÁMICO MEJORADO (basado en patrón list.php probado) ---
-$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = [
-    'https://intranet.volquetesescalante.com'
-];
-
-// Verificar si es origen permitido estático o StackBlitz dinámico
-$isOriginAllowed = false;
-if (in_array($requestOrigin, $allowedOrigins)) {
-    $isOriginAllowed = true;
-} elseif (preg_match('/^https:\/\/.*\.webcontainer\.io$/', $requestOrigin)) {
-    // Patrón dinámico para StackBlitz
-    $isOriginAllowed = true;
-}
-
-// Configurar headers CORS (patrón list.php mejorado)
-if ($isOriginAllowed && $requestOrigin) {
-    header("Access-Control-Allow-Origin: " . $requestOrigin);
-} else {
-    // Fallback para producción
-    header("Access-Control-Allow-Origin: https://intranet.volquetesescalante.com");
-}
-
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit(0);
-}
-
-// Verificar autenticación manualmente (igual que list.php)
-if (!isset($_SESSION['user']['id'])) {
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'No autorizado']);
-    exit;
-}
-
-// Configuración de BD directa (igual que list.php)
-$DB_HOST = 'localhost';
-$DB_USER = 'verso';
-$DB_PASS = 'verso_dev_2026';
-$DB_NAME = 'verso_dev';
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../cors.php';
+require_once __DIR__ . '/../auth_check.php';
 
 // Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -73,21 +29,10 @@ try {
     // Cargar TCPDF (mismo patrón que tus PDFs de órdenes)
     require_once(__DIR__ . '/../../vendor/tecnickcom/tcpdf/tcpdf.php');
 
-    // Conectar DB (MySQLi como list.php)
-    $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-    if ($conn->connect_error) {
-        throw new Exception("Error de conexión");
-    }
-    
-    $conn->set_charset("utf8mb4");
-
     // Obtener datos del empleado
-    $stmt = $conn->prepare("SELECT full_name, dni_nie, hire_date FROM employees WHERE id = ? AND status = 'active'");
-    $stmt->bind_param("i", $employee_id);
-    $stmt->execute();
-    $employee = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    $conn->close();
+    $stmt = $pdo->prepare("SELECT full_name, dni_nie, hire_date FROM employees WHERE id = ? AND status = 'active'");
+    $stmt->execute([$employee_id]);
+    $employee = $stmt->fetch();
 
     if (!$employee) {
         throw new Exception('Empleado no encontrado o inactivo');

@@ -1,14 +1,8 @@
 <?php
 // /api/manufacturing-orders/pdf-tcpdf-adaptive.php - DISEÑO EQUILIBRADO PERFECTO V4
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../auth_check.php';
-require_once __DIR__ . '/../../config.php';
-
-if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-}
 
 $order_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
