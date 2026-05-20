@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Plus, RefreshCw, FileDown, Search, Factory, MoreVertical, Eye, Download, CheckCircle, XCircle, Copy, AlertCircle, Trash2 } from 'lucide-react';
 import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
+import { apiClient } from '../../api';
 import { manufacturingAPI, ManufacturingOrder } from '../../api/manufacturing';
 import NewManufacturingOrderModal from './components/NewManufacturingOrderModal';
 import EditManufacturingOrderModal from './components/EditManufacturingOrderModal';
@@ -52,6 +53,10 @@ export function ManufacturingOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState('');
+  const [applyingBulk, setApplyingBulk] = useState(false);
 
   // ✅ ESTADO PARA DROPDOWN - Idéntico a reparación
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
@@ -143,6 +148,36 @@ export function ManufacturingOrdersPage() {
     } catch (error: any) {
       console.error('Error eliminando orden:', error);
       await dialog.error(error.response?.data?.message || 'Error al eliminar la orden');
+    }
+  };
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(selectedIds.size === orders.length ? new Set() : new Set(orders.map(o => o.id)));
+  };
+
+  const applyBulkStatus = async () => {
+    if (!bulkStatus || selectedIds.size === 0) return;
+    setApplyingBulk(true);
+    try {
+      await apiClient.put('/manufacturing-orders/bulk-status.php', {
+        ids: Array.from(selectedIds),
+        status: bulkStatus,
+      });
+      setSelectedIds(new Set());
+      setBulkStatus('');
+      loadOrders();
+    } catch {
+      dialog.error('Error al aplicar cambio de estado');
+    } finally {
+      setApplyingBulk(false);
     }
   };
 
@@ -251,12 +286,54 @@ export function ManufacturingOrdersPage() {
         </div>
       )}
 
+      {/* Barra de acción bulk */}
+      {selectedIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 p-3 bg-blue-50 border border-secondary rounded-lg">
+          <span className="text-sm font-medium text-primary-dark">
+            {selectedIds.size} {selectedIds.size === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
+          </span>
+          <select
+            value={bulkStatus}
+            onChange={(e) => setBulkStatus(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          >
+            <option value="">Cambiar estado a...</option>
+            <option value="pending">Pendiente</option>
+            <option value="in_progress">En Progreso</option>
+            <option value="completed">Completada</option>
+            <option value="delivered">Entregada</option>
+          </select>
+          <Button
+            variant="primary"
+            onClick={applyBulkStatus}
+            disabled={!bulkStatus || applyingBulk}
+          >
+            {applyingBulk ? 'Aplicando...' : 'Aplicar'}
+          </Button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Limpiar selección
+          </button>
+        </div>
+      )}
+
       {/* ✅ TABLA CON ESTRUCTURA IDÉNTICA A REPARACIÓN */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={orders.length > 0 && selectedIds.size === orders.length}
+                    ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Nº Orden
                 </th>
@@ -311,7 +388,15 @@ export function ManufacturingOrdersPage() {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={order.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-blue-50' : ''}`}>
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(order.id)}
+                        onChange={() => toggleSelect(order.id)}
+                        className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {order.order_number}
