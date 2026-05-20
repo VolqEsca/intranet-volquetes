@@ -1,6 +1,5 @@
 <?php
 // NO incluir auth_check.php para evitar problemas de sesión
-session_start();
 
 // Verificar autenticación manualmente
 if (!isset($_SESSION['user']['id'])) {

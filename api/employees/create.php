@@ -1,6 +1,5 @@
 <?php
 // ✅ VERSO v14.1 - Creación Individual con Auto-inicialización de Saldos
-session_start();
 
 if (!isset($_SESSION['user']['id'])) {
     http_response_code(401);

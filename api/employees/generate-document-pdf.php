@@ -1,6 +1,5 @@
 <?php
 // NO incluir auth_check.php para evitar problemas de sesión
-session_start();
 
 // --- CORS DINÁMICO MEJORADO (basado en patrón list.php probado) ---
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';

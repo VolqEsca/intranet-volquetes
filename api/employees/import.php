@@ -1,6 +1,5 @@
 <?php
 // ✅ VERSO v14.1 - Importación Masiva con Auto-inicialización de Saldos
-session_start();
 
 // Verificar autenticación manualmente (como clientes)
 if (!isset($_SESSION['user']['id'])) {
