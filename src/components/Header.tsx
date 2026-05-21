@@ -106,7 +106,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
 
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-[#dc2626]/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#dc2626] hover:bg-gray-50 transition-colors"
                 >
                   <LogOut size={16} />
                   Cerrar Sesión
