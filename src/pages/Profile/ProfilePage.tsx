@@ -64,9 +64,9 @@ export const ProfilePage = () => {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength <= 2) return "bg-red-500";
-    if (passwordStrength <= 3) return "bg-yellow-500";
-    return "bg-green-500";
+    if (passwordStrength <= 2) return "bg-[#dc2626]";
+    if (passwordStrength <= 3) return "bg-[#a2bade]";
+    return "bg-[#5487c0]";
   };
 
   const getPasswordStrengthText = () => {
@@ -186,22 +186,24 @@ export const ProfilePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="mt-2 text-gray-600">
-            Gestiona tu información personal y seguridad
-          </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+          <User className="w-5 h-5 text-white" />
         </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
+          <p className="text-sm text-gray-500">Gestiona tu información personal y seguridad</p>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Información Personal */}
-          <Card className="p-6 shadow-lg">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-primary-dark/10 rounded-lg">
-                <User className="w-6 h-6 text-primary-dark" />
+              <div className="p-2 bg-[#1162a6]/10 rounded-lg">
+                <User className="w-6 h-6 text-[#1162a6]" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900">
                 Información Personal
@@ -218,7 +220,7 @@ export const ProfilePage = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                  className="w-full px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                   required
                 />
               </div>
@@ -236,7 +238,7 @@ export const ProfilePage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                     required
                   />
                 </div>
@@ -252,7 +254,7 @@ export const ProfilePage = () => {
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -264,7 +266,7 @@ export const ProfilePage = () => {
                     name="apellidos"
                     value={formData.apellidos}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                   />
                 </div>
               </div>
@@ -280,7 +282,7 @@ export const ProfilePage = () => {
                   <input
                     type="text"
                     value={formData.rol}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-[#e2e8f0] rounded-lg cursor-not-allowed"
                     disabled
                   />
                 </div>
@@ -298,10 +300,10 @@ export const ProfilePage = () => {
           </Card>
 
           {/* Cambiar Contraseña */}
-          <Card className="p-6 shadow-lg">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-primary-dark/10 rounded-lg">
-                <Lock className="w-6 h-6 text-primary-dark" />
+              <div className="p-2 bg-[#1162a6]/10 rounded-lg">
+                <Lock className="w-6 h-6 text-[#1162a6]" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900">Seguridad</h2>
             </div>
@@ -317,7 +319,7 @@ export const ProfilePage = () => {
                     name="currentPassword"
                     value={passwordData.currentPassword}
                     onChange={handlePasswordInputChange}
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full px-4 py-2 pr-10 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                     required
                   />
                   <button
@@ -344,7 +346,7 @@ export const ProfilePage = () => {
                     name="newPassword"
                     value={passwordData.newPassword}
                     onChange={handlePasswordInputChange}
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full px-4 py-2 pr-10 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                     required
                   />
                   <button
@@ -389,13 +391,13 @@ export const ProfilePage = () => {
                         className="flex items-center gap-2 text-xs"
                       >
                         {req.met ? (
-                          <Check className="w-4 h-4 text-green-500" />
+                          <Check className="w-4 h-4 text-[#5487c0]" />
                         ) : (
                           <X className="w-4 h-4 text-gray-300" />
                         )}
                         <span
                           className={
-                            req.met ? "text-green-700" : "text-gray-500"
+                            req.met ? "text-[#5487c0]" : "text-gray-500"
                           }
                         >
                           {req.text}
@@ -416,7 +418,7 @@ export const ProfilePage = () => {
                     name="confirmPassword"
                     value={passwordData.confirmPassword}
                     onChange={handlePasswordInputChange}
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                    className="w-full px-4 py-2 pr-10 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
                     required
                   />
                   <button
@@ -433,7 +435,7 @@ export const ProfilePage = () => {
                 </div>
                 {passwordData.confirmPassword &&
                   passwordData.newPassword !== passwordData.confirmPassword && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <p className="mt-1 text-xs text-[#dc2626] flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
                       Las contraseñas no coinciden
                     </p>
@@ -454,7 +456,6 @@ export const ProfilePage = () => {
             </form>
           </Card>
         </div>
-      </div>
     </div>
   );
 };

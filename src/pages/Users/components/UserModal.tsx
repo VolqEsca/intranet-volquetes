@@ -362,7 +362,7 @@ export const UserModal = ({
 
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
-          <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+          <Button type="button" variant="subtle" onClick={onClose} disabled={loading}>
             Cancelar
           </Button>
           <Button

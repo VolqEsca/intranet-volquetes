@@ -356,10 +356,9 @@ export const EmployeesPage = () => {
                         {user?.rol === 'admin' && (
                           <Button
                             onClick={() => handleDeleteClick(employee)}
-                            variant="ghost"
-                            size="sm"
+                            variant="destructive"
+                            size="icon"
                             title="Desactivar empleado"
-                            className="text-[#dc2626] hover:text-[#dc2626] hover:bg-[#dc2626]/10"
                           >
                             <Trash2 size={16} />
                           </Button>
@@ -378,6 +377,26 @@ export const EmployeesPage = () => {
               <span className="text-sm text-gray-700">
                 Página {pagination.currentPage} de {pagination.totalPages}
               </span>
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    onClick={() => fetchEmployees(pagination.currentPage - 1)}
+                    disabled={pagination.currentPage <= 1}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    onClick={() => fetchEmployees(pagination.currentPage + 1)}
+                    disabled={pagination.currentPage >= pagination.totalPages}
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
@@ -389,10 +408,30 @@ export const EmployeesPage = () => {
                   {' '}empleado{pagination.total !== 1 ? 's' : ''}
                 </p>
               </div>
-              <div>
+              <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-700">
                   Página {pagination.currentPage} de {pagination.totalPages}
                 </span>
+                {pagination.totalPages > 1 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="subtle"
+                      size="sm"
+                      onClick={() => fetchEmployees(pagination.currentPage - 1)}
+                      disabled={pagination.currentPage <= 1}
+                    >
+                      Anterior
+                    </Button>
+                    <Button
+                      variant="subtle"
+                      size="sm"
+                      onClick={() => fetchEmployees(pagination.currentPage + 1)}
+                      disabled={pagination.currentPage >= pagination.totalPages}
+                    >
+                      Siguiente
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

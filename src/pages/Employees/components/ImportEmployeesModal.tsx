@@ -200,7 +200,7 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
 
             {/* Botones de acción */}
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="secondary" onClick={handleClose}>
+              <Button type="button" variant="subtle" onClick={handleClose}>
                 Cancelar
               </Button>
               <Button 

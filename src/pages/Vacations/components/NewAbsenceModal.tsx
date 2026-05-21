@@ -527,7 +527,7 @@ export const NewAbsenceModal: React.FC<Props> = ({
           <div className="flex justify-end items-center gap-3 pt-4 border-t border-gray-200">
             <Button
               type="button"
-              variant="outline"
+              variant="subtle"
               onClick={onClose}
               disabled={isSubmitting}
               size="md"
@@ -538,7 +538,6 @@ export const NewAbsenceModal: React.FC<Props> = ({
               type="submit"
               disabled={!canSubmit}
               isLoading={isSubmitting}
-              className="bg-[#1162a6] hover:bg-[#0d4d85] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               size="md"
             >
               <CheckCircle className="w-4 h-4 mr-2" />

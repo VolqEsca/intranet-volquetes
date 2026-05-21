@@ -2,9 +2,9 @@
 // /api/manufacturing-orders/create.php
 require_once __DIR__ . '/../cors.php';      // ✅ Usa el CORS probado
 require_once __DIR__ . '/../auth_check.php';
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../permission_check.php';
 require_module_permission('manufacturing-orders');
-require_once __DIR__ . '/../../config.php';
 
 header('Content-Type: application/json');
 

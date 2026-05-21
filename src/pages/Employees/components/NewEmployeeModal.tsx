@@ -444,7 +444,7 @@ export const NewEmployeeModal: React.FC<NewEmployeeModalProps> = ({
           <Button
             type="button"
             onClick={handleClose}
-            variant="secondary"
+            variant="subtle"
             disabled={isSubmitting}
           >
             Cancelar

@@ -533,9 +533,8 @@ export const EditAbsenceModal: React.FC<Props> = ({
             <div className="flex gap-2">
               <Button
                 type="button"
-                variant="outline"
+                variant="destructive"
                 onClick={handleDelete}
-                className="text-red-600 border-red-300 hover:bg-red-50"
                 size="md"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
@@ -546,11 +545,10 @@ export const EditAbsenceModal: React.FC<Props> = ({
               {absence.absence_type === 'vacation' && (
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   onClick={handleGenerateReceipt}
                   disabled={isGeneratingReceipt}
                   isLoading={isGeneratingReceipt}
-                  className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300"
                   size="md"
                 >
                   <FileText className="w-4 h-4 mr-2" />
@@ -563,19 +561,18 @@ export const EditAbsenceModal: React.FC<Props> = ({
             <div className="flex gap-3">
               <Button
                 type="button"
-                variant="outline"
+                variant="subtle"
                 onClick={onClose}
                 disabled={isSubmitting}
                 size="md"
               >
                 Cancelar
               </Button>
-              
+
               <Button
                 type="submit"
                 disabled={!canSubmit}
                 isLoading={isSubmitting}
-                className="bg-[#1162a6] hover:bg-[#0d4d85] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 size="md"
               >
                 <CheckCircle className="w-4 h-4 mr-2" />

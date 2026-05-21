@@ -528,16 +528,16 @@ const orderData = {
         <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-end gap-3">
           <Button
             type="button"
-            variant="outline"
+            variant="subtle"
             onClick={onClose}
             disabled={loading}
           >
             Cancelar
           </Button>
-          
+
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={() => {
               let baseUrl = apiClient.defaults.baseURL;
               if (baseUrl && !baseUrl.endsWith('/')) {
@@ -553,12 +553,13 @@ const orderData = {
             <Printer className="h-4 w-4" />
             Imprimir PDF
           </Button>
-          
+
           <Button
             type="button"
+            variant="primary"
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-primary-dark hover:bg-primary-dark/90 shadow-sm flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <Save className="h-4 w-4" />
             {loading ? 'Guardando...' : 'Guardar Cambios'}

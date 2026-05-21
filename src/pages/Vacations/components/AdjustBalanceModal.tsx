@@ -210,7 +210,7 @@ export const AdjustBalanceModal: React.FC<Props> = ({
 
           {/* Botones */}
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="subtle" onClick={onClose}>
               Cancelar
             </Button>
             <Button type="submit" variant="primary" isLoading={isSubmitting}>

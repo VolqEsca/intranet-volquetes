@@ -72,7 +72,7 @@ export default function ImportClientsModal({ isOpen, onClose, onImportSuccess }:
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="secondary" onClick={onClose}>Cancelar</Button>
+          <Button type="button" variant="subtle" onClick={onClose}>Cancelar</Button>
           <Button type="submit" disabled={loading || !selectedFile}>{loading ? 'Importando...' : 'Importar'}</Button>
         </div>
       </form>

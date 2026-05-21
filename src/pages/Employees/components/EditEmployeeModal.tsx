@@ -454,7 +454,7 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
           <Button
             type="button"
             onClick={handleClose}
-            variant="secondary"
+            variant="subtle"
             disabled={isSubmitting}
           >
             Cancelar

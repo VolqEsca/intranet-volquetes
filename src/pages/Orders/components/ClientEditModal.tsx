@@ -220,7 +220,7 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
         </div>
 
         <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="subtle" onClick={onClose}>
             Cancelar
           </Button>
           <Button type="submit" variant="primary" disabled={loading}>

@@ -686,25 +686,25 @@ export const IndividualReportModal: React.FC<Props> = ({
         {/* Botones de Exportación */}
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
           <Button
-            variant="outline"
+            variant="subtle"
             onClick={onClose}
           >
             Cerrar
           </Button>
-          
+
           <Button
             onClick={copyAsText}
-            variant="outline"
+            variant="secondary"
             disabled={isLoadingAbsences}
           >
             <FileText className="w-4 h-4 mr-2" />
             Copiar Texto
           </Button>
-          
+
           <Button
+            variant="primary"
             onClick={copyToWord}
             disabled={isLoadingAbsences}
-            className="bg-[#1162a6] text-white hover:bg-[#0d4d85] disabled:opacity-50"
           >
             <Copy className="w-4 h-4 mr-2" />
             Copiar Word

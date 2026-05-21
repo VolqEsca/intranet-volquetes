@@ -189,7 +189,17 @@ export const DashboardPage = () => {
                   kpiValue={stats.kpis.or_active}
                   kpiLabel="ACTIVAS"
                   context={[
-                    `${stats.kpis.or_critical} críticas ${stats.kpis.or_critical > 0 ? '⚠️' : ''}`,
+                    stats.kpis.or_critical > 0
+                      ? (
+                        <div key="or-critical" className="flex items-center gap-2">
+                          <div className="w-1 h-1 rounded-full bg-[#dc2626]"></div>
+                          <span className="text-gray-600 font-medium flex items-center gap-1">
+                            {stats.kpis.or_critical} críticas
+                            <AlertCircle size={14} className="text-[#dc2626]" />
+                          </span>
+                        </div>
+                      )
+                      : `${stats.kpis.or_critical} críticas`,
                     `${stats.kpis.or_in_progress} en progreso`
                   ]}
                 />

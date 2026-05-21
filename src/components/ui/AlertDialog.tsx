@@ -1,6 +1,7 @@
 // src/components/ui/AlertDialog.tsx
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import { Button } from './Button';
 
 interface AlertDialogProps {
   isOpen: boolean;
@@ -122,19 +123,19 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
         {/* Footer */}
         <div className="flex justify-center gap-2">
           {showCancel && (
-            <button
+            <Button
+              variant="subtle"
               onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-primary-dark bg-white border-2 border-primary-dark rounded-lg hover:bg-light-accent/20 hover:border-secondary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark transition-all duration-200"
             >
               {cancelText}
-            </button>
+            </Button>
           )}
-          <button
+          <Button
+            variant="primary"
             onClick={handleConfirm}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-dark rounded-lg hover:bg-secondary hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark transition-all duration-200"
           >
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>,

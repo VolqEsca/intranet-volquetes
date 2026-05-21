@@ -1059,7 +1059,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
             {activeTab > 0 && (
               <Button
                 type="button"
-                variant="outline"
+                variant="subtle"
                 onClick={handlePrevious}
                 disabled={loading}
                 className="flex items-center gap-2"
@@ -1069,17 +1069,17 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
               </Button>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Button
               type="button"
-              variant="outline"
+              variant="subtle"
               onClick={onClose}
               disabled={loading}
             >
               Cancelar
             </Button>
-            
+
             {activeTab < tabs.length - 1 ? (
               <Button
                 type="button"
@@ -1093,9 +1093,9 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
             ) : (
               <Button
                 type="button"
+                variant="primary"
                 onClick={handleCreateOrder}
                 disabled={loading}
-                className="bg-primary-dark hover:bg-primary-dark/90 shadow-sm"
               >
                 {loading ? (
                   <>

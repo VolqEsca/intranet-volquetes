@@ -10,22 +10,22 @@ const OrderPriorityBadge: React.FC<OrderPriorityBadgeProps> = ({ priority, size 
   const config = {
     low: {
       label: 'Baja',
-      color: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+      color: 'bg-gray-100 text-gray-600',
       icon: Minus
     },
     normal: {
       label: 'Normal',
-      color: 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400',
+      color: 'bg-[#a2bade]/20 text-[#5487c0]',
       icon: Info
     },
     high: {
       label: 'Alta',
-      color: 'bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-400',
+      color: 'bg-[#a2bade]/20 text-[#1162a6]',
       icon: AlertCircle
     },
     urgent: {
       label: 'Urgente',
-      color: 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400',
+      color: 'bg-[#dc2626]/10 text-[#dc2626]',
       icon: AlertTriangle
     }
   };

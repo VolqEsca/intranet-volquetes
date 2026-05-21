@@ -300,7 +300,7 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
                 <div className="flex justify-end gap-3 pt-4 border-t border-blue-200">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="subtle"
                     size="sm"
                     onClick={resetForm}
                     disabled={isSubmitting}
@@ -313,7 +313,6 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
                     size="sm"
                     disabled={isSubmitting}
                     isLoading={isSubmitting}
-                    className="bg-[#1162a6] hover:bg-[#0d4d85]"
                   >
                     {editingId ? 'Actualizar' : 'Crear'} Festivo
                   </Button>
@@ -343,12 +342,11 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
               
               {selectedYear >= currentYear && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   onClick={handleCopyYear}
                   disabled={isSubmitting}
                   isLoading={isSubmitting}
-                  className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300 font-semibold shadow-sm"
                 >
                   <Copy className="w-4 h-4 mr-2" />
                   Generar Festivos {selectedYear}
@@ -378,14 +376,15 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
                     </div>
 
                     <div className="flex gap-2 ml-4">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleEdit(holiday)}
                         disabled={isSubmitting}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
                         title="Editar"
                       >
                         <Edit2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                       <button
                         onClick={() => handleDelete(holiday.id)}
                         disabled={isSubmitting}

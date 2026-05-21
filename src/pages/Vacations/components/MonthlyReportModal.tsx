@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, CheckCircle, FileText, Loader2 } from 'lucide-react';
 import { vacationsAPI, MonthlyReportData, WeeklyRange } from '../../../api/vacations';
 import { toast } from 'sonner';
+import { Button } from '../../../components/ui/Button';
 
 interface Props {
   isOpen: boolean;
@@ -156,12 +157,13 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
               </p>
             </div>
           </div>
-          <button 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content - Estilo documento de oficina */}
@@ -196,17 +198,18 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
               <span>Selecciona el texto y copia con Ctrl+C</span>
             </p>
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={handleSelectAll}
                 disabled={loading}
-                className="px-4 py-2 text-[#1162a6] border border-[#1162a6] hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 font-medium"
               >
                 Seleccionar Todo
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 onClick={handleCopy}
                 disabled={loading}
-                className="flex items-center gap-2 px-6 py-2 bg-[#1162a6] hover:bg-[#0d4d85] text-white rounded-lg transition-colors disabled:opacity-50 font-medium shadow-sm"
+                className="flex items-center gap-2"
               >
                 {copied ? (
                   <>
@@ -219,7 +222,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
                     Copiar Reporte
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -243,221 +243,203 @@ export const VacationsPage: React.FC = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ======= Header Principal ======= */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-[1800px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Título */}
+    <div className="space-y-5">
+      {/* ======= Header Principal — patrón estándar ======= */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+            <Calendar className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Gestión de Vacaciones</h1>
+            <p className="text-sm text-gray-500">Convenio Metal de Valladolid 2025</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="secondary"
+            onClick={() => setIsMonthlyReportModalOpen(true)}
+            className="hidden sm:flex"
+            title="Generar reporte mensual para gestoría"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Reporte Mensual
+          </Button>
+
+          <Button
+            variant="secondary"
+            onClick={() => setIsBalancesReportModalOpen(true)}
+            className="hidden sm:flex"
+            title="Ver estado global de saldos de todos los empleados"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Ver Saldos
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setShowHolidaysModal(true)}
+            title="Configurar festivos y días no laborables"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Festivos
+          </Button>
+
+          <Button
+            onClick={() => {
+              setPrefilledDate(null);
+              setPrefilledEmployeeId(null);
+              setIsNewAbsenceModalOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva Ausencia
+          </Button>
+        </div>
+      </div>
+
+      {/* ======= Navegación + Filtros + Métricas en card ======= */}
+      <div className="bg-white rounded-xl border border-[#e2e8f0] p-4 space-y-4">
+        {/* Fila 1: Navegación + Filtros */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Navegación mes/año */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={goToPreviousMonth}
+              className="p-2 rounded-lg hover:bg-gray-50 text-gray-600 border border-[#e2e8f0] bg-white transition-colors"
+              title="Mes anterior"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-[#1162a6] focus:border-transparent bg-white cursor-pointer min-w-[130px]"
+            >
+              {MONTH_NAMES.map((name, idx) => (
+                <option key={idx} value={idx + 1}>
+                  {name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="px-3 py-2 border border-[#e2e8f0] rounded-lg text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-[#1162a6] focus:border-transparent bg-white cursor-pointer"
+            >
+              {availableYears.map(y => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={goToNextMonth}
+              className="p-2 rounded-lg hover:bg-gray-50 text-gray-600 border border-[#e2e8f0] bg-white transition-colors"
+              title="Mes siguiente"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            <Button
+              variant="secondary"
+              onClick={goToToday}
+              size="sm"
+              className="font-semibold ml-1"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Hoy
+            </Button>
+          </div>
+
+          {/* Filtros por Nave */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <div className="flex gap-1 p-1 bg-gray-50 rounded-lg border border-[#e2e8f0]">
+              <Button
+                variant="toggle"
+                active={locationFilter === 'all'}
+                size="sm"
+                onClick={() => setLocationFilter('all')}
+                className="font-semibold"
+              >
+                Todas {calendarData && `(${calendarData.employees.length})`}
+              </Button>
+              <Button
+                variant="toggle"
+                active={locationFilter === 'Nave 01'}
+                size="sm"
+                onClick={() => setLocationFilter('Nave 01')}
+                className="font-semibold"
+              >
+                Nave 01 {calendarData && `(${calendarData.employees.filter(e => e.location === 'Nave 01').length})`}
+              </Button>
+              <Button
+                variant="toggle"
+                active={locationFilter === 'Nave 02'}
+                size="sm"
+                onClick={() => setLocationFilter('Nave 02')}
+                className="font-semibold"
+              >
+                Nave 02 {calendarData && `(${calendarData.employees.filter(e => e.location === 'Nave 02').length})`}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Fila 2: Métricas en tiempo real */}
+        {metrics && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1 border-t border-[#e2e8f0]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-md">
-                <Calendar className="w-6 h-6 text-white" />
+              <div className="w-9 h-9 rounded-lg bg-[#1162a6] flex items-center justify-center flex-shrink-0">
+                <Users className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Gestión de Vacaciones</h1>
-                <p className="text-sm text-gray-600">Convenio Metal de Valladolid 2025</p>
+                <div className="text-xl font-bold text-[#1162a6]">{metrics.employeesWithAbsences}</div>
+                <div className="text-xs text-gray-500">Con ausencias este mes</div>
               </div>
             </div>
 
-            {/* Botones de acción */}
             <div className="flex items-center gap-3">
-              <Button 
-                variant="outline"
-                onClick={() => setIsMonthlyReportModalOpen(true)}
-                className="hidden sm:flex"
-                title="Generar reporte mensual para gestoría"
-              >
-                <FileText className="w-4 h-4 mr-2 text-gray-600" />
-                Reporte Mensual
-              </Button>
-
-              <Button 
-                variant="outline"
-                onClick={() => setIsBalancesReportModalOpen(true)}
-                className="hidden sm:flex"
-                title="Ver estado global de saldos de todos los empleados"
-              >
-                <BarChart3 className="w-4 h-4 mr-2 text-gray-600" />
-                Ver Saldos
-              </Button>
-
-              {/* ✅ NUEVO v13.1.4: Botón Festivos */}
-              <Button
-                variant="outline"
-                size="md"
-                onClick={() => setShowHolidaysModal(true)}
-                className="bg-white hover:bg-gray-50"
-                title="Configurar festivos y días no laborables"
-              >
-                <Settings className="w-4 h-4 mr-2 text-gray-600" />
-                Festivos
-              </Button>
-
-              <Button 
-                onClick={() => {
-                  setPrefilledDate(null);
-                  setPrefilledEmployeeId(null);
-                  setIsNewAbsenceModalOpen(true);
-                }}
-                className="bg-[#1162a6] text-white hover:bg-[#0d4d85]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva Ausencia
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ======= Navegación Inteligente + Filtros + Métricas ======= */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1800px] mx-auto px-6 py-4">
-          {/* Fila 1: Navegación + Filtros */}
-          <div className="flex items-center justify-between gap-6 mb-4">
-            {/* ✅ NAVEGACIÓN HÍBRIDA v13.0: Flechas + Selectores + Hoy */}
-            <div className="flex items-center gap-2">
-              {/* Flecha Anterior */}
-              <button
-                onClick={goToPreviousMonth}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 border border-gray-300 bg-white transition-colors"
-                title="Mes anterior"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <select
-                value={month}
-                onChange={(e) => setMonth(Number(e.target.value))}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-base font-semibold text-gray-900 focus:ring-2 focus:ring-[#1162a6] focus:border-transparent bg-white hover:bg-gray-50 transition-colors cursor-pointer min-w-[140px]"
-              >
-                {MONTH_NAMES.map((name, idx) => (
-                  <option key={idx} value={idx + 1}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-base font-semibold text-gray-900 focus:ring-2 focus:ring-[#1162a6] focus:border-transparent bg-white hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                {availableYears.map(y => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-
-              {/* Flecha Siguiente */}
-              <button
-                onClick={goToNextMonth}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 border border-gray-300 bg-white transition-colors"
-                title="Mes siguiente"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-
-              <Button
-                variant="outline"
-                onClick={goToToday}
-                size="sm"
-                className="font-semibold ml-2"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Hoy
-              </Button>
+              <div className="w-9 h-9 rounded-lg bg-[#5487c0] flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="text-xl font-bold text-[#5487c0]">{metrics.totalVacationDays}</div>
+                <div className="text-xs text-gray-500">Días de vacaciones</div>
+              </div>
             </div>
 
-            {/* ✅ Filtros por Nave con contadores dinámicos */}
             <div className="flex items-center gap-3">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
-                <button
-                  onClick={() => setLocationFilter('all')}
-                  className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
-                    locationFilter === 'all'
-                      ? 'bg-[#1162a6] text-white shadow-sm'
-                      : 'bg-transparent text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Todas {calendarData && `(${calendarData.employees.length})`}
-                </button>
-                <button
-                  onClick={() => setLocationFilter('Nave 01')}
-                  className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
-                    locationFilter === 'Nave 01'
-                      ? 'bg-[#1162a6] text-white shadow-sm'
-                      : 'bg-transparent text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Nave 01 {calendarData && `(${calendarData.employees.filter(e => e.location === 'Nave 01').length})`}
-                </button>
-                <button
-                  onClick={() => setLocationFilter('Nave 02')}
-                  className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
-                    locationFilter === 'Nave 02'
-                      ? 'bg-[#1162a6] text-white shadow-sm'
-                      : 'bg-transparent text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Nave 02 {calendarData && `(${calendarData.employees.filter(e => e.location === 'Nave 02').length})`}
-                </button>
+              <div className="w-9 h-9 rounded-lg bg-[#dc2626] flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="text-xl font-bold text-[#dc2626]">{metrics.employeesWithNegativeBalance}</div>
+                <div className="text-xs text-gray-500">Con saldo negativo</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#a2bade] flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="text-xl font-bold text-[#5487c0]">{metrics.employeesLowBalance}</div>
+                <div className="text-xs text-gray-500">Saldo bajo (≤5 días)</div>
               </div>
             </div>
           </div>
-
-          {/* Fila 2: Panel de Métricas en tiempo real */}
-          {metrics && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
-              <div className="grid grid-cols-4 gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1162a6] flex items-center justify-center shadow-sm">
-                    <Users className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-[#1162a6]">{metrics.employeesWithAbsences}</div>
-                    <div className="text-xs text-gray-600 font-medium">Con ausencias este mes</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">{metrics.totalVacationDays}</div>
-                    <div className="text-xs text-gray-600 font-medium">Días de vacaciones</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center shadow-sm">
-                    <AlertTriangle className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-red-600">{metrics.employeesWithNegativeBalance}</div>
-                    <div className="text-xs text-gray-600 font-medium">Con saldo negativo</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center shadow-sm">
-                    <AlertTriangle className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-orange-600">{metrics.employeesLowBalance}</div>
-                    <div className="text-xs text-gray-600 font-medium">Saldo bajo (≤5 días)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* ======= Contenido Principal ======= */}
-      <div className="max-w-[1800px] mx-auto px-6 py-6">
+      {/* ======= Calendario ======= */}
+      <div>
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
@@ -466,15 +448,15 @@ export const VacationsPage: React.FC = () => {
             </div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <p className="text-red-800 font-semibold mb-2">Error al cargar datos</p>
-            <p className="text-red-600 text-sm mb-4">{error}</p>
-            <Button onClick={loadCalendarData} variant="outline">
+          <div className="bg-white border-l-4 border-[#dc2626] rounded-r-xl p-5 shadow-sm">
+            <p className="text-gray-900 font-semibold mb-1">Error al cargar datos</p>
+            <p className="text-gray-600 text-sm mb-3">{error}</p>
+            <Button onClick={loadCalendarData} variant="subtle" size="sm">
               Reintentar
             </Button>
           </div>
         ) : filteredCalendarData ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-[#e2e8f0] overflow-hidden">
             <MonthlyCalendarGrid
               currentYear={year}
               currentMonth={month}

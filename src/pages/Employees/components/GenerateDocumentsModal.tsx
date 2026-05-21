@@ -147,7 +147,7 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
           <Button
             type="button"
             onClick={handleClose}
-            variant="secondary"
+            variant="subtle"
             disabled={isGenerating}
           >
             Cancelar

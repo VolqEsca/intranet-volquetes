@@ -238,8 +238,8 @@ export function ManufacturingOrdersPage() {
           <option value="high">Alta</option>
         </select>
 
-        <Button 
-          variant="secondary" 
+        <Button
+          variant="subtle"
           onClick={() => {
             setSearch('');
             setStatusFilter('');
@@ -537,7 +537,7 @@ export function ManufacturingOrdersPage() {
         if (order.status !== 'completed' && order.status !== 'delivered')
           statusActions.push({ label: 'Marcar como completada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />, onClick: () => { handleChangeStatus(order, 'completed'); close(); } });
         if (order.status === 'completed')
-          statusActions.push({ label: 'Marcar como entregada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#059669' }} />, onClick: () => { handleChangeStatus(order, 'delivered'); close(); } });
+          statusActions.push({ label: 'Marcar como entregada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />, onClick: () => { handleChangeStatus(order, 'delivered'); close(); } });
         if (statusActions.length > 0) statusActions[0].dividerBefore = true;
         const actions: DropdownAction[] = [
           { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },

@@ -325,10 +325,10 @@ export const UsersPage = () => {
                         </Button>
                         {user.id !== currentUser?.id ? (
                           <Button
-                          variant="ghost"
+                          variant="destructive"
                           size="sm"
                           onClick={() => handleDeleteUser(user.id)}
-                          className="flex items-center gap-1 text-secondary hover:bg-light-accent/20 hover:text-primary-dark"
+                          className="flex items-center gap-1"
                           title="Eliminar usuario"
                         >
                           <Trash2 size={16} />

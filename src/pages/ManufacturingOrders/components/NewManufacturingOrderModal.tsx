@@ -450,7 +450,7 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
             {activeTab > 0 && (
               <Button
                 type="button"
-                variant="outline"
+                variant="subtle"
                 onClick={handlePrevious}
                 disabled={loading}
                 className="flex items-center gap-2"
@@ -460,17 +460,17 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
               </Button>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Button
               type="button"
-              variant="outline"
+              variant="subtle"
               onClick={onClose}
               disabled={loading}
             >
               Cancelar
             </Button>
-            
+
             {activeTab < tabs.length - 1 ? (
               <Button
                 type="button"
@@ -484,9 +484,9 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
             ) : (
               <Button
                 type="button"
+                variant="primary"
                 onClick={handleCreateOrder}
                 disabled={loading}
-                className="bg-primary-dark hover:bg-primary-dark/90 shadow-sm"
               >
                 {loading ? (
                   <>

@@ -507,37 +507,31 @@ export const BalancesReportModal: React.FC<Props> = ({
             Filtrar por Ubicación
           </label>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="toggle"
+              active={locationFilter === 'all'}
               onClick={() => setLocationFilter('all')}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all ${
-                locationFilter === 'all'
-                  ? 'bg-[#1162a6] text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-              }`}
+              className="flex-1 font-semibold"
             >
               <Users className="w-4 h-4 inline mr-2" />
               Todas ({employees.length})
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="toggle"
+              active={locationFilter === 'Nave 01'}
               onClick={() => setLocationFilter('Nave 01')}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all ${
-                locationFilter === 'Nave 01'
-                  ? 'bg-[#1162a6] text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-              }`}
+              className="flex-1 font-semibold"
             >
               Nave 01 ({employees.filter(e => e.location === 'Nave 01').length})
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="toggle"
+              active={locationFilter === 'Nave 02'}
               onClick={() => setLocationFilter('Nave 02')}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all ${
-                locationFilter === 'Nave 02'
-                  ? 'bg-[#1162a6] text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-              }`}
+              className="flex-1 font-semibold"
             >
               Nave 02 ({employees.filter(e => e.location === 'Nave 02').length})
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -565,35 +559,27 @@ export const BalancesReportModal: React.FC<Props> = ({
             Formato de Exportación
           </label>
           <div className="flex gap-3">
-            <button
+            <Button
+              variant="toggle"
+              active={selectedFormat === 'excel'}
               onClick={() => setSelectedFormat('excel')}
-              className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                selectedFormat === 'excel'
-                  ? 'border-[#1162a6] bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
+              className="flex-1 flex-col h-auto p-4"
             >
-              <FileSpreadsheet className={`w-6 h-6 mx-auto mb-2 ${
-                selectedFormat === 'excel' ? 'text-[#1162a6]' : 'text-gray-400'
-              }`} />
+              <FileSpreadsheet className={`w-6 h-6 mx-auto mb-2 ${selectedFormat === 'excel' ? 'text-white' : 'text-gray-400'}`} />
               <div className="font-semibold text-sm">Excel (TSV)</div>
-              <div className="text-xs text-gray-600 mt-1">Tabla resumida para análisis rápido</div>
-            </button>
-            
-            <button
+              <div className={`text-xs mt-1 ${selectedFormat === 'excel' ? 'text-blue-100' : 'text-gray-600'}`}>Tabla resumida para análisis rápido</div>
+            </Button>
+
+            <Button
+              variant="toggle"
+              active={selectedFormat === 'word'}
               onClick={() => setSelectedFormat('word')}
-              className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                selectedFormat === 'word'
-                  ? 'border-[#1162a6] bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
+              className="flex-1 flex-col h-auto p-4"
             >
-              <FileText className={`w-6 h-6 mx-auto mb-2 ${
-                selectedFormat === 'word' ? 'text-[#1162a6]' : 'text-gray-400'
-              }`} />
+              <FileText className={`w-6 h-6 mx-auto mb-2 ${selectedFormat === 'word' ? 'text-white' : 'text-gray-400'}`} />
               <div className="font-semibold text-sm">Word (HTML)</div>
-              <div className="text-xs text-gray-600 mt-1">Informe limpio con fechas específicas</div>
-            </button>
+              <div className={`text-xs mt-1 ${selectedFormat === 'word' ? 'text-blue-100' : 'text-gray-600'}`}>Informe limpio con fechas específicas</div>
+            </Button>
           </div>
         </div>
 
@@ -628,7 +614,7 @@ export const BalancesReportModal: React.FC<Props> = ({
 
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
           <Button
-            variant="outline"
+            variant="subtle"
             onClick={onClose}
           >
             Cerrar
