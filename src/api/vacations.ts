@@ -162,8 +162,8 @@ export const ABSENCE_TYPES = {
 export const getAbsenceColor = (type: string) => {
   switch (type) {
     case 'vacation': return '#5487c0';
-    case 'special_permit': return '#a3bade';
-    case 'sick_leave': return '#a3bade';
+    case 'special_permit': return '#a2bade';
+    case 'sick_leave': return '#a2bade';
     case 'unpaid_leave': return '#dc2626';
     default: return '#cbd5e1';
   }
@@ -220,7 +220,7 @@ export const HOLIDAY_TYPES = {
 export const HOLIDAY_TYPE_COLORS = {
   national: 'bg-[#1162a6] text-white border-[#0d4d85]',           // Azul oscuro corporativo (más importante)
   regional: 'bg-[#5487c0] text-white border-[#4a7bb7]',           // Azul medio corporativo  
-  local: 'bg-[#a3bade] text-[#1162a6] border-[#8ba8d1]',          // Azul claro corporativo
+  local: 'bg-[#a2bade] text-[#1162a6] border-[#8ba8d1]',          // Azul claro corporativo
   agreement: 'bg-slate-100 text-slate-700 border-slate-300',      // Gris neutro convenio
 } as const;
 

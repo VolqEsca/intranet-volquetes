@@ -77,7 +77,7 @@ export const DashboardPage = () => {
       {/* Header */}
       <div className="flex items-end justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#0f172a] tracking-tight mb-3">
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">
               {getGreeting()}, {getDisplayName()}
             </h1>
             <div className="flex items-center gap-3">
