@@ -27,7 +27,7 @@ const DepartmentBadge: React.FC<DepartmentBadgeProps> = ({ name, color, size = '
   return (
     <span 
       className={`inline-flex items-center gap-1 font-medium rounded-full text-white ${sizeClasses}`}
-      style={{ backgroundColor: color || '#6B7280' }}
+      style={{ backgroundColor: color || '#5487c0' }}
     >
       <Icon size={iconSize} />
       {name}

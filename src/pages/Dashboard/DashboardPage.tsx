@@ -5,6 +5,7 @@ import { usePermission } from "../../hooks/usePermission";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 import { useNavigate } from "react-router-dom";
 import { ModuleCard } from "../../components/dashboard/ModuleCard";
+import { getGreeting } from "../../utils/greeting";
 
 export const DashboardPage = () => {
   const { user } = useAuth();
@@ -23,13 +24,6 @@ export const DashboardPage = () => {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Buenos días";
-    if (hour < 18) return "Buenas tardes";
-    return "Buenas noches";
-  };
 
   const getDisplayName = () => {
     if (user?.nombre) return user.nombre;
@@ -78,14 +72,13 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-auto bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9]">
-      <div className="max-w-[1800px] mx-auto px-8 py-10">
-        
-        {/* Header - PRESERVADO INTACTO */}
-        <div className="flex items-end justify-between mb-12">
+    <div className="space-y-6">
+
+      {/* Header */}
+      <div className="flex items-end justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-[#0f172a] tracking-tight mb-3">
-              {getGreeting()}, {getDisplayName()} 👋
+            <h1 className="text-3xl font-bold text-[#0f172a] tracking-tight mb-3">
+              {getGreeting()}, {getDisplayName()}
             </h1>
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 text-sm font-medium shadow-sm">
@@ -127,10 +120,10 @@ export const DashboardPage = () => {
         )}
 
         {error && (
-          <div className="relative overflow-hidden bg-white border-l-4 border-[#1162a6] rounded-r-xl p-5 shadow-sm flex items-center justify-between mb-8">
+          <div className="relative overflow-hidden bg-white border-l-4 border-[#dc2626] rounded-r-xl p-5 shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-[#1162a6]/10 rounded-lg">
-                <AlertCircle size={20} className="text-[#1162a6]" />
+              <div className="p-2 bg-[#dc2626]/10 rounded-lg">
+                <AlertCircle size={20} className="text-[#dc2626]" />
               </div>
               <p className="text-gray-700 font-medium">{error}</p>
             </div>
@@ -143,9 +136,8 @@ export const DashboardPage = () => {
           </div>
         )}
 
-        {/* Contenido principal */}
-        {stats && (
-          <div className="space-y-10">
+      {stats && (
+        <div className="space-y-8">
             
             {/* Alertas críticas - PRESERVADAS INTACTAS */}
             {stats.alerts.length > 0 && (
@@ -158,19 +150,19 @@ export const DashboardPage = () => {
                       onClick={() => navigate(alert.action_path)}
                       className="group relative overflow-hidden bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#1162a6]/30 transition-all cursor-pointer"
                     >
-                      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isCritical ? 'bg-red-500' : 'bg-[#1162a6]'}`}></div>
-                      
+                      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isCritical ? 'bg-[#dc2626]' : 'bg-[#1162a6]'}`}></div>
+
                       <div className="flex items-center gap-4 pl-3">
-                        <div className={`p-2.5 rounded-lg ${isCritical ? 'bg-red-50' : 'bg-[#1162a6]/5'} group-hover:scale-105 transition-transform`}>
-                          <AlertCircle size={20} className={isCritical ? 'text-red-600' : 'text-[#1162a6]'} />
+                        <div className={`p-2.5 rounded-lg ${isCritical ? 'bg-[#dc2626]/10' : 'bg-[#1162a6]/5'} group-hover:scale-105 transition-transform`}>
+                          <AlertCircle size={20} className={isCritical ? 'text-[#dc2626]' : 'text-[#1162a6]'} />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`font-bold text-base ${isCritical ? 'text-red-600' : 'text-[#1162a6]'}`}>
+                            <span className={`font-bold text-base ${isCritical ? 'text-[#dc2626]' : 'text-[#1162a6]'}`}>
                               {alert.title}
                             </span>
                             {alert.count > 0 && (
-                              <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isCritical ? 'bg-red-100 text-red-700' : 'bg-[#1162a6]/10 text-[#1162a6]'}`}>
+                              <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isCritical ? 'bg-[#dc2626]/10 text-[#dc2626]' : 'bg-[#1162a6]/10 text-[#1162a6]'}`}>
                                 {alert.count}
                               </span>
                             )}
@@ -256,8 +248,7 @@ export const DashboardPage = () => {
 
             </div>
           </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };

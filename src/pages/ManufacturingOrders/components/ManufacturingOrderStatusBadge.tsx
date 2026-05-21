@@ -1,38 +1,46 @@
 import React from 'react';
-import { Wrench, Zap, Droplet } from 'lucide-react';
+import { Clock, PlayCircle, CheckCircle, Truck } from 'lucide-react';
 
-interface DepartmentBadgeProps {
-  name: string;
-  color?: string;
+type ManufacturingStatus = 'pending' | 'in_progress' | 'completed' | 'delivered';
+
+interface ManufacturingOrderStatusBadgeProps {
+  status: ManufacturingStatus;
   size?: 'sm' | 'md';
 }
 
-const DepartmentBadge: React.FC<DepartmentBadgeProps> = ({ name, color, size = 'md' }) => {
-  const getIcon = () => {
-    switch (name.toLowerCase()) {
-      case 'hidráulica':
-        return Droplet;
-      case 'electricidad':
-        return Zap;
-      case 'taller':
-      default:
-        return Wrench;
+const ManufacturingOrderStatusBadge: React.FC<ManufacturingOrderStatusBadgeProps> = ({ status, size = 'md' }) => {
+  const config: Record<ManufacturingStatus, { label: string; color: string; icon: React.ElementType }> = {
+    pending: {
+      label: 'Pendiente',
+      color: 'bg-[#a2bade]/20 text-[#1162a6]',
+      icon: Clock
+    },
+    in_progress: {
+      label: 'En Progreso',
+      color: 'bg-[#5487c0]/20 text-[#1162a6]',
+      icon: PlayCircle
+    },
+    completed: {
+      label: 'Completada',
+      color: 'bg-[#a2bade]/30 text-[#1162a6]',
+      icon: CheckCircle
+    },
+    delivered: {
+      label: 'Entregada',
+      color: 'bg-[#1162a6]/10 text-[#1162a6]',
+      icon: Truck
     }
   };
 
-  const Icon = getIcon();
+  const { label, color, icon: Icon } = config[status];
   const sizeClasses = size === 'sm' ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm';
-  const iconSize = size === 'sm' ? 12 : 14;
 
   return (
-    <span 
-      className={`inline-flex items-center gap-1 font-medium rounded-full text-white ${sizeClasses}`}
-      style={{ backgroundColor: color || '#6B7280' }}
-    >
-      <Icon size={iconSize} />
-      {name}
+    <span className={`inline-flex items-center gap-1 font-medium rounded-full ${color} ${sizeClasses}`}>
+      <Icon size={size === 'sm' ? 12 : 14} />
+      {label}
     </span>
   );
 };
 
-export default DepartmentBadge;
+export default ManufacturingOrderStatusBadge;

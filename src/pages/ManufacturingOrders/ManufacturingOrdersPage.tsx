@@ -27,16 +27,16 @@ const priorityLabels = {
 } as const;
 
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  in_progress: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  delivered: 'bg-gray-100 text-gray-800'
+  pending: 'bg-[#a2bade]/20 text-[#1162a6]',
+  in_progress: 'bg-[#a2bade]/20 text-[#1162a6]',
+  completed: 'bg-[#5487c0]/20 text-[#1162a6]',
+  delivered: 'bg-[#a2bade]/30 text-[#1162a6]'
 } as const;
 
 const priorityColors = {
-  high: 'bg-red-100 text-red-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  low: 'bg-green-100 text-green-800'
+  high: 'bg-[#dc2626]/10 text-[#dc2626]',
+  medium: 'bg-[#a2bade]/20 text-[#1162a6]',
+  low: 'bg-[#a2bade]/10 text-[#5487c0]'
 } as const;
 
 
@@ -190,14 +190,18 @@ export function ManufacturingOrdersPage() {
 
 
   return (
-    <div className="p-6">
-      {/* Header - Estructura idéntica a reparación */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-          <Factory className="w-8 h-8 mr-3 text-primary-600" />
-          Órdenes de Fabricación
-        </h1>
-        <div className="flex gap-3">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+            <Factory className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Órdenes de Fabricación</h1>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
           <Button variant="secondary" onClick={loadOrders} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refrescar
@@ -210,11 +214,11 @@ export function ManufacturingOrdersPage() {
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow border">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0]">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Factory className="w-6 h-6 text-blue-600" />
+            <div className="p-2 bg-[#a2bade]/20 rounded-lg">
+              <Factory className="w-6 h-6 text-[#1162a6]" />
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-500">Total Órdenes</p>
@@ -224,8 +228,8 @@ export function ManufacturingOrdersPage() {
         </div>
       </div>
 
-      {/* Filtros - Estructura idéntica a reparación */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      {/* Filtros */}
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
@@ -236,12 +240,12 @@ export function ManufacturingOrdersPage() {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           />
         </div>
-        
+
         <select
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value);
@@ -256,7 +260,7 @@ export function ManufacturingOrdersPage() {
         </select>
 
         <select
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           value={priorityFilter}
           onChange={(e) => {
             setPriorityFilter(e.target.value);
@@ -282,23 +286,22 @@ export function ManufacturingOrdersPage() {
         </Button>
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-white border-l-4 border-[#dc2626] rounded-r-xl px-4 py-3 text-[#dc2626]">
           {error}
         </div>
       )}
 
       {/* Barra de acción bulk */}
       {selectedIds.size > 0 && (
-        <div className="mb-4 flex items-center gap-3 p-3 bg-blue-50 border border-secondary rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-lg">
           <span className="text-sm font-medium text-primary-dark">
             {selectedIds.size} {selectedIds.size === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
           </span>
           <select
             value={bulkStatus}
             onChange={(e) => setBulkStatus(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           >
             <option value="">Cambiar estado a...</option>
             <option value="pending">Pendiente</option>
@@ -391,7 +394,7 @@ export function ManufacturingOrdersPage() {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-blue-50' : ''}`}>
+                  <tr key={order.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : ''}`}>
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
@@ -510,20 +513,20 @@ export function ManufacturingOrdersPage() {
                     variant="secondary"
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage <= 1}
-                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
                   >
                     Anterior
                   </Button>
-                  
-                  <div className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+
+                  <div className="relative inline-flex items-center px-4 py-2 border border-[#e2e8f0] bg-white text-sm font-medium text-gray-700">
                     {currentPage} / {totalPages}
                   </div>
-                  
+
                   <Button
                     variant="secondary"
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage >= totalPages}
-                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
                   >
                     Siguiente
                   </Button>

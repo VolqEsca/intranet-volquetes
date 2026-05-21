@@ -10,6 +10,7 @@ import {
   Calendar,
   Star,
   Grid3X3,
+  X,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useFavorites } from "../hooks/useFavorites";
@@ -55,7 +56,7 @@ const renderNavItem = (item: NavItem) => {
             size={20}
             className={isActive ? "text-white" : "text-gray-400 group-hover:text-[#1162a6] transition-colors"}
           />
-          <span className="flex-1">{item.label}</span>
+          <span className="flex-1 truncate" title={item.label}>{item.label}</span>
           {isActive && <ChevronRight size={16} className="text-white/70" />}
         </>
       )}
@@ -63,7 +64,11 @@ const renderNavItem = (item: NavItem) => {
   );
 };
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
   const { user } = useAuth();
   const { favorites } = useFavorites();
 
@@ -86,14 +91,23 @@ export const Sidebar = () => {
   );
 
   return (
-    <div className="flex flex-col w-64 bg-white border-r border-[#e2e8f0]">
+    <div className="flex flex-col h-full w-64 bg-white border-r border-[#e2e8f0]">
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 border-b border-[#e2e8f0]">
+      <div className="relative flex items-center justify-center h-16 border-b border-[#e2e8f0]">
         <img
           src="https://medios.volquetesescalante.com/verso/logo_verso.svg"
           alt="Logo Verso"
           className="h-10 w-auto"
         />
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute right-3 p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors lg:hidden"
+            aria-label="Cerrar menú"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -119,8 +133,8 @@ export const Sidebar = () => {
           {/* 3. Módulos disponibles — accesibles y no en favoritos */}
           {nonFavoriteModules.length > 0 && (
             <div className="py-3">
-              <div className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                <Grid3X3 size={12} />
+              <div className="px-4 text-xs font-semibold text-[#5487c0] uppercase tracking-wider mb-2 flex items-center gap-2">
+                <Grid3X3 size={12} className="text-[#5487c0]" />
                 <span>Módulos</span>
               </div>
               <div className="space-y-1">
@@ -140,13 +154,9 @@ export const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[#e2e8f0]">
-        <div className="px-4 py-3 bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
-          <p className="text-xs font-medium text-[#1162a6]">VERSO v14.3.1</p>
-          <p className="text-xs text-gray-500 mt-1">
-            Sistema Integral • Command Center
-          </p>
-        </div>
+      <div className="px-8 py-4 border-t border-[#e2e8f0]">
+        <p className="text-xs font-medium text-[#1162a6]">VERSO v2.1.0</p>
+        <p className="text-xs text-gray-400 mt-0.5">Sistema Integral</p>
       </div>
     </div>
   );

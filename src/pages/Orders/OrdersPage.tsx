@@ -1,6 +1,6 @@
 // src/pages/Orders/OrdersPage.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, Download, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle } from 'lucide-react';
+import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, Download, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle, Wrench } from 'lucide-react';
 import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
@@ -232,92 +232,96 @@ export const OrdersPage: React.FC = () => {
 
 
   return (
-    <div className="p-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Órdenes de Trabajo</h1>
-          <div className="flex gap-3">
-            <Button
-              variant="primary"
-              onClick={() => setShowClientsModal(true)}
-              className="flex items-center gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Gestionar Clientes
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => setShowNewOrderModal(true)}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nueva Orden
-            </Button>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+            <Wrench className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Órdenes de Trabajo</h1>
           </div>
         </div>
-
-        {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Buscar por número de orden, cliente o matrícula..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
-            />
-          </div>
-
-          <select
-            value={filterStatus}
-            onChange={(e) => {
-              setFilterStatus(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="secondary"
+            onClick={() => setShowClientsModal(true)}
+            className="flex items-center gap-2"
           >
-            <option value="all">Todos los estados</option>
-            <option value="pending">Pendiente</option>
-            <option value="in_progress">En Progreso</option>
-            <option value="completed">Completado</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
-
-          <select
-            value={filterPriority}
-            onChange={(e) => {
-              setFilterPriority(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            <Users className="w-4 h-4" />
+            Gestionar Clientes
+          </Button>
+          <Button
+            onClick={() => setShowNewOrderModal(true)}
+            className="flex items-center gap-2"
           >
-            <option value="all">Todas las prioridades</option>
-            <option value="low">Baja</option>
-            <option value="normal">Normal</option>
-            <option value="high">Alta</option>
-            <option value="urgent">Urgente</option>
-          </select>
+            <Plus className="w-4 h-4" />
+            Nueva Orden
+          </Button>
         </div>
       </div>
 
+      {/* Filtros */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Buscar por número de orden, cliente o matrícula..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          />
+        </div>
+
+        <select
+          value={filterStatus}
+          onChange={(e) => {
+            setFilterStatus(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+        >
+          <option value="all">Todos los estados</option>
+          <option value="pending">Pendiente</option>
+          <option value="in_progress">En Progreso</option>
+          <option value="completed">Completado</option>
+          <option value="cancelled">Cancelado</option>
+        </select>
+
+        <select
+          value={filterPriority}
+          onChange={(e) => {
+            setFilterPriority(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+        >
+          <option value="all">Todas las prioridades</option>
+          <option value="low">Baja</option>
+          <option value="normal">Normal</option>
+          <option value="high">Alta</option>
+          <option value="urgent">Urgente</option>
+        </select>
+      </div>
+
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-white border-l-4 border-[#dc2626] rounded-r-xl px-4 py-3 text-[#dc2626]">
           {error}
         </div>
       )}
 
       {/* Barra de acción bulk */}
       {selectedIds.size > 0 && (
-        <div className="mb-4 flex items-center gap-3 p-3 bg-blue-50 border border-secondary rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-lg">
           <span className="text-sm font-medium text-primary-dark">
             {selectedIds.size} {selectedIds.size === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
           </span>
           <select
             value={bulkStatus}
             onChange={(e) => setBulkStatus(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
           >
             <option value="">Cambiar estado a...</option>
             <option value="pending">Pendiente</option>
@@ -400,7 +404,7 @@ export const OrdersPage: React.FC = () => {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className={`hover:bg-gray-50 ${selectedIds.has(order.id) ? 'bg-blue-50' : ''}`}>
+                  <tr key={order.id} className={`hover:bg-gray-50 ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : ''}`}>
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
@@ -509,12 +513,12 @@ export const OrdersPage: React.FC = () => {
                     variant="secondary"
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage <= 1}
-                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
                   >
                     Anterior
                   </Button>
 
-                  <div className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                  <div className="relative inline-flex items-center px-4 py-2 border border-[#e2e8f0] bg-white text-sm font-medium text-gray-700">
                     {currentPage} / {totalPages}
                   </div>
 
@@ -522,7 +526,7 @@ export const OrdersPage: React.FC = () => {
                     variant="secondary"
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage >= totalPages}
-                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
                   >
                     Siguiente
                   </Button>

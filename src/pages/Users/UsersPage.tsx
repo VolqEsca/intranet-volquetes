@@ -216,12 +216,10 @@ export const UsersPage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-dark"></div>
           </div>
         ) : error ? (
-          <Card className="p-6">
-            <div className="text-center">
-              <p className="text-red-600 mb-4">{error}</p>
-              <Button onClick={fetchUsers}>Reintentar</Button>
-            </div>
-          </Card>
+          <div className="flex items-start gap-3 border-l-4 border-[#dc2626] bg-[#dc2626]/5 px-4 py-3 text-[#dc2626]">
+            <span className="text-sm leading-snug">{error}</span>
+            <Button onClick={fetchUsers} className="ml-auto flex-shrink-0">Reintentar</Button>
+          </div>
         ) : sortedUsers.length === 0 ? (
           <Card className="p-12">
             <div className="text-center text-gray-500">

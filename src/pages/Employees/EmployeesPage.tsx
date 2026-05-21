@@ -132,113 +132,93 @@ export const EmployeesPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary-dark mb-2 flex items-center gap-3">
-          <Users size={32} className="text-primary-dark" />
-          Gestión de Empleados
-        </h1>
-        <p className="text-gray-600">
-          Administra la información de los empleados de Volquetes Escalante
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+            <Users className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Gestión de Empleados</h1>
+            <p className="text-sm text-gray-500">
+              {pagination.total > 0
+                ? `${pagination.total} empleado${pagination.total !== 1 ? 's' : ''} registrado${pagination.total !== 1 ? 's' : ''}`
+                : 'Administra la información de los empleados'}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            onClick={handleImportEmployees}
+            variant="secondary"
+            className="flex items-center gap-2"
+          >
+            <Upload size={18} />
+            Importar
+          </Button>
+          <Button
+            onClick={handleNewEmployee}
+            className="flex items-center gap-2"
+          >
+            <Plus size={18} />
+            Nuevo Empleado
+          </Button>
+        </div>
       </div>
 
-      {/* Card de controles */}
-      <Card className="p-6 mb-6 bg-white shadow-md rounded-lg">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h2 className="text-xl font-semibold text-gray-700">
-            Listado de Empleados
-            {pagination.total > 0 && (
-              <span className="text-sm font-normal text-gray-500 ml-2">
-                ({pagination.total} empleado{pagination.total !== 1 ? 's' : ''})
-              </span>
-            )}
-          </h2>
-          
-          {/* Botones de acción */}
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleImportEmployees} 
-              variant="secondary" 
-              className="flex items-center gap-2"
-            >
-              <Upload size={18} /> 
-              Importar
-            </Button>
-            <Button 
-              onClick={handleNewEmployee} 
-              className="flex items-center gap-2"
-            >
-              <Plus size={18} /> 
-              Nuevo Empleado
-            </Button>
-          </div>
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-4 items-center">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre, DNI o email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+          />
         </div>
 
-        {/* Filtros */}
-        <div className="flex flex-wrap gap-4 items-center mt-4">
-          {/* Búsqueda */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
-              placeholder="Buscar por nombre, DNI o email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-            />
-          </div>
-          
-          {/* Filtro Nave */}
-          <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+        <select
+          value={locationFilter}
+          onChange={(e) => setLocationFilter(e.target.value)}
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+        >
+          <option value="">Todas las naves</option>
+          <option value="Nave 01">Nave 01</option>
+          <option value="Nave 02">Nave 02</option>
+        </select>
+
+        <select
+          value={contractFilter}
+          onChange={(e) => setContractFilter(e.target.value)}
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+        >
+          <option value="">Todos los contratos</option>
+          <option value="Indefinido">Indefinido</option>
+          <option value="Temporal">Temporal</option>
+        </select>
+
+        {(searchTerm || locationFilter || contractFilter) && (
+          <Button
+            onClick={() => {
+              setSearchTerm('');
+              setLocationFilter('');
+              setContractFilter('');
+            }}
+            variant="ghost"
+            size="sm"
+            className="text-gray-600 hover:text-gray-800"
           >
-            <option value="">Todas las naves</option>
-            <option value="Nave 01">Nave 01</option>
-            <option value="Nave 02">Nave 02</option>
-          </select>
+            Limpiar filtros
+          </Button>
+        )}
+      </div>
 
-          {/* Filtro Contrato */}
-          <select
-            value={contractFilter}
-            onChange={(e) => setContractFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-          >
-            <option value="">Todos los contratos</option>
-            <option value="Indefinido">Indefinido</option>
-            <option value="Temporal">Temporal</option>
-          </select>
-
-          {/* Botón limpiar filtros */}
-          {(searchTerm || locationFilter || contractFilter) && (
-            <Button 
-              onClick={() => {
-                setSearchTerm('');
-                setLocationFilter('');
-                setContractFilter('');
-              }}
-              variant="ghost" 
-              size="sm"
-              className="text-gray-600 hover:text-gray-800"
-            >
-              Limpiar filtros
-            </Button>
-          )}
-        </div>
-      </Card>
-
-      {/* Mensaje de error */}
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {error}
-          </div>
+        <div className="bg-white border-l-4 border-[#dc2626] rounded-r-xl px-4 py-3 text-[#dc2626]">
+          {error}
         </div>
       )}
 
@@ -323,15 +303,15 @@ export const EmployeesPage = () => {
                       {employee.job_category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-[#a2bade]/20 text-[#1162a6]">
                         {employee.location}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        employee.contract_type === 'Indefinido' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
+                        employee.contract_type === 'Indefinido'
+                          ? 'bg-[#a2bade]/20 text-[#1162a6]'
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {employee.contract_type}
                       </span>
@@ -353,34 +333,33 @@ export const EmployeesPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex gap-1">
-                        <Button 
-                          onClick={() => handleEditEmployee(employee)} 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          onClick={() => handleEditEmployee(employee)}
+                          variant="ghost"
+                          size="sm"
                           title="Editar empleado"
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="text-[#1162a6] hover:text-[#5487c0] hover:bg-[#a2bade]/15"
                         >
                           <Edit size={16} />
                         </Button>
-                        
-                        {/* NUEVO BOTÓN: Generar documentos */}
-                        <Button 
-                          onClick={() => handleGenerateDocuments(employee)} 
-                          variant="ghost" 
-                          size="sm" 
+
+                        <Button
+                          onClick={() => handleGenerateDocuments(employee)}
+                          variant="ghost"
+                          size="sm"
                           title="Generar documentos de incorporación"
-                          className="text-green-600 hover:text-green-800 hover:bg-green-50"
+                          className="text-[#5487c0] hover:text-[#1162a6] hover:bg-[#a2bade]/15"
                         >
                           <FileText size={16} />
                         </Button>
-                        
+
                         {user?.rol === 'admin' && (
-                          <Button 
-                            onClick={() => handleDeleteClick(employee)} 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            onClick={() => handleDeleteClick(employee)}
+                            variant="ghost"
+                            size="sm"
                             title="Desactivar empleado"
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                            className="text-[#dc2626] hover:text-[#dc2626] hover:bg-[#dc2626]/10"
                           >
                             <Trash2 size={16} />
                           </Button>

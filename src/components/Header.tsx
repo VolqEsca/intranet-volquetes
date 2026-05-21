@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { Bell, Search, LogOut, User, ChevronDown } from "lucide-react";
+import { LogOut, User, ChevronDown, Menu } from "lucide-react";
 import { Button } from "./ui/Button";
 import { useNavigate } from "react-router-dom";
 
-export const Header = () => {
+interface HeaderProps {
+  onMenuToggle: () => void;
+}
+
+export const Header = ({ onMenuToggle }: HeaderProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -36,32 +40,19 @@ export const Header = () => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 px-8">
-      <div className="h-full flex items-center justify-between">
-        {/* Barra de búsqueda */}
-        <div className="flex-1 max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Buscar órdenes, clientes..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all"
-            />
-          </div>
-        </div>
+    <header className="h-16 bg-white border-b border-[#e2e8f0] px-4 lg:px-8">
+      <div className="h-full flex items-center justify-between lg:justify-end">
 
-        {/* Acciones del usuario */}
-        <div className="flex items-center gap-4 ml-8">
-          {/* Notificaciones - SIN punto rojo */}
-          <Button variant="ghost" size="sm" className="relative p-2">
-            <Bell size={20} />
-            {/* Punto rojo eliminado - se puede añadir condicionalmente en el futuro */}
-          </Button>
+        {/* Hamburger — solo móvil/tablet */}
+        <button
+          onClick={onMenuToggle}
+          className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#1162a6] transition-colors"
+          aria-label="Abrir menú"
+        >
+          <Menu size={22} />
+        </button>
 
-          {/* Separador */}
-          <div className="h-8 w-px bg-gray-200"></div>
-
-          {/* Dropdown de usuario */}
+        {/* Dropdown de usuario */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -115,7 +106,7 @@ export const Header = () => {
 
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-[#dc2626]/10 transition-colors"
                 >
                   <LogOut size={16} />
                   Cerrar Sesión
@@ -123,7 +114,6 @@ export const Header = () => {
               </div>
             )}
           </div>
-        </div>
       </div>
     </header>
   );
