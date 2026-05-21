@@ -7,37 +7,14 @@ import { apiClient } from '../../api';
 import { manufacturingAPI, ManufacturingOrder } from '../../api/manufacturing';
 import NewManufacturingOrderModal from './components/NewManufacturingOrderModal';
 import EditManufacturingOrderModal from './components/EditManufacturingOrderModal';
+import ManufacturingOrderStatusBadge from './components/ManufacturingOrderStatusBadge';
+import ManufacturingOrderPriorityBadge from './components/ManufacturingOrderPriorityBadge';
 import { dialog } from '../../services/dialog.service';
 import { Modal } from '../../components/ui/Modal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromSnake } from '../../types/pagination';
 import { apiErrorMessage } from '../../utils/error';
 
-const statusLabels = {
-  pending: 'Pendiente',
-  in_progress: 'En Progreso',
-  completed: 'Completada',
-  delivered: 'Entregada'
-} as const;
-
-const priorityLabels = {
-  low: 'Baja',
-  medium: 'Media',
-  high: 'Alta'
-} as const;
-
-const statusColors = {
-  pending: 'bg-[#a2bade]/20 text-[#1162a6]',
-  in_progress: 'bg-[#a2bade]/20 text-[#1162a6]',
-  completed: 'bg-[#5487c0]/20 text-[#1162a6]',
-  delivered: 'bg-[#a2bade]/30 text-[#1162a6]'
-} as const;
-
-const priorityColors = {
-  high: 'bg-[#dc2626]/10 text-[#dc2626]',
-  medium: 'bg-[#a2bade]/20 text-[#1162a6]',
-  low: 'bg-[#a2bade]/10 text-[#5487c0]'
-} as const;
 
 
 export function ManufacturingOrdersPage() {
@@ -199,6 +176,9 @@ export function ManufacturingOrdersPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Órdenes de Fabricación</h1>
+            {totalRecords > 0 && (
+              <p className="text-sm text-gray-500 mt-0.5">{totalRecords} órdenes en total</p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -210,21 +190,6 @@ export function ManufacturingOrdersPage() {
             <Plus className="w-4 h-4 mr-2" />
             Nueva Orden
           </Button>
-        </div>
-      </div>
-
-      {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0]">
-          <div className="flex items-center">
-            <div className="p-2 bg-[#a2bade]/20 rounded-lg">
-              <Factory className="w-6 h-6 text-[#1162a6]" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Total Órdenes</p>
-              <p className="text-xl font-semibold text-gray-900">{totalRecords}</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -325,11 +290,11 @@ export function ManufacturingOrdersPage() {
         </div>
       )}
 
-      {/* ✅ TABLA CON ESTRUCTURA IDÉNTICA A REPARACIÓN */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      {/* Tabla */}
+      <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-[#f8fafc] border-b border-[#e2e8f0]">
               <tr>
                 <th className="px-4 py-3 w-10">
                   <input
@@ -365,12 +330,12 @@ export function ManufacturingOrdersPage() {
                   Fecha Pedido
                 </th>
                 {/* ✅ COLUMNA ACCIONES STICKY - Idéntica a reparación */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 border-l border-gray-200 z-10">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-[#f8fafc] border-l border-[#e2e8f0] z-10">
                   Acciones
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[#e2e8f0]">
               {loading ? (
                 <tr>
                   <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
@@ -394,7 +359,7 @@ export function ManufacturingOrdersPage() {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : ''}`}>
+                  <tr key={order.id} className={`transition-colors ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : 'hover:bg-[#f8fafc]'}`}>
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
@@ -444,15 +409,11 @@ export function ManufacturingOrdersPage() {
                     </td>
                     
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[order.status]}`}>
-                        {statusLabels[order.status]}
-                      </span>
+                      <ManufacturingOrderStatusBadge status={order.status} size="sm" />
                     </td>
-                    
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${priorityColors[order.priority]}`}>
-                        {priorityLabels[order.priority]}
-                      </span>
+                      <ManufacturingOrderPriorityBadge priority={order.priority} size="sm" />
                     </td>
                     
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -460,7 +421,7 @@ export function ManufacturingOrdersPage() {
                     </td>
                     
                     {/* ✅ CELDA ACCIONES STICKY - Idéntica a reparación */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-gray-200 z-5">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-[#e2e8f0] z-5">
                       <div className="relative dropdown-container">
                         <button
                           type="button"

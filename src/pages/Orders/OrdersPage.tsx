@@ -346,10 +346,10 @@ export const OrdersPage: React.FC = () => {
       )}
 
       {/* Tabla */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-[#f8fafc] border-b border-[#e2e8f0]">
               <tr>
                 <th className="px-4 py-3 w-10">
                   <input
@@ -384,12 +384,12 @@ export const OrdersPage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Entrega Est.
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 border-l border-gray-200 z-10">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-[#f8fafc] border-l border-[#e2e8f0] z-10">
                   Acciones
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[#e2e8f0]">
               {loading ? (
                 <tr>
                   <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
@@ -404,7 +404,7 @@ export const OrdersPage: React.FC = () => {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className={`hover:bg-gray-50 ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : ''}`}>
+                  <tr key={order.id} className={`transition-colors ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : 'hover:bg-[#f8fafc]'}`}>
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
@@ -460,7 +460,7 @@ export const OrdersPage: React.FC = () => {
                       {formatDate(order.estimated_delivery)}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-gray-200 z-5">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-[#e2e8f0] z-5">
                       <div className="relative dropdown-container">
                         <button
                           type="button"

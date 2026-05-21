@@ -211,12 +211,12 @@ export const LoginPage = () => {
           }}
         />
 
-        {/* Logo empresa — parte superior */}
-        <div className="absolute top-12 left-12">
+        {/* Logo empresa — parte superior, centrado */}
+        <div className="relative flex justify-center px-14 pt-12">
           <img
             src="/assets/logo_horizontal.svg"
             alt="Volquetes Escalante"
-            className="h-12 w-auto"
+            className="h-10 w-auto"
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </div>
@@ -248,7 +248,7 @@ export const LoginPage = () => {
         </div>
 
         {/* Etiqueta inferior */}
-        <div className="absolute bottom-12 left-12">
+        <div className="relative flex px-14 pb-12">
           <p className="text-xs uppercase tracking-[0.45em] text-white/50 font-semibold">
             Sistema VERSO
           </p>
