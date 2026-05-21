@@ -567,11 +567,11 @@ export const OrdersPage: React.FC = () => {
           statusActions.push({ label: 'Cancelar orden', icon: <XCircle className="w-4 h-4 text-[#a2bade]" />, onClick: () => { handleChangeStatus(order, 'cancelled'); close(); } });
         if (statusActions.length > 0) statusActions[0].dividerBefore = true;
         const actions: DropdownAction[] = [
-          { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },
-          { label: 'Imprimir PDF',     icon: <FileText className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
+          { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4" />, onClick: () => { handleViewDetails(order); close(); } },
+          { label: 'Imprimir PDF',     icon: <FileText className="w-4 h-4" />, onClick: () => { handleDownloadPDF(order); close(); } },
           ...statusActions,
-          { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4 text-gray-400" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
-          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4 text-[#dc2626]" />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#dc2626' }, rowClassName: 'hover:bg-[#dc2626]/10', dividerBefore: true },
+          { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
+          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4" />, onClick: () => { handleDeleteOrder(order); close(); }, rowClassName: 'hover:bg-[#dc2626]/10 hover:text-[#dc2626]', dividerBefore: true },
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
       })()}
