@@ -485,20 +485,20 @@ export const OrdersPage: React.FC = () => {
         {totalPages > 1 && (
           <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
-              <Button
-                variant="secondary"
+              <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
+                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Anterior
-              </Button>
-              <Button
-                variant="secondary"
+              </button>
+              <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
+                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Siguiente
-              </Button>
+              </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
@@ -508,28 +508,24 @@ export const OrdersPage: React.FC = () => {
                 </p>
               </div>
               <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  <Button
-                    variant="secondary"
+                <nav className="inline-flex rounded-lg border border-[#e2e8f0] overflow-hidden">
+                  <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage <= 1}
-                    className="relative inline-flex items-center px-3 py-2 rounded-l-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
+                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 border-r border-[#e2e8f0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Anterior
-                  </Button>
-
-                  <div className="relative inline-flex items-center px-4 py-2 border border-[#e2e8f0] bg-white text-sm font-medium text-gray-700">
+                  </button>
+                  <div className="px-4 py-2 bg-white text-sm font-medium text-gray-700 border-r border-[#e2e8f0] select-none">
                     {currentPage} / {totalPages}
                   </div>
-
-                  <Button
-                    variant="secondary"
+                  <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage >= totalPages}
-                    className="relative inline-flex items-center px-3 py-2 rounded-r-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50"
+                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Siguiente
-                  </Button>
+                  </button>
                 </nav>
               </div>
             </div>

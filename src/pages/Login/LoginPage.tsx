@@ -58,9 +58,9 @@ export const LoginPage = () => {
 
         {/* Bloque central: logo + título + formulario */}
         <div className="flex-1 flex flex-col justify-center items-center">
-          <div className="w-80">
-            {/* Logo VERSO centrado, encima del título */}
-            <div className="flex justify-center mb-8">
+          <div className="w-full max-w-lg">
+            {/* Logo VERSO */}
+            <div className="mb-8">
               <img
                 src="https://medios.volquetesescalante.com/verso/logo_verso.svg"
                 alt="VERSO"
@@ -211,27 +211,27 @@ export const LoginPage = () => {
           }}
         />
 
-        {/* Logo empresa — parte superior, centrado */}
-        <div className="relative flex justify-center px-14 pt-12">
+        {/* Bloque único centrado verticalmente */}
+        <div className="relative flex flex-col justify-center h-full px-14">
           <img
             src="/assets/logo_horizontal.svg"
-            alt="Volquetes Escalante"
-            className="h-10 w-auto"
-            style={{ filter: "brightness(0) invert(1)" }}
+            alt="Escalante Carrocerías y Volquetes"
+            style={{
+              height: '6rem',
+              width: 'auto',
+              filter: 'brightness(0) invert(1)',
+              display: 'block',
+              alignSelf: 'flex-start',
+              marginBottom: '2rem'
+            }}
           />
-        </div>
 
-        {/* Contenido central */}
-        <div className="relative flex flex-col justify-center flex-1 px-14">
-          {/* Saludo */}
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/80 mb-4">
+          <p className="text-xs uppercase tracking-widest text-white/80">
             {getGreeting(currentTime)}
           </p>
 
-          {/* Separador */}
           <div className="w-12 h-px bg-white/30 my-4" />
 
-          {/* Reloj HH:MM + segundos */}
           <div className="flex items-end gap-2">
             <span className="text-8xl font-bold text-white tabular-nums leading-none font-mono">
               {formatHHMM(currentTime)}
@@ -241,18 +241,15 @@ export const LoginPage = () => {
             </span>
           </div>
 
-          {/* Fecha */}
           <p className="text-base text-white/80 capitalize font-medium mt-4">
             {formatDate(currentTime)}
           </p>
+
         </div>
 
-        {/* Etiqueta inferior */}
-        <div className="relative flex px-14 pb-12">
-          <p className="text-xs uppercase tracking-[0.45em] text-white/50 font-semibold">
-            Sistema VERSO
-          </p>
-        </div>
+        <p className="absolute bottom-10 left-14 text-xs tracking-widest text-white/50">
+          SISTEMA VERSO
+        </p>
       </div>
 
       <ForgotPasswordModal
