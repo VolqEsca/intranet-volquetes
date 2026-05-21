@@ -1,6 +1,6 @@
 // src/pages/Orders/components/ClientsManagementModal.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Upload, Search, Trash2, Edit2, Download, Users, FileSpreadsheet, AlertCircle, CheckCircle, Plus } from 'lucide-react';
+import { X, Upload, Search, Trash2, Pencil, Download, Users, FileSpreadsheet, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
@@ -404,23 +404,27 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => {
                                   setEditingClient(client);
                                   setCreatingClient(false);
                                 }}
-                                className="p-1 hover:bg-gray-100 rounded"
                                 title="Editar"
+                                className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
                               >
-                                <Edit2 className="w-4 h-4 text-gray-600" />
-                              </button>
-                              <button
+                                <Pencil size={16} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => handleDeleteSingle(client.id)}
-                                className="p-1 hover:bg-gray-100 rounded"
                                 title="Eliminar"
+                                className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
                               >
-                                <Trash2 className="w-4 h-4 text-secondary" />
-                              </button>
+                                <Trash2 size={16} />
+                              </Button>
                             </div>
                           </td>
                         </tr>

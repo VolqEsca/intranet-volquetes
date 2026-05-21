@@ -9,7 +9,7 @@ import { EditEmployeeModal } from './components/EditEmployeeModal';
 import { ImportEmployeesModal } from './components/ImportEmployeesModal';
 import { GenerateDocumentsModal } from './components/GenerateDocumentsModal';
 import AlertDialog from '../../components/ui/AlertDialog';
-import { Plus, Upload, Edit, Trash2, Users, Search, FileText } from 'lucide-react';
+import { Plus, Upload, Pencil, Trash2, Users, Search, FileText } from 'lucide-react';
 import { apiErrorMessage } from '../../utils/error';
 import { useAuth } from '../../hooks/useAuth';
 import { dialog } from '../../services/dialog.service';
@@ -336,19 +336,19 @@ export const EmployeesPage = () => {
                         <Button
                           onClick={() => handleEditEmployee(employee)}
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           title="Editar empleado"
-                          className="text-[#1162a6] hover:text-[#5487c0] hover:bg-[#a2bade]/15"
+                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
                         >
-                          <Edit size={16} />
+                          <Pencil size={16} />
                         </Button>
 
                         <Button
                           onClick={() => handleGenerateDocuments(employee)}
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           title="Generar documentos de incorporación"
-                          className="text-[#5487c0] hover:text-[#1162a6] hover:bg-[#a2bade]/15"
+                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
                         >
                           <FileText size={16} />
                         </Button>
@@ -356,9 +356,10 @@ export const EmployeesPage = () => {
                         {user?.rol === 'admin' && (
                           <Button
                             onClick={() => handleDeleteClick(employee)}
-                            variant="destructive"
+                            variant="ghost"
                             size="icon"
                             title="Desactivar empleado"
+                            className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
                           >
                             <Trash2 size={16} />
                           </Button>

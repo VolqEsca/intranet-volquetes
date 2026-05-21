@@ -462,16 +462,17 @@ export const OrdersPage: React.FC = () => {
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-[#e2e8f0] z-5">
                       <div className="relative dropdown-container">
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleDropdown(order.id, e.currentTarget);
                           }}
-                          className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="text-gray-400 hover:text-gray-600"
                         >
-                          <MoreVertical className="w-5 h-5" />
-                        </button>
+                          <MoreVertical size={16} />
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -559,18 +560,18 @@ export const OrdersPage: React.FC = () => {
         const close = () => setActiveDropdown(null);
         const statusActions: DropdownAction[] = [];
         if (order.status !== 'in_progress' && order.status !== 'completed' && order.status !== 'cancelled')
-          statusActions.push({ label: 'Marcar en progreso', icon: <AlertCircle className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleChangeStatus(order, 'in_progress'); close(); } });
+          statusActions.push({ label: 'Marcar en progreso', icon: <AlertCircle className="w-4 h-4 text-[#5487c0]" />, onClick: () => { handleChangeStatus(order, 'in_progress'); close(); } });
         if (order.status !== 'completed' && order.status !== 'cancelled')
-          statusActions.push({ label: 'Marcar como completada', icon: <CheckCircle className="w-4 h-4" style={{ color: '#1162a6' }} />, onClick: () => { handleChangeStatus(order, 'completed'); close(); } });
+          statusActions.push({ label: 'Marcar como completada', icon: <CheckCircle className="w-4 h-4 text-[#1162a6]" />, onClick: () => { handleChangeStatus(order, 'completed'); close(); } });
         if (order.status !== 'cancelled' && order.status !== 'completed')
-          statusActions.push({ label: 'Cancelar orden', icon: <XCircle className="w-4 h-4" style={{ color: '#a2bade' }} />, onClick: () => { handleChangeStatus(order, 'cancelled'); close(); } });
+          statusActions.push({ label: 'Cancelar orden', icon: <XCircle className="w-4 h-4 text-[#a2bade]" />, onClick: () => { handleChangeStatus(order, 'cancelled'); close(); } });
         if (statusActions.length > 0) statusActions[0].dividerBefore = true;
         const actions: DropdownAction[] = [
           { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },
           { label: 'Imprimir PDF',     icon: <Download className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
           ...statusActions,
           { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4 text-gray-400" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
-          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4" style={{ color: '#5487c0' }} />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#5487c0' }, dividerBefore: true },
+          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4 text-[#5487c0]" />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#5487c0' }, dividerBefore: true },
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
       })()}

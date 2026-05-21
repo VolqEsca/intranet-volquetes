@@ -4,7 +4,7 @@ import { Button } from "../../components/ui/Button";
 import {
   Plus,
   Search,
-  Edit,
+  Pencil,
   Trash2,
   Key,
   MoreVertical,
@@ -310,7 +310,7 @@ export const UsersPage = () => {
                           className="flex items-center gap-1"
                           title="Editar usuario"
                         >
-                          <Edit size={16} />
+                          <Pencil size={16} />
                           <span className="lg:hidden">Editar</span>
                         </Button>
                         <Button

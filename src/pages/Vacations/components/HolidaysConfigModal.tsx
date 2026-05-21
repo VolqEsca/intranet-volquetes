@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Copy, Calendar, AlertCircle, Loader2, Settings } from 'lucide-react';
+import { Plus, Pencil, Trash2, Copy, Calendar, AlertCircle, Loader2, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
@@ -383,16 +383,18 @@ const HolidaysConfigModal: React.FC<HolidaysConfigModalProps> = ({
                         disabled={isSubmitting}
                         title="Editar"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Pencil size={16} />
                       </Button>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleDelete(holiday.id)}
                         disabled={isSubmitting}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                        className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
                         title="Eliminar"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
                   </div>
                 ))}
