@@ -6,6 +6,7 @@ export interface DropdownAction {
   icon: ReactNode;
   onClick: () => void;
   labelStyle?: CSSProperties;
+  rowClassName?: string;
   dividerBefore?: boolean;
 }
 
@@ -65,7 +66,7 @@ export function PortalDropdownMenu({ anchorEl, onClose, actions, menuHeight = 28
             <button
               type="button"
               onClick={action.onClick}
-              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+              className={`flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 transition-colors text-left ${action.rowClassName ?? 'hover:bg-gray-50'}`}
             >
               {action.icon}
               <span style={action.labelStyle}>{action.label}</span>

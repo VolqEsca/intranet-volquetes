@@ -1,6 +1,6 @@
 // src/pages/Orders/OrdersPage.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, Download, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle, Wrench } from 'lucide-react';
+import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, FileText, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle, Wrench } from 'lucide-react';
 import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
@@ -568,10 +568,10 @@ export const OrdersPage: React.FC = () => {
         if (statusActions.length > 0) statusActions[0].dividerBefore = true;
         const actions: DropdownAction[] = [
           { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4 text-gray-400" />, onClick: () => { handleViewDetails(order); close(); } },
-          { label: 'Imprimir PDF',     icon: <Download className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
+          { label: 'Imprimir PDF',     icon: <FileText className="w-4 h-4 text-gray-400" />, onClick: () => { handleDownloadPDF(order); close(); } },
           ...statusActions,
           { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4 text-gray-400" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
-          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4 text-[#5487c0]" />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#5487c0' }, dividerBefore: true },
+          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4 text-[#dc2626]" />, onClick: () => { handleDeleteOrder(order); close(); }, labelStyle: { color: '#dc2626' }, rowClassName: 'hover:bg-[#dc2626]/10', dividerBefore: true },
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
       })()}
