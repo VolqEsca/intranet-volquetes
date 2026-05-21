@@ -1,20 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos adicionales globales si fueran necesarios */
 body {
-  background-color: #f3f4f6; /* bg-gray-100 */
-  color: #111827; /* text-gray-900 */
-  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1), 
-              background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827; /* dark:bg-gray-900 */
-    color: #f3f4f6; /* dark:text-gray-100 */
-  }
+  background-color: #f8fafc;
+  color: #111827;
 }
 
 /* Animaciones para los diálogos */
