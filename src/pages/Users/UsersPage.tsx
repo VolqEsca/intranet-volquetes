@@ -307,48 +307,44 @@ export const UsersPage = () => {
 
                     {/* Acciones */}
                     <div className="col-span-12 lg:col-span-1">
-                      <div className="flex gap-2 lg:justify-end">
+                      <div className="flex gap-1 lg:justify-end">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => handleEditUser(user)}
-                          className="flex items-center gap-1"
                           title="Editar usuario"
+                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
                         >
                           <Pencil size={16} />
-                          <span className="lg:hidden">Editar</span>
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
                           onClick={() => handleChangePassword(user)}
-                          className="flex items-center gap-1"
                           title="Cambiar contraseña"
+                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
                         >
                           <Key size={16} />
-                          <span className="lg:hidden">Contraseña</span>
                         </Button>
                         {user.id !== currentUser?.id ? (
                           <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="flex items-center gap-1"
-                          title="Eliminar usuario"
-                        >
-                          <Trash2 size={16} />
-                          <span className="lg:hidden">Eliminar</span>
-                        </Button>
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteUser(user.id)}
+                            title="Eliminar usuario"
+                            className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
                         ) : (
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             disabled
-                            className="flex items-center gap-1 text-gray-400 cursor-not-allowed"
                             title="No puedes eliminarte a ti mismo"
+                            className="text-gray-400 opacity-40 cursor-not-allowed"
                           >
                             <Trash2 size={16} />
-                            <span className="lg:hidden">Eliminar</span>
                           </Button>
                         )}
                       </div>
