@@ -268,7 +268,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
             onClick={() => setActiveTab('list')}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'list'
-                ? 'text-primary-dark border-b-2 border-primary-dark'
+                ? 'text-[#1162a6] border-b-2 border-[#1162a6]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -278,7 +278,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
             onClick={() => setActiveTab('import')}
             className={`px-6 py-3 font-medium transition-colors ${
               activeTab === 'import'
-                ? 'text-primary-dark border-b-2 border-primary-dark'
+                ? 'text-[#1162a6] border-b-2 border-[#1162a6]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -300,7 +300,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                       placeholder="Buscar por nombre, CIF/NIF o teléfono..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
                     />
                   </div>
                   <Button
@@ -438,7 +438,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                   className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-                    dragActive ? 'border-primary-dark bg-[#a2bade]/20' : 'border-gray-300 hover:border-primary-dark'
+                    dragActive ? 'border-[#1162a6] bg-[#a2bade]/20' : 'border-gray-300 hover:border-[#1162a6]'
                   } ${importing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <input
@@ -450,14 +450,14 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                     disabled={importing}
                   />
                   <label htmlFor="file-upload" className={`cursor-pointer ${importing ? 'cursor-not-allowed' : ''}`}>
-                    <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-primary-dark" />
+                    <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-[#1162a6]" />
                     {importing ? (
                       <div className="flex items-center justify-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary-dark border-t-transparent" />
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#1162a6] border-t-transparent" />
                         <p className="text-lg font-medium text-gray-700">Importando clientes...</p>
                       </div>
                     ) : dragActive ? (
-                      <p className="text-lg font-medium text-primary-dark">Suelta el archivo aquí...</p>
+                      <p className="text-lg font-medium text-[#1162a6]">Suelta el archivo aquí...</p>
                     ) : (
                       <>
                         <p className="text-lg font-medium text-gray-700">
@@ -484,8 +484,8 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                         </p>
                         {importResult.errors.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-sm font-medium text-red-700">Advertencias:</p>
-                            <ul className="text-sm text-red-600 mt-1">
+                            <p className="text-sm font-medium text-[#dc2626]">Advertencias:</p>
+                            <ul className="text-sm text-[#dc2626] mt-1">
                               {importResult.errors.slice(0, 5).map((error, index) => (
                                 <li key={index}>• {error}</li>
                               ))}
@@ -502,9 +502,9 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
 
                 {/* Información */}
                 {!importing && !importResult && (
-                  <div className="mt-6 bg-light-accent bg-opacity-20 rounded-lg p-4">
+                  <div className="mt-6 bg-[#a2bade]/20 rounded-lg p-4">
                     <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-primary-dark mt-0.5 flex-shrink-0" />
+                      <AlertCircle className="w-4 h-4 text-[#1162a6] mt-0.5 flex-shrink-0" />
                       <div className="text-sm">
                         <p className="font-medium text-gray-900 mb-2">Formato del archivo Excel:</p>
                         <div className="space-y-1 text-gray-700">
