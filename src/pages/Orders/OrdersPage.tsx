@@ -359,17 +359,17 @@ export const OrdersPage: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {/* Header de columnas */}
-            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider items-center">
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-2.5 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
               <div className="col-span-1">
                 <input
                   type="checkbox"
                   checked={orders.length > 0 && selectedIds.size === orders.length}
                   ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
                   onChange={toggleSelectAll}
-                  className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                  className="w-5 h-5 rounded border-2 border-gray-300 accent-[#1162a6] cursor-pointer transition-colors"
                 />
               </div>
-              <div className="col-span-2">Orden / Cliente</div>
+              <div className="col-span-2">Nº Orden</div>
               <div className="col-span-3">Vehículo</div>
               <div className="col-span-3">Departamentos</div>
               <div className="col-span-2">Estado</div>
@@ -379,7 +379,7 @@ export const OrdersPage: React.FC = () => {
             {orders.map((order) => (
               <Card
                 key={order.id}
-                className={`p-4 transition-all duration-200 hover:shadow-md ${selectedIds.has(order.id) ? 'ring-1 ring-[#a2bade]' : ''}`}
+                className={`p-4 transition-all duration-200 hover:shadow-md ${selectedIds.has(order.id) ? 'ring-2 ring-[#1162a6]/30 bg-[#1162a6]/5' : ''}`}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
                   {/* Checkbox */}
@@ -388,7 +388,7 @@ export const OrdersPage: React.FC = () => {
                       type="checkbox"
                       checked={selectedIds.has(order.id)}
                       onChange={() => toggleSelect(order.id)}
-                      className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                      className="w-5 h-5 rounded border-2 border-gray-300 accent-[#1162a6] cursor-pointer transition-colors"
                     />
                   </div>
 

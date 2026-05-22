@@ -169,8 +169,8 @@ export const EmployeesPage = () => {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-wrap gap-4 items-center">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
@@ -250,7 +250,7 @@ export const EmployeesPage = () => {
         <>
         <div className="space-y-3">
           {/* Header de columnas */}
-          <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-2.5 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
             <div className="col-span-4">Empleado</div>
             <div className="col-span-3">DNI/NIE</div>
             <div className="col-span-2">Categoría</div>

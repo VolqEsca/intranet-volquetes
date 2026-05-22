@@ -242,7 +242,7 @@ export const UsersPage = () => {
               <div className="col-span-4">Usuario</div>
               <div className="col-span-3">Email</div>
               <div className="col-span-2">Rol</div>
-              <div className="col-span-2">Fecha</div>
+              <div className="col-span-2">Alta</div>
               <div className="col-span-1 text-right">Acciones</div>
             </div>
 
