@@ -50,23 +50,33 @@ if (preg_match('/\/api\/clients\/(\d+)$/', $path, $matches)) {
 
 function listClients() {
     global $pdo;
-    
+
+    $search = $_GET['search'] ?? '';
+
+    if (strlen($search) < 2) {
+        echo json_encode(['success' => true, 'data' => [], 'empty_search' => true]);
+        return;
+    }
+
     try {
-        $query = "SELECT * FROM clients WHERE active = 1 ORDER BY name ASC";
-        $stmt = $pdo->prepare($query);
-        $stmt->execute();
-        
+        $term = '%' . $search . '%';
+        $stmt = $pdo->prepare(
+            "SELECT id, name, cif_nif, contact_person, phone, notes, active
+             FROM clients
+             WHERE active = 1
+               AND (name LIKE ? OR cif_nif LIKE ? OR phone LIKE ?)
+             ORDER BY name ASC
+             LIMIT 50"
+        );
+        $stmt->execute([$term, $term, $term]);
+
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Convertir active a booleano
+
         foreach ($clients as &$client) {
             $client['active'] = (bool)$client['active'];
         }
-        
-        echo json_encode([
-            'success' => true,
-            'data' => $clients
-        ]);
+
+        echo json_encode(['success' => true, 'data' => $clients]);
     } catch (PDOException $e) {
         error_log("Error PDO clients/list: " . $e->getMessage());
         http_response_code(500);

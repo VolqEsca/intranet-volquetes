@@ -35,6 +35,8 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [creatingClient, setCreatingClient] = useState(false);
@@ -49,41 +51,61 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
   } | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
-  // Cargar clientes
-  const loadClients = useCallback(async () => {
+  // Fetch clientes por búsqueda server-side
+  const fetchClients = useCallback(async (search: string) => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/clients/');
+      const response = await apiClient.get(`/clients/?search=${encodeURIComponent(search)}`);
       setClients(response.data.data || []);
     } catch (error) {
       console.error('Error cargando clientes:', error);
+      setClients([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    if (isOpen && activeTab === 'list') {
-      loadClients();
+  // Refresca la búsqueda actual (tras edición o borrado)
+  const refreshCurrentSearch = useCallback(() => {
+    if (debouncedSearch.length >= 2) {
+      fetchClients(debouncedSearch);
     }
-  }, [isOpen, activeTab, loadClients]);
+  }, [debouncedSearch, fetchClients]);
 
-  // Filtrar clientes
-  const filteredClients = clients.filter(client => {
-    const search = searchTerm.toLowerCase();
-    return (
-      client.name.toLowerCase().includes(search) ||
-      client.cif_nif.toLowerCase().includes(search) ||
-      client.phone.includes(search)
-    );
-  });
+  // Reset al abrir el modal
+  useEffect(() => {
+    if (!isOpen) return;
+    setSearchTerm('');
+    setDebouncedSearch('');
+    setClients([]);
+    setHasSearched(false);
+    setSelectedClients([]);
+  }, [isOpen]);
+
+  // Debounce 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Lanzar búsqueda cuando el término debounced cambia
+  useEffect(() => {
+    if (debouncedSearch.length >= 2) {
+      setHasSearched(true);
+      fetchClients(debouncedSearch);
+    } else {
+      setHasSearched(false);
+      setClients([]);
+      setSelectedClients([]);
+    }
+  }, [debouncedSearch, fetchClients]);
 
   // Manejar selección
   const handleSelectAll = () => {
-    if (selectedClients.length === filteredClients.length) {
+    if (selectedClients.length === clients.length) {
       setSelectedClients([]);
     } else {
-      setSelectedClients(filteredClients.map(c => c.id));
+      setSelectedClients(clients.map(c => c.id));
     }
   };
 
@@ -130,7 +152,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
     try {
       setLoading(true);
       await apiClient.post('/clients/delete-bulk', { ids: selectedClients });
-      await loadClients();
+      refreshCurrentSearch();
       setSelectedClients([]);
       await dialog.success(`${selectedClients.length} cliente${selectedClients.length !== 1 ? 's' : ''} eliminado${selectedClients.length !== 1 ? 's' : ''} correctamente`);
     } catch (error) {
@@ -157,7 +179,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
     try {
       setLoading(true);
       await apiClient.delete(`/clients/${id}`);
-      await loadClients();
+      refreshCurrentSearch();
       await dialog.success('Cliente eliminado correctamente');
     } catch (error) {
       console.error('Error eliminando cliente:', error);
@@ -234,7 +256,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
         
         // Recargar lista de clientes si se importó algo
         if (response.data.imported > 0 || response.data.updated > 0) {
-          await loadClients();
+          refreshCurrentSearch();
           // Cambiar a la pestaña de listado después de 2 segundos
           setTimeout(() => {
             setActiveTab('list');
@@ -322,9 +344,11 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                     </Button>
                   )}
                 </div>
-                <div className="text-sm text-gray-600">
-                  {filteredClients.length} cliente{filteredClients.length !== 1 ? 's' : ''}
-                </div>
+                {hasSearched && (
+                  <div className="text-sm text-gray-600">
+                    {clients.length} cliente{clients.length !== 1 ? 's' : ''}
+                  </div>
+                )}
               </div>
 
               {/* Tabla */}
@@ -335,8 +359,9 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                       <th className="px-4 py-3 text-left">
                         <input
                           type="checkbox"
-                          checked={selectedClients.length === filteredClients.length && filteredClients.length > 0}
+                          checked={selectedClients.length === clients.length && clients.length > 0}
                           onChange={handleSelectAll}
+                          disabled={!hasSearched || clients.length === 0}
                           className="rounded"
                         />
                       </th>
@@ -355,14 +380,21 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                           Cargando clientes...
                         </td>
                       </tr>
-                    ) : filteredClients.length === 0 ? (
+                    ) : !hasSearched ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-12 text-center">
+                          <Search className="w-8 h-8 text-gray-300 mx-auto mb-3" />
+                          <p className="text-sm text-gray-500">Busca un cliente por nombre, CIF/NIF o teléfono</p>
+                        </td>
+                      </tr>
+                    ) : clients.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                          No se encontraron clientes
+                          No se encontraron clientes para "{debouncedSearch}"
                         </td>
                       </tr>
                     ) : (
-                      filteredClients.map((client) => (
+                      clients.map((client) => (
                         <tr key={client.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <input
@@ -537,7 +569,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
             setCreatingClient(false);
           }}
           onSave={() => {
-            loadClients();
+            refreshCurrentSearch();
             setEditingClient(null);
             setCreatingClient(false);
             if (creatingClient && onClientCreated) {
