@@ -359,18 +359,18 @@ export const OrdersPage: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {/* Header de columnas */}
-            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-2.5 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center border-b border-[#e2e8f0]">
               <div className="col-span-1">
                 <input
                   type="checkbox"
                   checked={orders.length > 0 && selectedIds.size === orders.length}
                   ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
                   onChange={toggleSelectAll}
-                  className="w-5 h-5 rounded border-2 border-gray-300 accent-[#1162a6] cursor-pointer transition-colors"
+                  className="w-4 h-4 rounded border-gray-300 accent-[#5487c0] cursor-pointer"
                 />
               </div>
-              <div className="col-span-2">Nº Orden</div>
-              <div className="col-span-3">Vehículo</div>
+              <div className="col-span-3">Nº Orden</div>
+              <div className="col-span-2">Vehículo</div>
               <div className="col-span-3">Departamentos</div>
               <div className="col-span-2">Estado</div>
               <div className="col-span-1 text-right">Acciones</div>
@@ -388,12 +388,12 @@ export const OrdersPage: React.FC = () => {
                       type="checkbox"
                       checked={selectedIds.has(order.id)}
                       onChange={() => toggleSelect(order.id)}
-                      className="w-5 h-5 rounded border-2 border-gray-300 accent-[#1162a6] cursor-pointer transition-colors"
+                      className="w-4 h-4 rounded border-gray-300 accent-[#5487c0] cursor-pointer"
                     />
                   </div>
 
                   {/* Nº Orden + Cliente */}
-                  <div className="col-span-12 lg:col-span-2">
+                  <div className="col-span-12 lg:col-span-3">
                     <h3 className="font-semibold text-gray-900 text-sm">{order.order_number}</h3>
                     <p className="text-sm text-gray-500 truncate" title={order.client_name}>
                       {truncateText(order.client_name, 30)}
@@ -401,7 +401,7 @@ export const OrdersPage: React.FC = () => {
                   </div>
 
                   {/* Vehículo */}
-                  <div className="col-span-12 lg:col-span-3">
+                  <div className="col-span-12 lg:col-span-2">
                     <div className="text-sm text-gray-900">{order.unit_type_name}</div>
                     <div className="text-xs text-gray-500">{order.brand} {order.model} - {order.license_plate}</div>
                   </div>

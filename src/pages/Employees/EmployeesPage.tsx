@@ -177,7 +177,7 @@ export const EmployeesPage = () => {
             placeholder="Buscar por nombre, DNI o email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
           />
         </div>
 
@@ -250,7 +250,7 @@ export const EmployeesPage = () => {
         <>
         <div className="space-y-3">
           {/* Header de columnas */}
-          <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-2.5 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
+          <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center border-b border-[#e2e8f0]">
             <div className="col-span-4">Empleado</div>
             <div className="col-span-3">DNI/NIE</div>
             <div className="col-span-2">Categoría</div>
