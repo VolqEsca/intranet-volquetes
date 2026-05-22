@@ -10,6 +10,7 @@ import { ImportEmployeesModal } from './components/ImportEmployeesModal';
 import { GenerateDocumentsModal } from './components/GenerateDocumentsModal';
 import AlertDialog from '../../components/ui/AlertDialog';
 import { Plus, Upload, Pencil, Trash2, Users, Search, FileText } from 'lucide-react';
+import { TableActionButton } from '../../components/ui/TableActionButton';
 import { apiErrorMessage } from '../../utils/error';
 import { useAuth } from '../../hooks/useAuth';
 import { dialog } from '../../services/dialog.service';
@@ -312,36 +313,18 @@ export const EmployeesPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex gap-1">
-                        <Button
-                          onClick={() => handleEditEmployee(employee)}
-                          variant="ghost"
-                          size="icon"
-                          title="Editar empleado"
-                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
-                        >
+                        <TableActionButton onClick={() => handleEditEmployee(employee)} title="Editar empleado">
                           <Pencil size={16} />
-                        </Button>
+                        </TableActionButton>
 
-                        <Button
-                          onClick={() => handleGenerateDocuments(employee)}
-                          variant="ghost"
-                          size="icon"
-                          title="Generar documentos de incorporación"
-                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
-                        >
+                        <TableActionButton onClick={() => handleGenerateDocuments(employee)} title="Generar documentos de incorporación">
                           <FileText size={16} />
-                        </Button>
+                        </TableActionButton>
 
                         {user?.rol === 'admin' && (
-                          <Button
-                            onClick={() => handleDeleteClick(employee)}
-                            variant="ghost"
-                            size="icon"
-                            title="Desactivar empleado"
-                            className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
-                          >
+                          <TableActionButton variant="danger" onClick={() => handleDeleteClick(employee)} title="Desactivar empleado">
                             <Trash2 size={16} />
-                          </Button>
+                          </TableActionButton>
                         )}
                       </div>
                     </td>

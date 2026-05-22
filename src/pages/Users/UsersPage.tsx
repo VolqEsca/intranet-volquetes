@@ -18,6 +18,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { apiClient } from "../../api";
 import { UserModal } from "./components/UserModal";
+import { TableActionButton } from "../../components/ui/TableActionButton";
 import { PasswordModal } from "./components/PasswordModal";
 import { getRoleConfig } from "../../config/roles";
 import { dialog } from "../../services/dialog.service";
@@ -308,44 +309,20 @@ export const UsersPage = () => {
                     {/* Acciones */}
                     <div className="col-span-12 lg:col-span-1">
                       <div className="flex gap-1 lg:justify-end">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditUser(user)}
-                          title="Editar usuario"
-                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
-                        >
+                        <TableActionButton onClick={() => handleEditUser(user)} title="Editar usuario">
                           <Pencil size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleChangePassword(user)}
-                          title="Cambiar contraseña"
-                          className="text-gray-400 hover:text-[#1162a6] hover:bg-[#a2bade]/10"
-                        >
+                        </TableActionButton>
+                        <TableActionButton onClick={() => handleChangePassword(user)} title="Cambiar contraseña">
                           <Key size={16} />
-                        </Button>
+                        </TableActionButton>
                         {user.id !== currentUser?.id ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteUser(user.id)}
-                            title="Eliminar usuario"
-                            className="text-gray-400 hover:text-[#dc2626] hover:bg-[#dc2626]/10"
-                          >
+                          <TableActionButton variant="danger" onClick={() => handleDeleteUser(user.id)} title="Eliminar usuario">
                             <Trash2 size={16} />
-                          </Button>
+                          </TableActionButton>
                         ) : (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled
-                            title="No puedes eliminarte a ti mismo"
-                            className="text-gray-400 opacity-40 cursor-not-allowed"
-                          >
+                          <TableActionButton variant="danger" onClick={() => {}} title="No puedes eliminarte a ti mismo" disabled>
                             <Trash2 size={16} />
-                          </Button>
+                          </TableActionButton>
                         )}
                       </div>
                     </div>
