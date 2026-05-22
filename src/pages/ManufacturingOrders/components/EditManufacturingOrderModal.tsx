@@ -189,7 +189,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
   // ✅ LOADING STATE ELEGANTE
   if (loadingData) {
     return (
-      <div className="flex flex-col h-[calc(100vh-10rem)]">
+      <div className="flex flex-col max-h-[90vh]">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-dark mx-auto mb-4"></div>
@@ -426,7 +426,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
       </div>
 
       {/* ✅ FOOTER IDÉNTICO AL MODAL DE REPARACIÓN */}
-      <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-end gap-3">
+      <div className="border-t border-[#e2e8f0] px-6 py-4 flex items-center justify-end gap-3">
         <Button
           type="button"
           variant="subtle"

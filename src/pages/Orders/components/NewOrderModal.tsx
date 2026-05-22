@@ -635,7 +635,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="max-w-5xl">
-      <div className="flex flex-col h-[calc(100vh-10rem)]">
+      <div className="flex flex-col max-h-[90vh]">
         {/* Header con barra de progreso */}
         <div className="bg-white px-6 py-4 border-b">
           <div className="flex items-center justify-between mb-4">
@@ -1052,7 +1052,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
         </div>
 
         {/* Footer con navegación mejorada */}
-        <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-between">
+        <div className="border-t border-[#e2e8f0] px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {activeTab > 0 && (
               <Button

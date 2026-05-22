@@ -260,8 +260,8 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="max-w-6xl" title="Gestión de Clientes">
-      <div className="flex flex-col h-[80vh]">
+    <Modal isOpen={isOpen} onClose={onClose} size="max-w-5xl" title="Gestión de Clientes">
+      <div className="flex flex-col max-h-[90vh]">
         {/* Tabs */}
         <div className="flex border-b">
           <button

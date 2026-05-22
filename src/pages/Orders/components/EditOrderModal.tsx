@@ -234,7 +234,7 @@ const orderData = {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="max-w-5xl" title={`Editar Orden #${initialOrder?.order_number}`}>
-      <div className="flex flex-col h-[calc(100vh-10rem)]">
+      <div className="flex flex-col max-h-[90vh]">
         {/* Contenido - IDÉNTICO a NewOrderModal pero sin tabs */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
@@ -502,7 +502,7 @@ const orderData = {
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-end gap-3">
+        <div className="border-t border-[#e2e8f0] px-6 py-4 flex items-center justify-end gap-3">
           <Button
             type="button"
             variant="subtle"
