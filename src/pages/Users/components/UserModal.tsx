@@ -299,7 +299,7 @@ export const UserModal = ({
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Mínimo 6 caracteres</p>
+                  <p className="mt-1 text-xs text-gray-400">Mínimo 6 caracteres</p>
                 </div>
               )}
             </div>

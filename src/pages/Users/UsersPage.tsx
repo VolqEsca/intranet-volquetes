@@ -238,7 +238,7 @@ export const UsersPage = () => {
         ) : (
           <div className="space-y-3">
             {/* Encabezado de la lista */}
-            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <div className="col-span-4">Usuario</div>
               <div className="col-span-3">Email</div>
               <div className="col-span-2">Rol</div>
@@ -264,7 +264,7 @@ export const UsersPage = () => {
                           {user.username.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="text-sm font-semibold text-gray-900">
                             {user.username}
                           </h3>
                           {user.nombre && (

@@ -395,7 +395,7 @@ export const OrdersPage: React.FC = () => {
                   {/* Nº Orden + Cliente */}
                   <div className="col-span-12 lg:col-span-3">
                     <h3 className="font-semibold text-gray-900 text-sm">{order.order_number}</h3>
-                    <p className="text-sm text-gray-500 truncate" title={order.client_name}>
+                    <p className="text-sm text-gray-600 truncate" title={order.client_name}>
                       {truncateText(order.client_name, 30)}
                     </p>
                   </div>
@@ -403,7 +403,7 @@ export const OrdersPage: React.FC = () => {
                   {/* Vehículo */}
                   <div className="col-span-12 lg:col-span-2">
                     <div className="text-sm text-gray-900">{order.unit_type_name}</div>
-                    <div className="text-xs text-gray-500">{order.brand} {order.model} - {order.license_plate}</div>
+                    <div className="text-xs text-gray-400">{order.brand} {order.model} - {order.license_plate}</div>
                   </div>
 
                   {/* Departamentos */}

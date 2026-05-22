@@ -134,8 +134,8 @@ export const ChangePasswordPage = () => {
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Cambiar Contraseña</h1>
-        <p className="mt-2 text-gray-600">Actualiza tu contraseña de acceso</p>
+        <h1 className="text-2xl font-bold text-gray-900">Cambiar Contraseña</h1>
+        <p className="mt-2 text-sm text-gray-500">Actualiza tu contraseña de acceso</p>
       </div>
 
       <Card className="p-8">

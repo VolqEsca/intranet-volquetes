@@ -43,7 +43,7 @@ export default function ClientsPage() {
     <>
       <Card>
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Gestión de Clientes</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Gestión de Clientes</h1>
           <div className="space-x-2">
             <Button onClick={() => setIsNewClientModalOpen(true)}>Añadir Cliente</Button>
             <Button onClick={() => setIsImportModalOpen(true)} variant="secondary">Importar desde Excel</Button>
@@ -53,20 +53,20 @@ export default function ClientsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b dark:border-gray-700">
-                <th className="py-2">Nombre</th>
-                <th className="py-2">CIF/NIF</th>
-                <th className="py-2">Persona de Contacto</th>
-                <th className="py-2">Teléfono</th>
+              <tr className="border-b border-[#e2e8f0]">
+                <th className="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th className="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">CIF/NIF</th>
+                <th className="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Persona de Contacto</th>
+                <th className="py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Teléfono</th>
               </tr>
             </thead>
             <tbody>
               {clients.map((client) => (
-                <tr key={client.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="py-2">{client.nombre}</td>
-                  <td className="py-2">{client.cif_nif}</td>
-                  <td className="py-2">{client.contact_person}</td>
-                  <td className="py-2">{client.contact_phone}</td>
+                <tr key={client.id} className="border-b border-[#e2e8f0] hover:bg-gray-50">
+                  <td className="py-2 text-sm font-semibold text-gray-900">{client.nombre}</td>
+                  <td className="py-2 text-sm text-gray-600">{client.cif_nif}</td>
+                  <td className="py-2 text-sm text-gray-600">{client.contact_person}</td>
+                  <td className="py-2 text-sm text-gray-600">{client.contact_phone}</td>
                 </tr>
               ))}
             </tbody>

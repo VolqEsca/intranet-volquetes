@@ -401,7 +401,7 @@ export const VacationsPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-xl font-bold text-[#1162a6]">{metrics.employeesWithAbsences}</div>
-                <div className="text-xs text-gray-500">Con ausencias este mes</div>
+                <div className="text-xs text-gray-400">Con ausencias este mes</div>
               </div>
             </div>
 
@@ -411,7 +411,7 @@ export const VacationsPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-xl font-bold text-[#5487c0]">{metrics.totalVacationDays}</div>
-                <div className="text-xs text-gray-500">Días de vacaciones</div>
+                <div className="text-xs text-gray-400">Días de vacaciones</div>
               </div>
             </div>
 
@@ -421,7 +421,7 @@ export const VacationsPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-xl font-bold text-[#dc2626]">{metrics.employeesWithNegativeBalance}</div>
-                <div className="text-xs text-gray-500">Con saldo negativo</div>
+                <div className="text-xs text-gray-400">Con saldo negativo</div>
               </div>
             </div>
 
@@ -431,7 +431,7 @@ export const VacationsPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-xl font-bold text-[#5487c0]">{metrics.employeesLowBalance}</div>
-                <div className="text-xs text-gray-500">Saldo bajo (≤5 días)</div>
+                <div className="text-xs text-gray-400">Saldo bajo (≤5 días)</div>
               </div>
             </div>
           </div>

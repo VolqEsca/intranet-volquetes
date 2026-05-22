@@ -271,7 +271,7 @@ export const EmployeesPage = () => {
                       {employee.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{employee.full_name}</h3>
+                      <h3 className="text-sm font-semibold text-gray-900">{employee.full_name}</h3>
                       {employee.employee_code && (
                         <p className="text-sm text-gray-600">Reloj: {employee.employee_code}</p>
                       )}
