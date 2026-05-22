@@ -1,7 +1,7 @@
 // src/pages/Orders/components/EditOrderModal.tsx
 import React, { useState, useEffect } from 'react';
-import { 
-  X, Save, User, Building2, Wrench, Calendar, AlertTriangle, AlertCircle,
+import {
+  Save, User, Building2, Wrench, Calendar, AlertTriangle, AlertCircle,
   Zap, Paintbrush, Droplets, Check, FileText, Printer
 } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal';
@@ -233,29 +233,8 @@ const orderData = {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="max-w-5xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="max-w-5xl" title={`Editar Orden #${initialOrder?.order_number}`}>
       <div className="flex flex-col h-[calc(100vh-10rem)]">
-        {/* Header */}
-        <div className="bg-white px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Editar Orden #{initialOrder?.order_number}
-              </h2>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Modifique los datos de la orden de trabajo
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1.5 hover:bg-gray-100"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
         {/* Contenido - IDÉNTICO a NewOrderModal pero sin tabs */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">

@@ -1,6 +1,6 @@
 // src/pages/Orders/components/ClientsManagementModal.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Upload, Search, Trash2, Pencil, Download, Users, FileSpreadsheet, AlertCircle, CheckCircle, Plus } from 'lucide-react';
+import { Upload, Search, Trash2, Pencil, Download, FileSpreadsheet, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
@@ -260,22 +260,8 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="max-w-6xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="max-w-6xl" title="Gestión de Clientes">
       <div className="flex flex-col h-[80vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center gap-3">
-            <Users className="w-6 h-6 text-primary-dark" />
-            <h2 className="text-xl font-semibold">Gestión de Clientes</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
         {/* Tabs */}
         <div className="flex border-b">
           <button
