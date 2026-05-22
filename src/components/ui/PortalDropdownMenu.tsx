@@ -65,7 +65,7 @@ export function PortalDropdownMenu({ anchorEl, onClose, actions, menuHeight = 28
             <button
               type="button"
               onClick={action.onClick}
-              className={`group flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-600 transition-colors text-left ${action.rowClassName ?? 'hover:bg-[#a2bade]/10 hover:text-[#1162a6]'}`}
+              className={`group flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-600 transition-colors text-left hover:bg-[#a2bade]/10 ${action.rowClassName ?? 'hover:text-[#1162a6]'}`}
             >
               <span className="text-gray-400 group-hover:text-inherit transition-colors flex-shrink-0">
                 {action.icon}

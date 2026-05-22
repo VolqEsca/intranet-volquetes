@@ -42,6 +42,11 @@ Antes de escribir código que dependa de valores de la columna `rol` en `usuario
 2. Verificar que el código nuevo maneja TODOS los valores existentes — no asumir que solo existe 'admin'
 3. Si hay valores legacy (ej: 'Administrador'), normalizar en login.php Y aceptar ambos en el código nuevo
 
+## Regla obligatoria — Build tras cada commit
+
+Todo commit en rama dev debe ir seguido de `npm run build` antes de pedir verificación visual a Miguel.
+Protocolo: commit → npm run build → confirmar build exitoso → pedir screenshot.
+
 ## Antes de cada tarea
 
 1. Leer el plan en @docs/plan-activo.md si existe

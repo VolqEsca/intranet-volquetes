@@ -544,7 +544,7 @@ export function ManufacturingOrdersPage() {
           { label: 'Ver/Editar orden', icon: <Eye className="w-4 h-4" />, onClick: () => { handleViewDetails(order); close(); } },
           { label: 'Imprimir PDF',     icon: <FileText className="w-4 h-4" />, onClick: () => { handleDownloadPDF(order); close(); } },
           ...statusActions,
-          { label: 'Eliminar orden', icon: <Trash2 className="w-4 h-4" />, onClick: () => { handleDeleteOrder(order); close(); }, rowClassName: 'hover:bg-[#dc2626]/10 hover:text-[#dc2626]', dividerBefore: true },
+          { label: 'Eliminar orden', icon: <Trash2 className="w-4 h-4" />, onClick: () => { handleDeleteOrder(order); close(); }, rowClassName: 'hover:text-[#dc2626]', dividerBefore: true },
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} menuHeight={240} />;
       })()}
