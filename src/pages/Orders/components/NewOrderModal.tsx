@@ -500,8 +500,6 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
         tasks: tasksArray
       };
       
-      console.log('📤 Enviando orden:', orderData); // Debug
-      
       const response = await apiClient.post('/orders/', orderData);
       
       await dialog.success(

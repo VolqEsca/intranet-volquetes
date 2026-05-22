@@ -40,7 +40,6 @@ export const BalancesReportModal: React.FC<Props> = ({
         const response = await vacationsAPI.getYearlyAbsences(year);
         const absencesData = response.data.absences || [];
         
-        console.log('🔍 DEBUG Modal - Ausencias anuales cargadas:', absencesData.length);
         setYearlyAbsences(absencesData);
       } catch (error: unknown) {
         console.error('❌ Error cargando ausencias anuales:', error);

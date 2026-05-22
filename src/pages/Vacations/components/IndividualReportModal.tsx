@@ -37,7 +37,6 @@ export const IndividualReportModal: React.FC<Props> = ({
         // Filtrar solo ausencias de este empleado
         const employeeAbsences = absencesData.filter(abs => abs.employee_id === employee.id);
         
-        console.log(`🔍 DEBUG Individual - Ausencias de ${employee.full_name}:`, employeeAbsences.length);
         setYearlyAbsences(employeeAbsences);
       } catch (error: unknown) {
         console.error('❌ Error cargando ausencias individuales:', error);

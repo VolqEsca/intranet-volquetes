@@ -129,8 +129,6 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
         priority: formData.priority
       };
       
-      console.log('📤 Enviando orden de fabricación:', orderData);
-      
       await manufacturingAPI.create(orderData);
       
       await dialog.success(

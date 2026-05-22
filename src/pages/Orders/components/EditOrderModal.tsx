@@ -211,8 +211,6 @@ const orderData = {
   client_phone: formData.client_phone || ''
 };
 
-      console.log('📤 Actualizando orden:', orderData);
-
       const response = await apiClient.put(`/orders/update.php?id=${initialOrder.id}`, orderData);
 
       if (response.data.success) {

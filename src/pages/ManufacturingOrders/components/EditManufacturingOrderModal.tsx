@@ -87,11 +87,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
   const loadOrderData = async () => {
     try {
       setLoadingData(true);
-      console.log('🔍 Cargando datos para orden ID:', orderId);
-      
       const response = await manufacturingAPI.details(orderId);
-      console.log('📡 Respuesta completa de API:', response.data);
-      
       // ✅ ADAPTACIÓN: El backend devuelve datos directamente (sin wrapper success/data)
       const orderData = response.data?.data || response.data;
       
@@ -119,12 +115,6 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
         observations: observations,
         priority: orderData.priority || 'medium',
         status: orderData.status || 'pending'
-      });
-      
-      console.log('✅ Datos cargados correctamente:', {
-        client_name: orderData.client_name,
-        order_date: convertDateFormat(orderData.order_date),
-        priority: orderData.priority
       });
       
     } catch (error: unknown) {
@@ -176,8 +166,6 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
         priority: formData.priority,
         status: formData.status
       };
-      
-      console.log('📤 Actualizando orden de fabricación:', orderData);
       
       await manufacturingAPI.update(orderId, orderData);
       

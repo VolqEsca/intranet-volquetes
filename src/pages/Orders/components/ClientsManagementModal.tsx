@@ -195,8 +195,6 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
   };
 
   const handleFile = async (file: File) => {
-    console.log('Procesando archivo:', file.name);
-    
     // Verificar tipo de archivo
     const validTypes = [
       'application/vnd.ms-excel',
@@ -217,14 +215,11 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
     formData.append('file', file);
 
     try {
-      console.log('Enviando archivo al servidor...');
       const response = await apiClient.post('/clients/import.php', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
-      console.log('Respuesta del servidor:', response.data);
       
       if (response.data.success) {
         setImportResult({
