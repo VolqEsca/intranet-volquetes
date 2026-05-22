@@ -200,8 +200,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => 'Error de base de datos al crear la orden',
-        'details' => $e->getMessage()
+        'error' => 'Error de base de datos al crear la orden'
     ]);
 
 } catch (Exception $e) {
@@ -212,8 +211,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => 'Error interno al crear la orden',
-        'details' => $e->getMessage()
+        'error' => 'Error interno al crear la orden'
     ]);
 }
 ?>

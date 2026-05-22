@@ -62,7 +62,7 @@ try {
                 DATE_FORMAT(birth_date, '%Y-%m-%d') as birth_date,
                 job_category, gender, contract_type,
                 DATE_FORMAT(contract_end_date, '%Y-%m-%d') as contract_end_date,
-                iban, status, created_at, updated_at
+                status, created_at, updated_at
             FROM employees
             WHERE {$whereClause}
             ORDER BY full_name ASC
@@ -74,18 +74,6 @@ try {
 
     $employees = [];
     foreach ($rows as $row) {
-        // Formatear IBAN: ESXX XXXX XXXX XXXX XXXX XXXX
-        if (!empty($row['iban'])) {
-            $iban = strtoupper(str_replace(' ', '', $row['iban']));
-            if (strlen($iban) === 24 && substr($iban, 0, 2) === 'ES') {
-                $row['iban'] = substr($iban, 0, 4) . ' ' .
-                               substr($iban, 4, 4) . ' ' .
-                               substr($iban, 8, 4) . ' ' .
-                               substr($iban, 12, 4) . ' ' .
-                               substr($iban, 16, 4) . ' ' .
-                               substr($iban, 20, 4);
-            }
-        }
         $employees[] = $row;
     }
 

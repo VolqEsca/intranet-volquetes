@@ -68,11 +68,9 @@ function listClients() {
             'data' => $clients
         ]);
     } catch (PDOException $e) {
+        error_log("Error PDO clients/list: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al obtener clientes: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 
@@ -100,11 +98,9 @@ function getClient($id) {
             'data' => $client
         ]);
     } catch (PDOException $e) {
+        error_log("Error PDO clients/get: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al obtener cliente: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 
@@ -152,11 +148,9 @@ function createClient() {
             'id' => $pdo->lastInsertId()
         ]);
     } catch (PDOException $e) {
+        error_log("Error PDO clients/create: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al crear cliente: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 
@@ -223,11 +217,9 @@ function updateClient($id) {
             'message' => 'Cliente actualizado correctamente'
         ]);
     } catch (PDOException $e) {
+        error_log("Error PDO clients/update: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al actualizar cliente: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 
@@ -266,11 +258,9 @@ function deleteClient($id) {
             'message' => 'Cliente eliminado correctamente'
         ]);
     } catch (PDOException $e) {
+        error_log("Error PDO clients/delete: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al eliminar cliente: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 
@@ -306,11 +296,9 @@ function deleteBulkClients() {
         ]);
     } catch (PDOException $e) {
         $pdo->rollBack();
+        error_log("Error PDO clients/delete-bulk: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error al eliminar clientes: ' . $e->getMessage()
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Error de base de datos']);
     }
 }
 ?>

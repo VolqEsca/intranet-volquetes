@@ -235,11 +235,11 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     
 } catch (PDOException $e) {
+    error_log("Error PDO dashboard/stats: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Error al obtener estadísticas del dashboard',
-        'error' => $e->getMessage()
+        'message' => 'Error al obtener estadísticas del dashboard'
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>
