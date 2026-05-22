@@ -134,11 +134,11 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
         </div>
 
         {/* Información de fecha */}
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-          <p className="text-sm text-blue-800">
+        <div className="p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-md">
+          <p className="text-sm text-[#1162a6]">
             <strong>Fecha de alta:</strong> {employee.hire_date ? new Date(employee.hire_date).toLocaleDateString('es-ES') : 'No registrada'}
           </p>
-          <p className="text-xs text-blue-600 mt-1">
+          <p className="text-xs text-[#5487c0] mt-1">
             Los documentos se generarán con esta fecha de incorporación.
           </p>
         </div>

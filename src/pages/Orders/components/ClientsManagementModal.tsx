@@ -452,7 +452,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                   className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-                    dragActive ? 'border-primary-dark bg-blue-50' : 'border-gray-300 hover:border-primary-dark'
+                    dragActive ? 'border-primary-dark bg-[#a2bade]/20' : 'border-gray-300 hover:border-primary-dark'
                   } ${importing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <input
@@ -487,12 +487,12 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
 
                 {/* Resultado de importación */}
                 {importResult && (
-                  <div className="mt-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                  <div className="mt-6 p-4 rounded-lg bg-[#f8fafc] border border-[#e2e8f0]">
                     <div className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-[#1162a6] mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-medium text-green-900">Importación completada</h4>
-                        <p className="text-sm text-green-700 mt-1">
+                        <h4 className="font-medium text-gray-900">Importación completada</h4>
+                        <p className="text-sm text-gray-700 mt-1">
                           {importResult.success} clientes nuevos importados
                           {importResult.updated > 0 && `, ${importResult.updated} actualizados`}
                         </p>

@@ -83,75 +83,75 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
         {!importResult ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Instrucciones Mejoradas con Numeración Visual */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-[#a2bade]/15 border border-[#a2bade] rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <FileSpreadsheet className="text-blue-600 mt-0.5" size={20} />
+                <FileSpreadsheet className="text-[#1162a6] mt-0.5" size={20} />
                 <div className="w-full">
-                  <h4 className="font-medium text-blue-900 mb-2">Formato del archivo Excel (13 columnas)</h4>
-                  <p className="text-sm text-blue-800 mb-3">
+                  <h4 className="font-medium text-[#1162a6] mb-2">Formato del archivo Excel (13 columnas)</h4>
+                  <p className="text-sm text-[#1162a6] mb-3">
                     Seleccione un archivo .xlsx con las columnas en este orden exacto:
                   </p>
-                  
+
                   {/* Lista numerada con indicadores visuales - CORREGIDA A 13 COLUMNAS */}
-                  <div className="text-sm text-blue-700 space-y-1">
+                  <div className="text-sm text-gray-700 space-y-1">
                     <div className="grid grid-cols-1 gap-1">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">1</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">1</span>
                         <span>Nave</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">2</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">2</span>
                         <span>Reloj (opcional)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">3</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">3</span>
                         <span>Nombre y Apellidos</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">4</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">4</span>
                         <span>DNI/NIE</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">5</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">5</span>
                         <span>Nº Seguridad Social (11-12 dígitos, sin espacios)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">6</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">6</span>
                         <span>Antigüedad (fecha alta) → <strong>DD/MM/YYYY</strong></span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">7</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">7</span>
                         <span>Teléfono de contacto</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">8</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">8</span>
                         <span>Correo electrónico</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">9</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">9</span>
                         <span>Fecha de nacimiento → <strong>DD/MM/YYYY</strong></span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">10</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">10</span>
                         <span>Categoría</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">11</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">11</span>
                         <span>Tipo de contrato (Indefinido | Temporal)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">12</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">12</span>
                         <span>Fecha fin (obligatoria si Temporal) → <strong>DD/MM/YYYY</strong></span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-blue-100 text-blue-800 rounded text-center text-xs font-mono flex items-center justify-center">13</span>
+                        <span className="w-5 h-5 bg-[#a2bade]/30 text-[#1162a6] rounded text-center text-xs font-mono flex items-center justify-center">13</span>
                         <span>Nº de cuenta (IBAN)</span>
                       </div>
                     </div>
                   </div>
                   
                   {/* Notas importantes destacadas */}
-                  <div className="mt-4 p-3 bg-blue-100 rounded text-xs text-blue-800">
+                  <div className="mt-4 p-3 bg-[#a2bade]/20 rounded text-xs text-[#1162a6]">
                     <strong>📋 Notas importantes:</strong>
                     <ul className="list-disc list-inside mt-1 space-y-0.5">
                       <li>Fechas en formato español: <strong>DD/MM/YYYY</strong> (ej: 05/06/2006)</li>
@@ -226,7 +226,7 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
           /* Resultado de importación con estadísticas mejoradas */
           <div className="space-y-6">
             <div className="text-center">
-              <CheckCircle className="mx-auto text-green-600 mb-4" size={48} />
+              <CheckCircle className="mx-auto text-[#1162a6] mb-4" size={48} />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Importación Completada
               </h3>
@@ -234,13 +234,13 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
 
             {/* Estadísticas en tres columnas */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-green-700">{importResult.imported}</div>
-                <div className="text-sm text-green-600">Empleados creados</div>
+              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-gray-700">{importResult.imported}</div>
+                <div className="text-sm text-gray-600">Empleados creados</div>
               </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-blue-700">{importResult.updated}</div>
-                <div className="text-sm text-blue-600">Empleados actualizados</div>
+              <div className="bg-[#a2bade]/15 border border-[#a2bade] rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-[#1162a6]">{importResult.updated}</div>
+                <div className="text-sm text-[#5487c0]">Empleados actualizados</div>
               </div>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-gray-700">{importResult.total}</div>
@@ -250,16 +250,16 @@ export const ImportEmployeesModal: React.FC<ImportEmployeesModalProps> = ({
 
             {/* Errores con scroll si los hay */}
             {importResult.errors && importResult.errors.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="bg-[#f8fafc] border border-[#a2bade] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <AlertCircle className="text-yellow-600" size={20} />
-                  <h4 className="font-medium text-yellow-800">
+                  <AlertCircle className="text-[#5487c0]" size={20} />
+                  <h4 className="font-medium text-gray-800">
                     {importResult.errors.length} filas con errores
                   </h4>
                 </div>
                 <div className="max-h-40 overflow-y-auto">
                   {importResult.errors.map((errorItem, index) => (
-                    <div key={index} className="text-sm text-yellow-700 py-1">
+                    <div key={index} className="text-sm text-gray-700 py-1">
                       • {errorItem}
                     </div>
                   ))}
