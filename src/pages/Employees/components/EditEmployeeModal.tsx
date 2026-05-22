@@ -143,7 +143,10 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
 
         {/* Información Básica */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Información Básica</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[0.6875rem] font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Información Básica</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
           
           {/* Nombre */}
           <div className="mb-4">
@@ -267,7 +270,10 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
 
         {/* Información Laboral */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Información Laboral</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[0.6875rem] font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Información Laboral</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
           
           {/* Categoría */}
           <div className="mb-4">
@@ -364,7 +370,10 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
 
         {/* Información Personal y Contacto */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Información Personal y Contacto</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[0.6875rem] font-semibold uppercase tracking-widest text-gray-400 whitespace-nowrap">Información Personal y Contacto</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
           
           {/* Fecha nacimiento */}
           <div className="mb-4">
