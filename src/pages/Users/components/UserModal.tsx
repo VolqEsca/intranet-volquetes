@@ -144,7 +144,7 @@ export const UserModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-b border-[#e2e8f0] bg-gray-50">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#1162a6]/10 rounded-lg">
               <User className="w-6 h-6 text-[#1162a6]" />
@@ -361,7 +361,7 @@ export const UserModal = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
+        <div className="px-6 py-4 bg-gray-50 border-t border-[#e2e8f0] flex gap-3 justify-end">
           <Button type="button" variant="subtle" onClick={onClose} disabled={loading}>
             Cancelar
           </Button>

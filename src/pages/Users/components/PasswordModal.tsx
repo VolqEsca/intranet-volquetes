@@ -102,10 +102,10 @@ export const PasswordModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-lg w-full">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-b border-[#e2e8f0] bg-gray-50">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary-dark/10 rounded-lg">
-              <Lock className="w-6 h-6 text-primary-dark" />
+            <div className="p-2 bg-[#1162a6]/10 rounded-lg">
+              <Lock className="w-6 h-6 text-[#1162a6]" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
@@ -127,7 +127,7 @@ export const PasswordModal = ({
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <div className="flex items-center gap-2 p-4 bg-[#dc2626]/5 border border-[#dc2626]/30 rounded-lg text-[#dc2626]">
               <AlertCircle size={20} />
               <span>{error}</span>
             </div>
@@ -143,7 +143,7 @@ export const PasswordModal = ({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
                 placeholder="••••••••"
               />
               <button
@@ -213,7 +213,7 @@ export const PasswordModal = ({
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
                 placeholder="••••••••"
               />
               <button
