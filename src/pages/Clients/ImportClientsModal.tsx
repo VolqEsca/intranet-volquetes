@@ -10,7 +10,7 @@ interface Props {
   onImportSuccess: () => void;
 }
 
-export default function ImportClientsModal({ isOpen, onClose, onImportSuccess }: Props) {
+export function ImportClientsModal({ isOpen, onClose, onImportSuccess }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

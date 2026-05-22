@@ -568,4 +568,4 @@ const orderData = {
   );
 };
 
-export default EditOrderModal;
+export { EditOrderModal };

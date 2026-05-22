@@ -3,7 +3,7 @@ import { apiClient } from '../../api';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { NewClientModal } from './NewClientModal';
-import ImportClientsModal from './ImportClientsModal';
+import { ImportClientsModal } from './ImportClientsModal';
 
 interface Client {
   id: number;

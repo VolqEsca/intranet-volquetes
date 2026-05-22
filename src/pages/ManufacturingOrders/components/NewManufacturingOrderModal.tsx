@@ -503,4 +503,4 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
   );
 };
 
-export default NewManufacturingOrderModal;
+export { NewManufacturingOrderModal };

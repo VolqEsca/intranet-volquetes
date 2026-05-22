@@ -472,4 +472,4 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
   );
 };
 
-export default EditManufacturingOrderModal;
+export { EditManufacturingOrderModal };

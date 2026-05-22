@@ -5,12 +5,12 @@ import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDr
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { apiClient } from '../../api';
-import NewOrderModal from './components/NewOrderModal';
+import { NewOrderModal } from './components/NewOrderModal';
 import OrderStatusBadge from './components/OrderStatusBadge';
 import DepartmentBadge from './components/DepartmentBadge';
 import { ClientsManagementModal } from './components/ClientsManagementModal';
 import { dialog } from '../../services/dialog.service';
-import EditOrderModal from './components/EditOrderModal';
+import { EditOrderModal } from './components/EditOrderModal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromCamel } from '../../types/pagination';
 import { apiErrorMessage } from '../../utils/error';

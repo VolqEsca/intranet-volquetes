@@ -1112,4 +1112,4 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onOrderC
   );
 };
 
-export default NewOrderModal;
+export { NewOrderModal };

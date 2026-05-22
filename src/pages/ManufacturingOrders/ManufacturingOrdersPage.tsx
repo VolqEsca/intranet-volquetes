@@ -5,8 +5,8 @@ import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDr
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
 import { manufacturingAPI, ManufacturingOrder } from '../../api/manufacturing';
-import NewManufacturingOrderModal from './components/NewManufacturingOrderModal';
-import EditManufacturingOrderModal from './components/EditManufacturingOrderModal';
+import { NewManufacturingOrderModal } from './components/NewManufacturingOrderModal';
+import { EditManufacturingOrderModal } from './components/EditManufacturingOrderModal';
 import ManufacturingOrderStatusBadge from './components/ManufacturingOrderStatusBadge';
 import ManufacturingOrderPriorityBadge from './components/ManufacturingOrderPriorityBadge';
 import { dialog } from '../../services/dialog.service';
