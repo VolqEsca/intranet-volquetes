@@ -1,29 +1,16 @@
 <?php
-// api/cors.php - Sistema CORS Optimizado para VERSO
-// Maneja desarrollo (StackBlitz) y producción de forma segura
+// api/cors.php - Sistema CORS VERSO
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-// ✅ WHITELIST DE ORIGINS SEGUROS
 $allowedOrigins = [
-    'https://intranet.volquetesescalante.com',  // Producción
+    'https://intranet.volquetesescalante.com',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5173',
 ];
 
-// Verificar si el origin está en la whitelist o es un patrón válido
-$isAllowed = false;
-
-if (in_array($origin, $allowedOrigins, true)) {
-    $isAllowed = true;
-} elseif (preg_match('/^https:\/\/intranetvolquetes-[a-z0-9-]+\.local-credentialless\.webcontainer\.io$/', $origin)) {
-    // ✅ PATRÓN ESPECÍFICO PARA TU STACKBLITZ ACTUAL
-    $isAllowed = true;
-} elseif (preg_match('/^https:\/\/[a-zA-Z0-9-]+\.(webcontainer\.io|stackblitz\.io|csb\.app)$/', $origin)) {
-    // ✅ PATRONES ADICIONALES PARA OTROS ENTORNOS DE DESARROLLO
-    $isAllowed = true;
-} elseif (strpos($origin, 'localhost') !== false) {
-    // ✅ DESARROLLO LOCAL
-    $isAllowed = true;
-}
+$isAllowed = in_array($origin, $allowedOrigins, true);
 
 if ($isAllowed && $origin) {
     header("Access-Control-Allow-Origin: $origin");
