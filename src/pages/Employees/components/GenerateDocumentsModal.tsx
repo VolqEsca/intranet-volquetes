@@ -104,46 +104,48 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={`Documentos: ${employee.full_name}`}>
-      <div className="p-6 space-y-4">
-        {error && (
-          <div className="p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700 whitespace-pre-wrap">
-            {error}
+      <div className="flex flex-col max-h-[90vh]">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {error && (
+            <div className="p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700 whitespace-pre-wrap">
+              {error}
+            </div>
+          )}
+
+          <p className="text-gray-600">
+            Selecciona los documentos de incorporación para <strong>{employee.full_name}</strong>:
+          </p>
+
+          <div className="space-y-3 p-4 border border-gray-200 rounded-md bg-gray-50">
+            {documentOptions.map((doc) => (
+              <label key={doc.id} className="flex items-start cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedDocs.includes(doc.id)}
+                  onChange={(e) => handleCheckboxChange(doc.id, e.target.checked)}
+                  className="mt-1 mr-3 h-4 w-4 text-primary-dark rounded focus:ring-primary-dark"
+                  disabled={isGenerating}
+                />
+                <div>
+                  <div className="font-medium text-gray-900">{doc.label}</div>
+                  <div className="text-sm text-gray-500">{doc.description}</div>
+                </div>
+              </label>
+            ))}
           </div>
-        )}
 
-        <p className="text-gray-600">
-          Selecciona los documentos de incorporación para <strong>{employee.full_name}</strong>:
-        </p>
-        
-        <div className="space-y-3 p-4 border border-gray-200 rounded-md bg-gray-50">
-          {documentOptions.map((doc) => (
-            <label key={doc.id} className="flex items-start cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selectedDocs.includes(doc.id)}
-                onChange={(e) => handleCheckboxChange(doc.id, e.target.checked)}
-                className="mt-1 mr-3 h-4 w-4 text-primary-dark rounded focus:ring-primary-dark"
-                disabled={isGenerating}
-              />
-              <div>
-                <div className="font-medium text-gray-900">{doc.label}</div>
-                <div className="text-sm text-gray-500">{doc.description}</div>
-              </div>
-            </label>
-          ))}
+          {/* Información de fecha */}
+          <div className="p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-md">
+            <p className="text-sm text-[#1162a6]">
+              <strong>Fecha de alta:</strong> {employee.hire_date ? new Date(employee.hire_date).toLocaleDateString('es-ES') : 'No registrada'}
+            </p>
+            <p className="text-xs text-[#5487c0] mt-1">
+              Los documentos se generarán con esta fecha de incorporación.
+            </p>
+          </div>
         </div>
 
-        {/* Información de fecha */}
-        <div className="p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-md">
-          <p className="text-sm text-[#1162a6]">
-            <strong>Fecha de alta:</strong> {employee.hire_date ? new Date(employee.hire_date).toLocaleDateString('es-ES') : 'No registrada'}
-          </p>
-          <p className="text-xs text-[#5487c0] mt-1">
-            Los documentos se generarán con esta fecha de incorporación.
-          </p>
-        </div>
-
-        <div className="flex justify-end gap-2 pt-4 border-t border-gray-200 mt-6">
+        <div className="flex-shrink-0 border-t border-[#e2e8f0] px-6 py-4 flex justify-end gap-3">
           <Button
             type="button"
             onClick={handleClose}
