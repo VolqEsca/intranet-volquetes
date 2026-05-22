@@ -516,7 +516,7 @@ export function ManufacturingOrdersPage() {
   >
     <EditManufacturingOrderModal
       orderId={selectedOrderId}
-      onCancel={() => {
+      onClose={() => {
         setShowEditModal(false);
         setSelectedOrderId(null);
       }}

@@ -9,14 +9,14 @@ import { apiErrorMessage } from '../../../utils/error';
 
 interface EditManufacturingOrderModalProps {
   orderId: number;
-  onCancel: () => void;
+  onClose: () => void;
   onSuccess: () => void;
 }
 
-const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = ({ 
-  orderId, 
-  onCancel, 
-  onSuccess 
+const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = ({
+  orderId,
+  onClose,
+  onSuccess
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -215,7 +215,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
           </div>
           <button
             type="button"
-            onClick={onCancel}
+            onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1.5 hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
@@ -430,7 +430,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
         <Button
           type="button"
           variant="subtle"
-          onClick={onCancel}
+          onClick={onClose}
           disabled={loading}
         >
           Cancelar
