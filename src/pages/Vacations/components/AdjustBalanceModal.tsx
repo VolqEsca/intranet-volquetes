@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Plus, Minus, AlertCircle, Calendar, History } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { vacationsAPI, VacationBalance, Employee } from '../../../api/vacations';
 
@@ -41,7 +42,9 @@ export const AdjustBalanceModal: React.FC<Props> = ({
     e.preventDefault();
     
     if (!adjustmentReason.trim() && manualAdjustments !== 0) {
-      alert('⚠️ Por favor indica el motivo del ajuste para trazabilidad');
+      toast.warning('Motivo obligatorio', {
+        description: 'Por favor indica el motivo del ajuste para trazabilidad'
+      });
       return;
     }
 
@@ -57,12 +60,14 @@ export const AdjustBalanceModal: React.FC<Props> = ({
         adjustment_reason: adjustmentReason || `Ajuste saldo - ${new Date().toLocaleDateString('es-ES')}`
       });
       
-      alert(`✅ Saldo actualizado para ${employee.full_name}\nNuevo disponible: ${finalAvailable} días`);
+      toast.success('Saldo actualizado correctamente', {
+        description: `${employee.full_name} — ${finalAvailable} días disponibles`
+      });
       onSuccess();
       onClose();
     } catch (error) {
       console.error(error);
-      alert('❌ Error al actualizar el saldo');
+      toast.error('Error al actualizar el saldo');
     } finally {
       setIsSubmitting(false);
     }
