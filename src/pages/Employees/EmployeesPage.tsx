@@ -247,158 +247,123 @@ export const EmployeesPage = () => {
           </div>
         </Card>
       ) : (
-        <Card className="overflow-hidden rounded-xl border border-[#e2e8f0] shadow-none">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#e2e8f0]">
-              <thead className="bg-[#f8fafc] border-b border-[#e2e8f0]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Empleado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    DNI/NIE
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Categoría
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contrato
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[#e2e8f0]">
-                {employees.map((employee) => (
-                  <tr key={employee.id} className="hover:bg-[#f8fafc] transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-primary-dark text-white flex items-center justify-center text-sm font-medium">
-                            {employee.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {employee.full_name}
-                          </div>
-                          {employee.employee_code && (
-                            <div className="text-sm text-gray-500">
-                              Reloj: {employee.employee_code}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {employee.dni_nie}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {employee.job_category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        employee.contract_type === 'Indefinido'
-                          ? 'bg-[#a2bade]/20 text-[#1162a6]'
-                          : 'bg-[#dc2626]/10 text-[#dc2626]'
-                      }`}>
-                        {employee.contract_type}
-                      </span>
-                      {employee.contract_type === 'Temporal' && employee.contract_end_date && (
-                        <div className="text-xs text-[#dc2626]/70 mt-1">
-                          hasta {formatDate(employee.contract_end_date)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex gap-1">
-                        <TableActionButton onClick={() => handleEditEmployee(employee)} title="Editar empleado">
-                          <Pencil size={16} />
-                        </TableActionButton>
-
-                        <TableActionButton onClick={() => handleGenerateDocuments(employee)} title="Generar documentos de incorporación">
-                          <FileText size={16} />
-                        </TableActionButton>
-
-                        {user?.rol === 'admin' && (
-                          <TableActionButton variant="danger" onClick={() => handleDeleteClick(employee)} title="Desactivar empleado">
-                            <Trash2 size={16} />
-                          </TableActionButton>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+        <div className="space-y-3">
+          {/* Header de columnas */}
+          <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div className="col-span-4">Empleado</div>
+            <div className="col-span-3">DNI/NIE</div>
+            <div className="col-span-2">Categoría</div>
+            <div className="col-span-2">Contrato</div>
+            <div className="col-span-1 text-right">Acciones</div>
           </div>
 
-          {/* Footer con información de paginación */}
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <span className="text-sm text-gray-700">
-                Página {pagination.currentPage} de {pagination.totalPages}
-              </span>
+          {employees.map((employee) => (
+            <Card
+              key={employee.id}
+              className="p-4 hover:shadow-md transition-all duration-200"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                {/* Empleado */}
+                <div className="col-span-12 lg:col-span-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#1162a6] text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
+                      {employee.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{employee.full_name}</h3>
+                      {employee.employee_code && (
+                        <p className="text-sm text-gray-600">Reloj: {employee.employee_code}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* DNI/NIE */}
+                <div className="col-span-12 lg:col-span-3">
+                  <span className="text-sm text-gray-900">{employee.dni_nie}</span>
+                </div>
+
+                {/* Categoría */}
+                <div className="col-span-12 lg:col-span-2">
+                  <span className="text-sm text-gray-500">{employee.job_category}</span>
+                </div>
+
+                {/* Contrato */}
+                <div className="col-span-12 lg:col-span-2">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    employee.contract_type === 'Indefinido'
+                      ? 'bg-[#a2bade]/20 text-[#1162a6]'
+                      : 'bg-[#dc2626]/10 text-[#dc2626]'
+                  }`}>
+                    {employee.contract_type}
+                  </span>
+                  {employee.contract_type === 'Temporal' && employee.contract_end_date && (
+                    <div className="text-xs text-[#dc2626]/70 mt-1">
+                      hasta {formatDate(employee.contract_end_date)}
+                    </div>
+                  )}
+                </div>
+
+                {/* Acciones */}
+                <div className="col-span-12 lg:col-span-1">
+                  <div className="flex gap-1 lg:justify-end">
+                    <TableActionButton onClick={() => handleEditEmployee(employee)} title="Editar empleado">
+                      <Pencil size={16} />
+                    </TableActionButton>
+                    <TableActionButton onClick={() => handleGenerateDocuments(employee)} title="Generar documentos de incorporación">
+                      <FileText size={16} />
+                    </TableActionButton>
+                    {user?.rol === 'admin' && (
+                      <TableActionButton variant="danger" onClick={() => handleDeleteClick(employee)} title="Desactivar empleado">
+                        <Trash2 size={16} />
+                      </TableActionButton>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Paginación — bloque independiente */}
+
+        <div className="bg-white px-4 py-3 flex items-center justify-between border border-[#e2e8f0] rounded-xl sm:px-6">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <span className="text-sm text-gray-700">
+              Página {pagination.currentPage} de {pagination.totalPages}
+            </span>
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage - 1)} disabled={pagination.currentPage <= 1}>
+                  Anterior
+                </Button>
+                <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages}>
+                  Siguiente
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-700">
+              Mostrando <span className="font-medium">{employees.length}</span> de <span className="font-medium">{pagination.total}</span> empleado{pagination.total !== 1 ? 's' : ''}
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-700">Página {pagination.currentPage} de {pagination.totalPages}</span>
               {pagination.totalPages > 1 && (
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="subtle"
-                    size="sm"
-                    onClick={() => fetchEmployees(pagination.currentPage - 1)}
-                    disabled={pagination.currentPage <= 1}
-                  >
+                  <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage - 1)} disabled={pagination.currentPage <= 1}>
                     Anterior
                   </Button>
-                  <Button
-                    variant="subtle"
-                    size="sm"
-                    onClick={() => fetchEmployees(pagination.currentPage + 1)}
-                    disabled={pagination.currentPage >= pagination.totalPages}
-                  >
+                  <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages}>
                     Siguiente
                   </Button>
                 </div>
               )}
             </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Mostrando{' '}
-                  <span className="font-medium">{employees.length}</span>
-                  {' '}de{' '}
-                  <span className="font-medium">{pagination.total}</span>
-                  {' '}empleado{pagination.total !== 1 ? 's' : ''}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-700">
-                  Página {pagination.currentPage} de {pagination.totalPages}
-                </span>
-                {pagination.totalPages > 1 && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="subtle"
-                      size="sm"
-                      onClick={() => fetchEmployees(pagination.currentPage - 1)}
-                      disabled={pagination.currentPage <= 1}
-                    >
-                      Anterior
-                    </Button>
-                    <Button
-                      variant="subtle"
-                      size="sm"
-                      onClick={() => fetchEmployees(pagination.currentPage + 1)}
-                      disabled={pagination.currentPage >= pagination.totalPages}
-                    >
-                      Siguiente
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
-        </Card>
+        </div>
+        </>
       )}
 
       {/* Modales */}
