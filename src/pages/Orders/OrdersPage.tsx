@@ -360,7 +360,7 @@ export const OrdersPage: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {/* Header de columnas */}
-            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center border-b border-[#e2e8f0]">
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider items-center border-b border-[#e2e8f0]">
               <div className="col-span-1">
                 <Checkbox
                   checked={orders.length > 0 && selectedIds.size === orders.length}
