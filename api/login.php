@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $permissions = $permStmt->fetchAll(PDO::FETCH_COLUMN);
             }
 
+            session_regenerate_id(true);
             $_SESSION['user'] = [
                 'id'          => $user['id'],
                 'username'    => $user['username'],

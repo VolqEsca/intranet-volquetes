@@ -20,7 +20,6 @@ if (isset($_SESSION['user']) && isset($_SESSION['user']['id'])) {
             'apellidos'   => $_SESSION['user']['apellidos'] ?? null,
             'permissions' => $_SESSION['user']['permissions'] ?? [],
         ],
-        'session_id'    => session_id(),
         'last_activity' => $_SESSION['last_activity'] ?? null
     ]);
 } else {

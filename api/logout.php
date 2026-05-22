@@ -9,6 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $_SESSION = [];
 session_destroy();
+setcookie(session_name(), '', time() - 3600, '/', '', true, true);
 
 echo json_encode(['success' => true, 'message' => 'Sesión cerrada']);
 ?>
