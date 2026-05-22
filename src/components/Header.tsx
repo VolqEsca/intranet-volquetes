@@ -58,7 +58,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
             >
-              <div className="w-10 h-10 bg-primary-dark rounded-full flex items-center justify-center text-white font-medium">
+              <div className="w-10 h-10 bg-[#1162a6] rounded-full flex items-center justify-center text-white font-medium">
                 {/* Solución robusta al error TypeScript */}
                 {(user?.nombre || user?.username || "U").charAt(0).toUpperCase()}
               </div>

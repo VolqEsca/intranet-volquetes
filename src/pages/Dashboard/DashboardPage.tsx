@@ -59,7 +59,7 @@ export const DashboardPage = () => {
           className="flex items-center gap-2 cursor-pointer hover:text-[#1162a6] transition-colors group/absence p-1 -mx-1 rounded"
           title="Ver en calendario de vacaciones"
         >
-          <div className="w-1 h-1 rounded-full bg-[#1162a6] group-hover/absence:bg-[#0d4d85]"></div>
+          <div className="w-1 h-1 rounded-full bg-[#1162a6] group-hover/absence:bg-[#1162a6]/90"></div>
           <span className="font-medium">
             {firstName} ({absence.tipo_legible})
           </span>
@@ -129,7 +129,7 @@ export const DashboardPage = () => {
             </div>
             <button 
               onClick={refresh} 
-              className="px-4 py-2 text-sm font-bold text-white bg-[#1162a6] hover:bg-[#0d4d85] rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-bold text-white bg-[#1162a6] hover:bg-[#1162a6]/90 rounded-lg transition-colors"
             >
               Reintentar
             </button>

@@ -1,6 +1,6 @@
 // src/pages/ManufacturingOrders/ManufacturingOrdersPage.tsx
 import { useState, useEffect } from 'react';
-import { Plus, RefreshCw, FileDown, Search, Factory, MoreVertical, Eye, FileText, CheckCircle, XCircle, Copy, AlertCircle, Trash2 } from 'lucide-react';
+import { Plus, RefreshCw, Search, Factory, MoreVertical, Eye, FileText, CheckCircle, XCircle, Copy, AlertCircle, Trash2 } from 'lucide-react';
 import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
@@ -205,12 +205,12 @@ export function ManufacturingOrdersPage() {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           />
         </div>
 
         <select
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value);
@@ -225,7 +225,7 @@ export function ManufacturingOrdersPage() {
         </select>
 
         <select
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           value={priorityFilter}
           onChange={(e) => {
             setPriorityFilter(e.target.value);
@@ -260,13 +260,13 @@ export function ManufacturingOrdersPage() {
       {/* Barra de acción bulk */}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-lg">
-          <span className="text-sm font-medium text-primary-dark">
+          <span className="text-sm font-medium text-[#1162a6]">
             {selectedIds.size} {selectedIds.size === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
           </span>
           <select
             value={bulkStatus}
             onChange={(e) => setBulkStatus(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           >
             <option value="">Cambiar estado a...</option>
             <option value="pending">Pendiente</option>
@@ -302,7 +302,7 @@ export function ManufacturingOrdersPage() {
                     checked={orders.length > 0 && selectedIds.size === orders.length}
                     ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
                     onChange={toggleSelectAll}
-                    className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                    className="rounded border-gray-300 text-[#1162a6] focus:ring-[#1162a6]"
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -365,7 +365,7 @@ export function ManufacturingOrdersPage() {
                         type="checkbox"
                         checked={selectedIds.has(order.id)}
                         onChange={() => toggleSelect(order.id)}
-                        className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                        className="rounded border-gray-300 text-[#1162a6] focus:ring-[#1162a6]"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

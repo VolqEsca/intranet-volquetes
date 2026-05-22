@@ -177,14 +177,14 @@ export const EmployeesPage = () => {
             placeholder="Buscar por nombre, DNI o email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
           />
         </div>
 
         <select
           value={locationFilter}
           onChange={(e) => setLocationFilter(e.target.value)}
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
         >
           <option value="">Todas las naves</option>
           <option value="Nave 01">Nave 01</option>
@@ -194,7 +194,7 @@ export const EmployeesPage = () => {
         <select
           value={contractFilter}
           onChange={(e) => setContractFilter(e.target.value)}
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
         >
           <option value="">Todos los contratos</option>
           <option value="Indefinido">Indefinido</option>
@@ -227,7 +227,7 @@ export const EmployeesPage = () => {
       {isLoading ? (
         <Card className="p-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-dark mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1162a6] mx-auto mb-4"></div>
             <p className="text-gray-500">Cargando empleados...</p>
           </div>
         </Card>

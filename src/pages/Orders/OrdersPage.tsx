@@ -272,7 +272,7 @@ export const OrdersPage: React.FC = () => {
             placeholder="Buscar por número de orden, cliente o matrícula..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="w-full pl-10 pr-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           />
         </div>
 
@@ -282,7 +282,7 @@ export const OrdersPage: React.FC = () => {
             setFilterStatus(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
         >
           <option value="all">Todos los estados</option>
           <option value="pending">Pendiente</option>
@@ -297,7 +297,7 @@ export const OrdersPage: React.FC = () => {
             setFilterPriority(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+          className="px-4 py-2 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
         >
           <option value="all">Todas las prioridades</option>
           <option value="low">Baja</option>
@@ -316,13 +316,13 @@ export const OrdersPage: React.FC = () => {
       {/* Barra de acción bulk */}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 p-3 bg-[#a2bade]/15 border border-[#a2bade] rounded-lg">
-          <span className="text-sm font-medium text-primary-dark">
+          <span className="text-sm font-medium text-[#1162a6]">
             {selectedIds.size} {selectedIds.size === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
           </span>
           <select
             value={bulkStatus}
             onChange={(e) => setBulkStatus(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            className="px-3 py-1.5 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6]"
           >
             <option value="">Cambiar estado a...</option>
             <option value="pending">Pendiente</option>
