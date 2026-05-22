@@ -51,13 +51,15 @@ export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
             <label className="block text-sm font-medium">CIF / NIF</label>
             <input type="text" value={cifNif} onChange={(e) => setCifNif(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
           </div>
-          <div>
-            <label className="block text-sm font-medium">Persona de Contacto</label>
-            <input type="text" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Teléfono de Contacto</label>
-            <input type="text" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium">Persona de Contacto</label>
+              <input type="text" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Teléfono de Contacto</label>
+              <input type="text" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
+            </div>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </form>

@@ -322,7 +322,7 @@ export const UserModal = ({
                 ) : loadingPerms ? (
                   <div className="text-sm text-gray-400 py-2">Cargando permisos...</div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     {MODULE_OPTIONS.map(({ slug, label, icon: Icon }) => {
                       const checked = grantedModules.includes(slug);
                       return (
