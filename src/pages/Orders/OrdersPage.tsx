@@ -6,7 +6,6 @@ import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
 import NewOrderModal from './components/NewOrderModal';
 import OrderStatusBadge from './components/OrderStatusBadge';
-import OrderPriorityBadge from './components/OrderPriorityBadge';
 import DepartmentBadge from './components/DepartmentBadge';
 import { ClientsManagementModal } from './components/ClientsManagementModal';
 import { dialog } from '../../services/dialog.service';
@@ -375,15 +374,6 @@ export const OrdersPage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Estado
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Prioridad
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fecha Entrada
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Entrega Est.
-                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-[#f8fafc] border-l border-[#e2e8f0] z-10">
                   Acciones
                 </th>
@@ -392,13 +382,13 @@ export const OrdersPage: React.FC = () => {
             <tbody className="bg-white divide-y divide-[#e2e8f0]">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
                     Cargando órdenes...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
                     No se encontraron órdenes
                   </td>
                 </tr>
@@ -449,15 +439,6 @@ export const OrdersPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <OrderStatusBadge status={order.status} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <OrderPriorityBadge priority={order.priority} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(order.entry_date)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(order.estimated_delivery)}
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-[#e2e8f0] z-5">
@@ -571,7 +552,7 @@ export const OrdersPage: React.FC = () => {
           { label: 'Imprimir PDF',     icon: <FileText className="w-4 h-4" />, onClick: () => { handleDownloadPDF(order); close(); } },
           ...statusActions,
           { label: 'Duplicar orden',  icon: <Copy className="w-4 h-4" />, onClick: () => { handleDuplicateOrder(order); close(); }, dividerBefore: true },
-          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4" />, onClick: () => { handleDeleteOrder(order); close(); }, rowClassName: 'hover:bg-[#dc2626]/10 hover:text-[#dc2626]', dividerBefore: true },
+          { label: 'Eliminar orden',  icon: <Trash2 className="w-4 h-4" />, onClick: () => { handleDeleteOrder(order); close(); }, rowClassName: 'hover:text-[#dc2626]', dividerBefore: true },
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
       })()}

@@ -261,13 +261,7 @@ export const EmployeesPage = () => {
                     Categoría
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ubicación
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Contrato
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Acciones
@@ -303,31 +297,16 @@ export const EmployeesPage = () => {
                       {employee.job_category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-[#a2bade]/20 text-[#1162a6]">
-                        {employee.location}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         employee.contract_type === 'Indefinido'
                           ? 'bg-[#a2bade]/20 text-[#1162a6]'
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-[#dc2626]/10 text-[#dc2626]'
                       }`}>
                         {employee.contract_type}
                       </span>
                       {employee.contract_type === 'Temporal' && employee.contract_end_date && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          Fin: {formatDate(employee.contract_end_date)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div>
-                        {employee.email_primary}
-                      </div>
-                      {employee.phone && (
-                        <div className="text-xs text-gray-400">
-                          {employee.phone}
+                        <div className="text-xs text-[#dc2626]/70 mt-1">
+                          hasta {formatDate(employee.contract_end_date)}
                         </div>
                       )}
                     </td>
