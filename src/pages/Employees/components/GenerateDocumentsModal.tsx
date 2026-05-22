@@ -103,7 +103,7 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={`Documentos: ${employee.full_name}`}>
+    <Modal isOpen={isOpen} onClose={handleClose} title={`Documentos: ${employee.full_name}`} size="max-w-lg">
       <div className="flex flex-col max-h-[90vh]">
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {error && (

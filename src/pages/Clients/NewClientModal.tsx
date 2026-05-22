@@ -40,7 +40,7 @@ export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Añadir Nuevo Cliente">
+    <Modal isOpen={isOpen} onClose={onClose} title="Añadir Nuevo Cliente" size="max-w-lg">
       <div className="flex flex-col max-h-[90vh]">
         <form id="new-client-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>

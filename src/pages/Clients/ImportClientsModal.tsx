@@ -50,7 +50,7 @@ export function ImportClientsModal({ isOpen, onClose, onImportSuccess }: Props) 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Importar Clientes desde Excel">
+    <Modal isOpen={isOpen} onClose={onClose} title="Importar Clientes desde Excel" size="max-w-lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <p className="text-sm">
           Seleccione un archivo .xlsx o .csv. Asegúrese de que las columnas estén en el orden correcto: 
