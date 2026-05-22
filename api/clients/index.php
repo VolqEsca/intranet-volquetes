@@ -1,8 +1,10 @@
 <?php
 // /api/clients/index.php
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../auth_check.php';
-require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../permission_check.php';
+require_module_permission('orders');
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = $_SERVER['REQUEST_URI'];
