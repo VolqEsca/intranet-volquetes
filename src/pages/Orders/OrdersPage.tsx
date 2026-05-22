@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Search, Filter, Calendar, Package, Users, MoreVertical, Eye, Edit, FileText, CheckCircle, XCircle, Copy, Trash2, Clock, AlertCircle, Wrench } from 'lucide-react';
 import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDropdownMenu';
 import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
 import { apiClient } from '../../api';
 import NewOrderModal from './components/NewOrderModal';
 import OrderStatusBadge from './components/OrderStatusBadge';
@@ -345,175 +346,132 @@ export const OrdersPage: React.FC = () => {
       )}
 
       {/* Tabla */}
-      <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#f8fafc] border-b border-[#e2e8f0]">
-              <tr>
-                <th className="px-4 py-3 w-10">
-                  <input
-                    type="checkbox"
-                    checked={orders.length > 0 && selectedIds.size === orders.length}
-                    ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
-                    onChange={toggleSelectAll}
-                    className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nº Orden
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cliente
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Vehículo
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Departamentos
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-[#f8fafc] border-l border-[#e2e8f0] z-10">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-[#e2e8f0]">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                    Cargando órdenes...
-                  </td>
-                </tr>
-              ) : orders.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                    No se encontraron órdenes
-                  </td>
-                </tr>
-              ) : (
-                orders.map((order) => (
-                  <tr key={order.id} className={`transition-colors ${selectedIds.has(order.id) ? 'bg-[#a2bade]/10' : 'hover:bg-[#f8fafc]'}`}>
-                    <td className="px-4 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(order.id)}
-                        onChange={() => toggleSelect(order.id)}
-                        className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {order.order_number}
-                      </div>
-                    </td>
+      <>
+        {/* Lista de órdenes — tarjetas */}
+        {loading ? (
+          <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-[#e2e8f0]">
+            Cargando órdenes...
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-[#e2e8f0]">
+            No se encontraron órdenes
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Header de columnas */}
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider items-center">
+              <div className="col-span-1">
+                <input
+                  type="checkbox"
+                  checked={orders.length > 0 && selectedIds.size === orders.length}
+                  ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
+                  onChange={toggleSelectAll}
+                  className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                />
+              </div>
+              <div className="col-span-2">Orden / Cliente</div>
+              <div className="col-span-3">Vehículo</div>
+              <div className="col-span-3">Departamentos</div>
+              <div className="col-span-2">Estado</div>
+              <div className="col-span-1 text-right">Acciones</div>
+            </div>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className="text-sm text-gray-900 max-w-[200px] sm:max-w-[250px] lg:max-w-[300px] truncate cursor-help"
-                        title={order.client_name}
+            {orders.map((order) => (
+              <Card
+                key={order.id}
+                className={`p-4 transition-all duration-200 hover:shadow-md ${selectedIds.has(order.id) ? 'ring-1 ring-[#a2bade]' : ''}`}
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                  {/* Checkbox */}
+                  <div className="col-span-12 lg:col-span-1">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(order.id)}
+                      onChange={() => toggleSelect(order.id)}
+                      className="rounded border-gray-300 text-primary-dark focus:ring-primary-dark"
+                    />
+                  </div>
+
+                  {/* Nº Orden + Cliente */}
+                  <div className="col-span-12 lg:col-span-2">
+                    <h3 className="font-semibold text-gray-900 text-sm">{order.order_number}</h3>
+                    <p className="text-sm text-gray-500 truncate" title={order.client_name}>
+                      {truncateText(order.client_name, 30)}
+                    </p>
+                  </div>
+
+                  {/* Vehículo */}
+                  <div className="col-span-12 lg:col-span-3">
+                    <div className="text-sm text-gray-900">{order.unit_type_name}</div>
+                    <div className="text-xs text-gray-500">{order.brand} {order.model} - {order.license_plate}</div>
+                  </div>
+
+                  {/* Departamentos */}
+                  <div className="col-span-12 lg:col-span-3">
+                    <div className="flex flex-wrap gap-1">
+                      {order.departments.map((dept) => (
+                        <DepartmentBadge key={dept.id} name={dept.name} color={dept.color} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Estado */}
+                  <div className="col-span-12 lg:col-span-2">
+                    <OrderStatusBadge status={order.status} />
+                  </div>
+
+                  {/* Acciones */}
+                  <div className="col-span-12 lg:col-span-1">
+                    <div className="flex lg:justify-end dropdown-container">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(order.id, e.currentTarget);
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
                       >
-                        {truncateText(order.client_name, 30)}
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <div>{order.unit_type_name}</div>
-                        <div className="text-xs text-gray-500">
-                          {order.brand} {order.model} - {order.license_plate}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {order.departments.map((dept) => (
-                          <DepartmentBadge
-                            key={dept.id}
-                            name={dept.name}
-                            color={dept.color}
-                          />
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <OrderStatusBadge status={order.status} />
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white border-l border-[#e2e8f0] z-5">
-                      <div className="relative dropdown-container">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleDropdown(order.id, e.currentTarget);
-                          }}
-                          className="text-gray-400 hover:text-gray-600"
-                        >
-                          <MoreVertical size={16} />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                        <MoreVertical size={16} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Paginación */}
         {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div className="bg-white px-4 py-3 flex items-center justify-between border border-[#e2e8f0] rounded-xl sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage <= 1}
-                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed">
                 Anterior
               </button>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage >= totalPages}
-                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed">
                 Siguiente
               </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Página <span className="font-medium">{currentPage}</span> de{' '}
-                  <span className="font-medium">{totalPages}</span> ({totalOrders} órdenes totales)
-                </p>
-              </div>
-              <div>
-                <nav className="inline-flex rounded-lg border border-[#e2e8f0] overflow-hidden">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage <= 1}
-                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 border-r border-[#e2e8f0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Anterior
-                  </button>
-                  <div className="px-4 py-2 bg-white text-sm font-medium text-gray-700 border-r border-[#e2e8f0] select-none">
-                    {currentPage} / {totalPages}
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Siguiente
-                  </button>
-                </nav>
-              </div>
+              <p className="text-sm text-gray-700">
+                Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span> ({totalOrders} órdenes totales)
+              </p>
+              <nav className="inline-flex rounded-lg border border-[#e2e8f0] overflow-hidden">
+                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 border-r border-[#e2e8f0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                  Anterior
+                </button>
+                <div className="px-4 py-2 bg-white text-sm font-medium text-gray-700 border-r border-[#e2e8f0] select-none">
+                  {currentPage} / {totalPages}
+                </div>
+                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                  Siguiente
+                </button>
+              </nav>
             </div>
           </div>
         )}
-      </div>
+      </>
 
       {/* Modal de nueva orden */}
       {showNewOrderModal && (
