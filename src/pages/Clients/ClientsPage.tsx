@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Users } from 'lucide-react';
 import { apiClient } from '../../api';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -13,7 +14,7 @@ interface Client {
   contact_phone: string;
 }
 
-export default function ClientsPage() {
+export const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
@@ -36,20 +37,44 @@ export default function ClientsPage() {
   }, []);
 
   if (loading) {
-    return <div>Cargando clientes...</div>;
+    return (
+      <Card className="p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1162a6] mx-auto mb-4"></div>
+          <p className="text-gray-500">Cargando clientes...</p>
+        </div>
+      </Card>
+    );
   }
 
   return (
-    <>
-      <Card>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Gestión de Clientes</h1>
-          <div className="space-x-2">
-            <Button onClick={() => setIsNewClientModalOpen(true)}>Añadir Cliente</Button>
-            <Button onClick={() => setIsImportModalOpen(true)} variant="secondary">Importar desde Excel</Button>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1162a6] flex items-center justify-center shadow-sm flex-shrink-0">
+            <Users className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Gestión de Clientes</h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              {clients.length > 0
+                ? `${clients.length} cliente${clients.length !== 1 ? 's' : ''} registrado${clients.length !== 1 ? 's' : ''}`
+                : 'Administra el catálogo de clientes'}
+            </p>
           </div>
         </div>
-        
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setIsImportModalOpen(true)} variant="secondary" className="flex items-center gap-2">
+            Importar desde Excel
+          </Button>
+          <Button onClick={() => setIsNewClientModalOpen(true)} className="flex items-center gap-2">
+            Añadir Cliente
+          </Button>
+        </div>
+      </div>
+
+      <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -77,14 +102,14 @@ export default function ClientsPage() {
       <NewClientModal
         isOpen={isNewClientModalOpen}
         onClose={() => setIsNewClientModalOpen(false)}
-        onClientAdded={fetchClients} // Para refrescar la lista al añadir un cliente
+        onClientAdded={fetchClients}
       />
 
       <ImportClientsModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        onImportSuccess={fetchClients} // Para refrescar la lista tras importar
+        onImportSuccess={fetchClients}
       />
-    </>
+    </div>
   );
-}
+};
