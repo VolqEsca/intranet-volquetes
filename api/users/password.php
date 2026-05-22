@@ -29,8 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 http_response_code(400);
                 exit();
             }
-            
-            $hashedPassword = password_hash($data['newPassword'], PASSWORD_DEFAULT);
+
+            if (strlen($data['newPassword']) < 8) {
+                echo json_encode(['error' => 'La contraseña debe tener al menos 8 caracteres']);
+                http_response_code(400);
+                exit();
+            }
+
+            $hashedPassword = password_hash($data['newPassword'], PASSWORD_BCRYPT);
             $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE id = ?");
             $stmt->execute([$hashedPassword, $currentUserId]);
             
@@ -42,14 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 exit();
             }
             
-            $userId = $data['id'] ?? null;
+            $userId = (int)($data['id'] ?? 0);
             if (!$userId || !isset($data['password'])) {
                 echo json_encode(['error' => 'Datos incompletos']);
                 http_response_code(400);
                 exit();
             }
-            
-            $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+
+            if (strlen($data['password']) < 8) {
+                echo json_encode(['error' => 'La contraseña debe tener al menos 8 caracteres']);
+                http_response_code(400);
+                exit();
+            }
+
+            $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
             $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE id = ?");
             $stmt->execute([$hashedPassword, $userId]);
         }

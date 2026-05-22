@@ -20,6 +20,13 @@ if (!isset($data['username']) || !isset($data['password']) || !isset($data['rol'
     exit();
 }
 
+$allowedRoles = ['admin', 'operador'];
+if (!in_array($data['rol'], $allowedRoles, true)) {
+    echo json_encode(['error' => 'Rol inválido']);
+    http_response_code(400);
+    exit();
+}
+
 try {
     $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE username = ?");
     $stmt->execute([$data['username']]);

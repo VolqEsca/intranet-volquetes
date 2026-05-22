@@ -14,10 +14,11 @@ if (!isset($data['id'])) {
     exit();
 }
 
-$currentUserId = $_SESSION['user']['id'];
+$targetId = (int)($data['id'] ?? 0);
+$currentUserId = (int)$_SESSION['user']['id'];
 $userRole = $_SESSION['user']['rol'];
 
-if (($userRole !== 'Administrador' && $userRole !== 'admin') && $currentUserId != $data['id']) {
+if (($userRole !== 'Administrador' && $userRole !== 'admin') && $currentUserId !== $targetId) {
     echo json_encode(['error' => 'No tienes permisos para editar este usuario']);
     http_response_code(403);
     exit();
@@ -48,7 +49,12 @@ try {
     }
     
     if (isset($data['rol']) && ($userRole === 'Administrador' || $userRole === 'admin')) {
-
+        $allowedRoles = ['admin', 'operador'];
+        if (!in_array($data['rol'], $allowedRoles, true)) {
+            echo json_encode(['error' => 'Rol inválido']);
+            http_response_code(400);
+            exit();
+        }
         $updateFields[] = "rol = ?";
         $params[] = $data['rol'];
     }
@@ -59,8 +65,8 @@ try {
         exit();
     }
     
-    $params[] = $data['id'];
-    
+    $params[] = $targetId;
+
     $sql = "UPDATE usuarios SET " . implode(", ", $updateFields) . " WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
