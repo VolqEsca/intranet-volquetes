@@ -14,6 +14,7 @@ import EditOrderModal from './components/EditOrderModal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromCamel } from '../../types/pagination';
 import { apiErrorMessage } from '../../utils/error';
+import { Checkbox } from '../../components/ui/Checkbox';
 
 interface Order {
   id: number;
@@ -361,12 +362,10 @@ export const OrdersPage: React.FC = () => {
             {/* Header de columnas */}
             <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider items-center border-b border-[#e2e8f0]">
               <div className="col-span-1">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={orders.length > 0 && selectedIds.size === orders.length}
-                  ref={el => { if (el) el.indeterminate = selectedIds.size > 0 && selectedIds.size < orders.length; }}
+                  indeterminate={selectedIds.size > 0 && selectedIds.size < orders.length}
                   onChange={toggleSelectAll}
-                  className="w-4 h-4 rounded border-gray-300 accent-[#5487c0] cursor-pointer"
                 />
               </div>
               <div className="col-span-3">Nº Orden</div>
@@ -384,11 +383,9 @@ export const OrdersPage: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
                   {/* Checkbox */}
                   <div className="col-span-12 lg:col-span-1">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedIds.has(order.id)}
                       onChange={() => toggleSelect(order.id)}
-                      className="w-4 h-4 rounded border-gray-300 accent-[#5487c0] cursor-pointer"
                     />
                   </div>
 
