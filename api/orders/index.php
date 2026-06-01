@@ -22,8 +22,6 @@ if (strpos($request_uri, $base_path) !== false) {
 }
 
 // Debug para ver qué path obtenemos
-error_log("Orders Router - Path: '$path' from URI: $request_uri");
-
 // Enrutar según el método y path
 switch ($method) {
     case 'GET':
@@ -40,6 +38,9 @@ switch ($method) {
         } elseif ($path === 'departments') {
             // Obtener departamentos
             require_once __DIR__ . '/departments.php';
+        } elseif ($path === 'recent-vehicle') {
+            // Último vehículo del cliente para quick-fill
+            require_once __DIR__ . '/recent-vehicle.php';
         } else {
             http_response_code(404);
             echo json_encode(['error' => 'Endpoint no encontrado', 'path' => $path]);

@@ -5,7 +5,8 @@ import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
 import { ClientEditModal } from './ClientEditModal';
-import { dialog } from '../../../services/dialog.service';
+import { toast } from 'sonner';
+import { useAlertModal } from '../../../hooks/useAlertModal';
 import { apiErrorMessage } from '../../../utils/error';
 
 interface Client {
@@ -50,6 +51,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
     errors: string[];
   } | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const { confirm: alertConfirm, modal: alertModal } = useAlertModal();
 
   // Fetch clientes por búsqueda server-side
   const fetchClients = useCallback(async (search: string) => {
@@ -137,16 +139,13 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
 
   // Borrar clientes
   const handleDeleteSelected = async () => {
-    const confirmed = await dialog.confirm(
-      `¿Estás seguro de que quieres eliminar ${selectedClients.length} cliente${selectedClients.length !== 1 ? 's' : ''}?`,
-      'Eliminar clientes',
-      { 
-        confirmText: 'Eliminar', 
-        cancelText: 'Cancelar',
-        variant: 'warning' 
-      }
-    );
-    
+    const confirmed = await alertConfirm({
+      title: 'Eliminar clientes',
+      description: `¿Estás seguro de que quieres eliminar ${selectedClients.length} cliente${selectedClients.length !== 1 ? 's' : ''}?`,
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+
     if (!confirmed) return;
 
     try {
@@ -154,36 +153,33 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
       await apiClient.post('/clients/delete-bulk', { ids: selectedClients });
       refreshCurrentSearch();
       setSelectedClients([]);
-      await dialog.success(`${selectedClients.length} cliente${selectedClients.length !== 1 ? 's' : ''} eliminado${selectedClients.length !== 1 ? 's' : ''} correctamente`);
+      toast.success(`${selectedClients.length} cliente${selectedClients.length !== 1 ? 's' : ''} eliminado${selectedClients.length !== 1 ? 's' : ''} correctamente`);
     } catch (error) {
       console.error('Error eliminando clientes:', error);
-      await dialog.error('Error al eliminar los clientes. Por favor, inténtalo de nuevo.');
+      toast.error('Error al eliminar los clientes. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteSingle = async (id: number) => {
-    const confirmed = await dialog.confirm(
-      '¿Estás seguro de que quieres eliminar este cliente?',
-      'Eliminar cliente',
-      { 
-        confirmText: 'Eliminar', 
-        cancelText: 'Cancelar',
-        variant: 'warning' 
-      }
-    );
-    
+    const confirmed = await alertConfirm({
+      title: 'Eliminar cliente',
+      description: '¿Estás seguro de que quieres eliminar este cliente?',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+
     if (!confirmed) return;
 
     try {
       setLoading(true);
       await apiClient.delete(`/clients/${id}`);
       refreshCurrentSearch();
-      await dialog.success('Cliente eliminado correctamente');
+      toast.success('Cliente eliminado correctamente');
     } catch (error) {
       console.error('Error eliminando cliente:', error);
-      await dialog.error('Error al eliminar el cliente. Por favor, inténtalo de nuevo.');
+      toast.error('Error al eliminar el cliente. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -224,7 +220,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
     ];
     
     if (!validTypes.includes(file.type) && !file.name.match(/\.xlsx?$/i)) {
-      await dialog.error('Por favor selecciona un archivo Excel (.xls o .xlsx)');
+      toast.error('Por favor selecciona un archivo Excel (.xls o .xlsx)');
       return;
     }
 
@@ -252,7 +248,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
         
         // Mostrar mensaje de éxito
         const message = `Se han importado ${response.data.imported} cliente${response.data.imported !== 1 ? 's' : ''} nuevo${response.data.imported !== 1 ? 's' : ''}${response.data.updated > 0 ? ` y actualizado ${response.data.updated} cliente${response.data.updated !== 1 ? 's' : ''} existente${response.data.updated !== 1 ? 's' : ''}` : ''}.`;
-        await dialog.success(message, '✅ Importación Exitosa');
+        toast.success(message);
         
         // Recargar lista de clientes si se importó algo
         if (response.data.imported > 0 || response.data.updated > 0) {
@@ -265,10 +261,7 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
       }
     } catch (error: unknown) {
       console.error('Error completo:', error);
-      await dialog.error(
-        apiErrorMessage(error, 'Error desconocido al importar el archivo'),
-        '❌ Error de Importación'
-      );
+      toast.error(apiErrorMessage(error, 'Error desconocido al importar el archivo'));
     } finally {
       setImporting(false);
       setImportFile(null);
@@ -558,6 +551,8 @@ export const ClientsManagementModal: React.FC<ClientsManagementModalProps> = ({
           )}
         </div>
       </div>
+
+      {alertModal}
 
       {/* Modal de edición/creación */}
       {editingClient && (

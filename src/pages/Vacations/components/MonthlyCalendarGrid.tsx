@@ -5,10 +5,10 @@ import {
   Absence,
   Holiday,
   Employee,
-  getAbsencesForDate, 
-  getHolidayForDate, 
-  getAbsenceColor, 
-  ABSENCE_TYPES, 
+  getAbsencesForDate,
+  getHolidayForDate,
+  getAbsenceColor,
+  ABSENCE_TYPES,
   getBalanceBadgeColor
 } from '../../../api/vacations';
 
@@ -21,17 +21,19 @@ interface Props {
   onCellClick: (employeeId: number, date: string) => void;
   activeLocationFilter: 'all' | 'Nave 01' | 'Nave 02';
   onIndividualReportClick?: (employee: Employee) => void;
+  warningThreshold: number;
 }
 
-export const MonthlyCalendarGrid: React.FC<Props> = ({ 
-  currentYear, 
-  currentMonth, 
+export const MonthlyCalendarGrid: React.FC<Props> = ({
+  currentYear,
+  currentMonth,
   data,
   onBalanceClick,
   onAbsenceClick,
   onCellClick,
   activeLocationFilter,
-  onIndividualReportClick
+  onIndividualReportClick,
+  warningThreshold
 }) => {
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month, 0).getDate();
@@ -80,31 +82,67 @@ export const MonthlyCalendarGrid: React.FC<Props> = ({
 
   const VERSO_COLORS = {
     header: '#1162a6',
-    weekend: '#cbd5e1',
+    weekend: '#f1f5f9',
     holiday: '#bfdbfe',
     available: '#ffffff',
-    border: '#e2e8f0',
+    border: '#f1f5f9',
     zebraRow: '#f8fafc'
+  };
+
+  const currentYearMonth = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+
+  const getEmployeeAbsencesForMonth = (employeeId: number): Absence[] => {
+    return data.absences.filter((a: Absence) =>
+      a.employee_id === employeeId &&
+      a.start_date.slice(0, 7) <= currentYearMonth &&
+      a.end_date.slice(0, 7)   >= currentYearMonth
+    );
+  };
+
+  const getBarGeometry = (absence: Absence) => {
+    const startYM = absence.start_date.slice(0, 7);
+    const endYM   = absence.end_date.slice(0, 7);
+    const startDay = startYM < currentYearMonth ? 1 : parseInt(absence.start_date.slice(8), 10);
+    const endDay   = endYM   > currentYearMonth ? daysInMonth : parseInt(absence.end_date.slice(8), 10);
+    const left  = ((startDay - 1) / daysInMonth) * 100;
+    const width = ((endDay - startDay + 1) / daysInMonth) * 100;
+    const isStartInMonth = startYM === currentYearMonth;
+    const isEndInMonth   = endYM   === currentYearMonth;
+    return { startDay, endDay, left, width, isStartInMonth, isEndInMonth };
   };
 
   return (
     <div className="overflow-x-auto border border-gray-300 rounded-xl bg-white shadow-sm">
+      <div className="flex items-center justify-end gap-4 px-4 py-2 border-b border-[#e2e8f0]">
+        {[
+          { type: 'vacation',       label: 'Vacaciones' },
+          { type: 'special_permit', label: 'Permiso Especial' },
+          { type: 'sick_leave',     label: 'Baja Médica' },
+          { type: 'unpaid_leave',   label: 'Permiso No Retribuido' },
+        ].map(({ type, label }) => (
+          <div key={type} className="flex items-center gap-1.5">
+            <div
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: getAbsenceColor(type) + '55' }}
+            />
+            <span className="text-xs text-gray-500 whitespace-nowrap">{label}</span>
+          </div>
+        ))}
+      </div>
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="text-white shadow-lg" style={{ backgroundColor: VERSO_COLORS.header }}>
-            <th className="sticky left-0 z-30 px-4 py-2 text-left font-bold min-w-[260px] lg:min-w-[280px] xl:min-w-[300px] border-r border-white/20 shadow-[2px_0_10px_rgba(0,0,0,0.1)]"
-                style={{ backgroundColor: VERSO_COLORS.header }}>
+          <tr className="bg-white border-b-2 border-[#e2e8f0]">
+            <th className="sticky left-0 z-30 px-4 py-2 text-left min-w-[160px] border-r border-[#e2e8f0] shadow-[2px_0_10px_rgba(0,0,0,0.04)] bg-white">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-                <span className="text-xs uppercase tracking-wider font-bold">Empleado</span>
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Empleado</span>
                 {activeLocationFilter !== 'all' && (
-                  <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-[10px] font-semibold">
+                  <span className="ml-2 px-2 py-0.5 bg-[#1162a6]/10 text-[#1162a6] rounded-full text-[10px] font-semibold">
                     {activeLocationFilter}
                   </span>
                 )}
               </div>
             </th>
-            
+
             {daysArray.map((day: number) => {
               const date = new Date(currentYear, currentMonth - 1, day);
               const dayOfWeek = date.getDay();
@@ -113,39 +151,42 @@ export const MonthlyCalendarGrid: React.FC<Props> = ({
               const dayName = ['D','L','M','X','J','V','S'][dayOfWeek];
               const dateString = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
               const isToday = dateString === todayString;
-              
+              const conflictCount = data.employees.filter(
+                (emp: Employee) => getAbsencesForDate(emp.id, dateString, data.absences)
+              ).length;
+
               return (
-                <th key={`head-${day}`} 
-                    className={`min-w-[32px] w-[32px] px-0 py-1.5 text-center font-medium transition-all ${
-                      isSunday ? 'border-r-2 border-white/40' : 'border-r border-white/20'
-                    } ${isToday ? 'ring-2 ring-inset ring-white/60' : ''} ${
-                      isWeekendHeader ? 'bg-black/10' : ''
-                    }`}
-                    style={{ backgroundColor: VERSO_COLORS.header }}>
-                  <div className={`text-[9px] font-medium mb-0.5 ${
-                    isWeekendHeader ? 'text-blue-200' : 'opacity-90'
+                <th key={`head-${day}`}
+                    className={`min-w-[32px] w-[32px] px-0 py-1.5 text-center font-medium ${
+                      conflictCount >= warningThreshold ? 'bg-[#dc2626]/10' : 'bg-white'
+                    } ${isSunday ? 'border-r-2 border-[#e2e8f0]' : 'border-r border-[#e2e8f0]'
+                    }`}>
+                  <div className={`text-[11px] font-medium mb-0.5 ${
+                    isToday ? 'text-[#1162a6] font-semibold' : 'text-gray-400'
                   }`}>
                     {dayName}
                   </div>
-                  <div className={`text-xs font-bold ${
-                    isWeekendHeader ? 'text-blue-200' : ''
-                  } ${isToday ? 'text-white drop-shadow-sm' : ''}`}>
-                    {day}
-                  </div>
+                  {isToday ? (
+                    <div className="w-7 h-7 rounded-full border border-[#1162a6] bg-transparent flex items-center justify-center mx-auto">
+                      <span className="text-xs font-bold text-[#1162a6]">{day}</span>
+                    </div>
+                  ) : (
+                    <div className={`text-sm font-semibold ${isWeekendHeader ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {day}
+                    </div>
+                  )}
                 </th>
               );
             })}
 
-            <th className="sticky right-[85px] z-30 px-3 py-2 text-center font-bold min-w-[75px] border-x border-white/20"
-                style={{ backgroundColor: VERSO_COLORS.header }}>
-              <div className="text-[9px] uppercase opacity-80 tracking-wider">Días</div>
-              <div className="text-xs font-bold">{monthShort}</div>
+            <th className="sticky right-[85px] z-30 px-3 py-2 text-center min-w-[75px] border-x border-[#e2e8f0] bg-white">
+              <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Días</div>
+              <div className="text-xs font-semibold text-gray-500">{monthShort}</div>
             </th>
 
-            <th className="sticky right-0 z-30 px-3 py-2 text-center font-bold min-w-[95px] shadow-[-4px_0_15px_rgba(0,0,0,0.15)]"
-                style={{ backgroundColor: VERSO_COLORS.header }}>
-              <div className="text-[9px] uppercase opacity-80 tracking-wider">Saldo</div>
-              <div className="text-xs font-bold">{currentYear}</div>
+            <th className="sticky right-0 z-30 px-3 py-2 text-center min-w-[95px] shadow-[-4px_0_15px_rgba(0,0,0,0.08)] bg-white">
+              <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider">Saldo</div>
+              <div className="text-xs font-semibold text-gray-500">{currentYear}</div>
             </th>
           </tr>
         </thead>
@@ -174,7 +215,7 @@ export const MonthlyCalendarGrid: React.FC<Props> = ({
 
             return (
               <tr key={employee.id} className={`group transition-all duration-200 ${rowBg} hover:bg-blue-50/40`}>
-                <td className={`sticky left-0 z-20 px-4 py-2.5 border-r transition-all duration-200 shadow-[2px_0_8px_rgba(0,0,0,0.04)] min-w-[260px] lg:min-w-[280px] xl:min-w-[300px] ${rowBg} group-hover:bg-blue-50/40`}
+                <td className={`sticky left-0 z-20 px-4 py-2.5 border-r transition-all duration-200 shadow-[2px_0_8px_rgba(0,0,0,0.04)] min-w-[160px] ${rowBg} group-hover:bg-blue-50/40`}
                     style={{ borderColor: VERSO_COLORS.border }}>
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs text-white shadow-sm flex-shrink-0 transition-transform duration-200 group-hover:scale-105"
@@ -205,101 +246,123 @@ export const MonthlyCalendarGrid: React.FC<Props> = ({
                   </div>
                 </td>
 
-                {daysArray.map((day: number) => {
-                  const dateString = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                  const dateObj = new Date(dateString + 'T00:00:00');
-                  const dayOfWeek = dateObj.getDay();
-                  const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
-                  const isSunday = dayOfWeek === 0;
-                  const holiday = getHolidayForDate(dateString, data.holidays);
-                  const absence = getAbsencesForDate(employee.id, dateString, data.absences);
-                  const isToday = dateString === todayString;
+                {/* Zona de días: única celda con CSS Grid interior */}
+                <td
+                  colSpan={daysInMonth}
+                  className="p-0 h-10"
+                >
+                  <div
+                    className="relative w-full h-full grid"
+                    style={{ gridTemplateColumns: `repeat(${daysInMonth}, minmax(32px, 1fr))` }}
+                  >
+                    {daysArray.map((day: number) => {
+                      const dateString = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      const dateObj = new Date(dateString + 'T00:00:00');
+                      const dayOfWeek = dateObj.getDay();
+                      const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
+                      const isSunday = dayOfWeek === 0;
+                      const holiday = getHolidayForDate(dateString, data.holidays);
+                      const absence = getAbsencesForDate(employee.id, dateString, data.absences);
+                      const isToday = dateString === todayString;
 
-                  let isStart = false; 
-                  let isEnd = false;
-                  if (absence) {
-                    isStart = absence.start_date === dateString;
-                    isEnd = absence.end_date === dateString;
-                  }
+                      let cellBg: string;
+                      if (holiday) {
+                        cellBg = VERSO_COLORS.holiday;
+                      } else if (isWeekendDay) {
+                        cellBg = VERSO_COLORS.weekend;
+                      } else {
+                        cellBg = 'transparent';
+                      }
 
-                  let cellStyle: React.CSSProperties = {};
-                  
-                  if (holiday) {
-                    cellStyle.backgroundColor = VERSO_COLORS.holiday;
-                  } else if (isWeekendDay) {
-                    cellStyle.backgroundColor = VERSO_COLORS.weekend;
-                  } else {
-                    cellStyle.backgroundColor = 'transparent';
-                  }
-                  
-                  const borderClass = isSunday ? 'border-r-2 border-slate-300' : 'border-r';
-                  const todayClass = isToday ? 'ring-1 ring-inset ring-[#1162a6]/40' : '';
+                      const borderClass = isSunday ? 'border-r-2 border-slate-300' : 'border-r';
+                      const todayClass = isToday ? 'ring-1 ring-inset ring-[#1162a6]/40' : '';
 
-                  let tooltipText = 'Click para crear ausencia';
-                  if (absence) {
-                    tooltipText = `${employee.full_name} - ${ABSENCE_TYPES[absence.absence_type]}\nDel ${absence.start_date} al ${absence.end_date}\n${absence.working_days_count} días laborales\n\n✏️ Click para editar`;
-                  } else if (holiday) {
-                    tooltipText = `🎉 ${holiday.description}`;
-                  } else if (isWeekendDay) {
-                    tooltipText = 'Fin de semana';
-                  }
+                      let tooltipText = 'Click para crear ausencia';
+                      if (absence) {
+                        tooltipText = `${employee.full_name} - ${ABSENCE_TYPES[absence.absence_type]}\nDel ${absence.start_date} al ${absence.end_date}\n${absence.working_days_count} días laborales\n\n✏️ Click para editar`;
+                      } else if (holiday) {
+                        tooltipText = `🎉 ${holiday.description}`;
+                      } else if (isWeekendDay) {
+                        tooltipText = 'Fin de semana';
+                      }
 
-                  return (
-                    <td 
-                      key={`${employee.id}-${day}`}
-                      className={`relative p-0 h-10 align-middle transition-all duration-200 ${borderClass} ${todayClass} ${
-                        !absence && !holiday && !isWeekendDay ? 'cursor-pointer hover:bg-blue-50/50' : ''
-                      }`}
-                      style={{
-                        ...cellStyle,
-                        borderColor: VERSO_COLORS.border
-                      }}
-                      title={tooltipText}
-                      onClick={() => {
-                        if (!absence && !holiday && !isWeekendDay) {
-                          onCellClick(employee.id, dateString);
-                        }
-                      }}
-                    >
-                      {absence && (
-                        <div className="absolute inset-x-0 top-1.5 bottom-1.5 flex items-center z-10">
-                          <div 
+                      return (
+                        <div
+                          key={`${employee.id}-${day}`}
+                          className={`relative h-full transition-all duration-200 ${borderClass} ${todayClass} ${
+                            !absence && !holiday && !isWeekendDay ? 'cursor-pointer hover:bg-blue-50/50' : ''
+                          }`}
+                          style={{ backgroundColor: cellBg, borderColor: VERSO_COLORS.border }}
+                          title={tooltipText}
+                          onClick={() => {
+                            if (!absence && !holiday && !isWeekendDay) {
+                              onCellClick(employee.id, dateString);
+                            }
+                          }}
+                        >
+                          {holiday && (
+                            <div className="absolute top-1 right-1">
+                              <div className="w-1.5 h-1.5 rounded-full opacity-70"
+                                   style={{ backgroundColor: VERSO_COLORS.header }} />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Barras de ausencia — overlay absoluto sobre el grid */}
+                    {getEmployeeAbsencesForMonth(employee.id).map((absence: Absence) => {
+                      const { left, width, isStartInMonth, isEndInMonth } = getBarGeometry(absence);
+                      const color = getAbsenceColor(absence.absence_type);
+                      const borderRadius = isStartInMonth && isEndInMonth
+                        ? '9999px'
+                        : isStartInMonth
+                        ? '9999px 0 0 9999px'
+                        : isEndInMonth
+                        ? '0 9999px 9999px 0'
+                        : '0';
+                      return (
+                        <React.Fragment key={absence.id}>
+                          {/* Número de días — a la izquierda del inicio, sobre fondo blanco */}
+                          {isStartInMonth && (
+                            <div
+                              className="absolute z-20 pointer-events-none"
+                              style={{
+                                left: `${left}%`,
+                                top: '50%',
+                                transform: 'translate(calc(-100% - 6px), -50%)',
+                              }}
+                            >
+                              <span
+                                className="text-sm font-semibold whitespace-nowrap"
+                                style={{ color }}
+                              >
+                                {absence.working_days_count}d
+                              </span>
+                            </div>
+                          )}
+                          {/* Barra sólida sin texto */}
+                          <div
+                            className="absolute z-10 cursor-pointer transition-all duration-200 hover:brightness-90"
+                            style={{
+                              top: '13px',
+                              bottom: '13px',
+                              left: `${left}%`,
+                              width: `${width}%`,
+                              backgroundColor: color + '55',
+                              borderRadius,
+                            }}
+                            title={`${employee.full_name} - ${ABSENCE_TYPES[absence.absence_type]}\nDel ${absence.start_date} al ${absence.end_date}\n${absence.working_days_count} días laborales\n\n✏️ Click para editar`}
                             onClick={(e) => {
                               e.stopPropagation();
                               onAbsenceClick(absence, employee);
                             }}
-                            className={`
-                              h-6 shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105 cursor-pointer
-                              flex items-center justify-center relative overflow-hidden
-                              ${isStart && isEnd ? 'rounded-lg mx-1 w-full' : ''}
-                              ${isStart && !isEnd ? 'rounded-l-lg ml-1 w-full' : ''} 
-                              ${isEnd && !isStart ? 'rounded-r-lg mr-1 w-full' : ''}
-                              ${!isStart && !isEnd ? 'w-full' : ''}
-                            `}
-                            style={{ 
-                              backgroundColor: getAbsenceColor(absence.absence_type)
-                            }}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/10"></div>
-                            
-                            {isStart && (
-                              <span className="relative z-10 text-xs font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] tracking-wide">
-                                {absence.working_days_count}d
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {holiday && !absence && (
-                        <div className="absolute top-1 right-1">
-                          <div className="w-1.5 h-1.5 rounded-full opacity-70"
-                               style={{ backgroundColor: VERSO_COLORS.header }}></div>
-                        </div>
-                      )}
-                    </td>
-                  );
-                })}
+                          />
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                </td>
 
                 <td className={`sticky right-[85px] z-20 px-3 py-2.5 text-center border-x transition-all duration-200 shadow-[-2px_0_8px_rgba(0,0,0,0.04)] ${rowBg} group-hover:bg-blue-50/40`}
                     style={{ borderColor: VERSO_COLORS.border }}>

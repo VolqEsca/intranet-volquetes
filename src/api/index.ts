@@ -15,7 +15,7 @@ apiClient.interceptors.response.use(
     const status = error.response?.status;
     const isLoginEndpoint = error.config?.url?.includes('/login');
     const isOnLoginPage = window.location.pathname.includes('/login');
-    if ((status === 401 || status === 403) && !isLoginEndpoint && !isOnLoginPage) {
+    if (status === 401 && !isLoginEndpoint && !isOnLoginPage) {
       window.location.href = '/login';
     }
     return Promise.reject(error);

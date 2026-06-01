@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { employeesAPI, Employee, EmployeesResponse } from '../../api/employees';
 import { PaginationData, fromSnake } from '../../types/pagination';
+import { PaginationNav } from '../../components/ui/PaginationNav';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { NewEmployeeModal } from './components/NewEmployeeModal';
@@ -13,7 +14,7 @@ import { Plus, Upload, Pencil, Trash2, Users, Search, FileText } from 'lucide-re
 import { TableActionButton } from '../../components/ui/TableActionButton';
 import { apiErrorMessage } from '../../utils/error';
 import { useAuth } from '../../hooks/useAuth';
-import { dialog } from '../../services/dialog.service';
+import { toast } from 'sonner';
 import { formatDate } from '../../utils/formatters';
 
 export const EmployeesPage = () => {
@@ -97,18 +98,18 @@ export const EmployeesPage = () => {
   // NUEVA FUNCIONALIDAD: Generar documentos con validaciones
   const handleGenerateDocuments = async (employee: Employee) => {
     if (!employee.hire_date) {
-      await dialog.warning(`${employee.full_name} no tiene fecha de alta registrada. Edítalo primero para añadir la fecha de alta antes de generar documentos.`);
+      toast.warning(`${employee.full_name} no tiene fecha de alta registrada. Edítalo primero para añadir la fecha de alta antes de generar documentos.`);
       return;
     }
 
     const hireDate = new Date(employee.hire_date);
     if (isNaN(hireDate.getTime())) {
-      await dialog.warning(`La fecha de alta de ${employee.full_name} tiene formato inválido. Corrígela antes de generar documentos.`);
+      toast.warning(`La fecha de alta de ${employee.full_name} tiene formato inválido. Corrígela antes de generar documentos.`);
       return;
     }
 
     if (!employee.full_name || !employee.dni_nie) {
-      await dialog.warning(`Faltan datos críticos para ${employee.full_name}. Completa nombre completo y DNI/NIE antes de generar documentos.`);
+      toast.warning(`Faltan datos críticos para ${employee.full_name}. Completa nombre completo y DNI/NIE antes de generar documentos.`);
       return;
     }
 
@@ -326,43 +327,11 @@ export const EmployeesPage = () => {
           ))}
         </div>
 
-        {/* Paginación — bloque independiente */}
-
-        <div className="bg-white px-4 py-3 flex items-center justify-between border border-[#e2e8f0] rounded-xl sm:px-6">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <span className="text-sm text-gray-700">
-              Página {pagination.currentPage} de {pagination.totalPages}
-            </span>
-            {pagination.totalPages > 1 && (
-              <div className="flex items-center gap-2">
-                <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage - 1)} disabled={pagination.currentPage <= 1}>
-                  Anterior
-                </Button>
-                <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages}>
-                  Siguiente
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p className="text-sm text-gray-700">
-              Mostrando <span className="font-medium">{employees.length}</span> de <span className="font-medium">{pagination.total}</span> empleado{pagination.total !== 1 ? 's' : ''}
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-700">Página {pagination.currentPage} de {pagination.totalPages}</span>
-              {pagination.totalPages > 1 && (
-                <div className="flex items-center gap-2">
-                  <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage - 1)} disabled={pagination.currentPage <= 1}>
-                    Anterior
-                  </Button>
-                  <Button variant="subtle" size="sm" onClick={() => fetchEmployees(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages}>
-                    Siguiente
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <PaginationNav
+          data={pagination}
+          onChange={(page) => fetchEmployees(page, pagination.limit)}
+          entityLabel="empleados"
+        />
         </>
       )}
 

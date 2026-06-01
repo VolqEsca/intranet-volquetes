@@ -5,38 +5,18 @@ import { PortalDropdownMenu, DropdownAction } from '../../components/ui/PortalDr
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { apiClient } from '../../api';
-import { NewOrderModal } from './components/NewOrderModal';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { OrderSheet } from './components/OrderSheet';
 import OrderStatusBadge from './components/OrderStatusBadge';
 import DepartmentBadge from './components/DepartmentBadge';
 import { ClientsManagementModal } from './components/ClientsManagementModal';
-import { dialog } from '../../services/dialog.service';
-import { EditOrderModal } from './components/EditOrderModal';
+import { toast } from 'sonner';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromCamel } from '../../types/pagination';
+import { PaginationNav } from '../../components/ui/PaginationNav';
 import { apiErrorMessage } from '../../utils/error';
 import { Checkbox } from '../../components/ui/Checkbox';
-
-interface Order {
-  id: number;
-  order_number: string;
-  client_name: string;
-  unit_type_name: string;
-  brand: string;
-  model: string;
-  license_plate: string;
-  departments: Array<{
-    id: number;
-    name: string;
-    color: string;
-  }>;
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  entry_date: string;
-  estimated_delivery: string | null;
-  completion_date: string | null;
-  created_by_name: string;
-  created_at: string;
-}
+import { Order } from '../../types/order';
 
 
 const ORDERS_PER_PAGE = 20;
@@ -51,15 +31,15 @@ export const OrdersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalOrders, setTotalOrders] = useState(0);
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderSheet, setShowOrderSheet] = useState(false);
+  const [orderSheetId, setOrderSheetId] = useState<number | undefined>(undefined);
   const [showClientsModal, setShowClientsModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [bulkStatus, setBulkStatus] = useState('');
   const [applyingBulk, setApplyingBulk] = useState(false);
+  const { confirm: alertConfirm, modal: alertModal } = useAlertModal();
 
   // Debounce búsqueda 300ms y resetear página
   useEffect(() => {
@@ -116,13 +96,13 @@ export const OrdersPage: React.FC = () => {
   };
 
   const handleViewDetails = (order: Order) => {
-    setSelectedOrder(order);
-    setShowEditModal(true);
+    setOrderSheetId(order.id);
+    setShowOrderSheet(true);
   };
 
   const handleEditOrder = (order: Order) => {
-    setSelectedOrder(order);
-    setShowEditModal(true);
+    setOrderSheetId(order.id);
+    setShowOrderSheet(true);
   };
 
   const handleDownloadPDF = async (order: Order) => {
@@ -135,7 +115,7 @@ export const OrdersPage: React.FC = () => {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error('Error abriendo PDF:', error);
-      dialog.error('Error al abrir el PDF');
+      toast.error('Error al abrir el PDF');
     }
   };
 
@@ -146,20 +126,22 @@ export const OrdersPage: React.FC = () => {
       });
 
       if (response.data.success) {
-        dialog.success('Estado actualizado correctamente');
+        toast.success('Estado actualizado correctamente');
         loadOrders();
       }
     } catch (error) {
       console.error('Error cambiando estado:', error);
-      dialog.error('Error al cambiar el estado');
+      toast.error('Error al cambiar el estado');
     }
   };
 
   const handleDuplicateOrder = async (order: Order) => {
-    const confirmed = await dialog.confirm(
-      `¿Duplicar la orden ${order.order_number}?`,
-      'Se creará una nueva orden con los mismos datos'
-    );
+    const confirmed = await alertConfirm({
+      title: `¿Duplicar la orden ${order.order_number}?`,
+      description: 'Se creará una nueva orden con los mismos datos',
+      variant: 'info',
+      confirmLabel: 'Duplicar',
+    });
 
     if (!confirmed) return;
 
@@ -167,20 +149,22 @@ export const OrdersPage: React.FC = () => {
       const response = await apiClient.post(`/orders/duplicate/${order.id}`);
 
       if (response.data.success) {
-        dialog.success('Orden duplicada correctamente');
+        toast.success('Orden duplicada correctamente');
         loadOrders();
       }
     } catch (error) {
       console.error('Error duplicando orden:', error);
-      dialog.error('Error al duplicar la orden');
+      toast.error('Error al duplicar la orden');
     }
   };
 
   const handleDeleteOrder = async (order: Order) => {
-    const confirmed = await dialog.confirm(
-      `¿Eliminar la orden ${order.order_number}?`,
-      'Esta acción no se puede deshacer'
-    );
+    const confirmed = await alertConfirm({
+      title: `¿Eliminar la orden ${order.order_number}?`,
+      description: 'Esta acción no se puede deshacer',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
 
     if (!confirmed) return;
 
@@ -188,12 +172,12 @@ export const OrdersPage: React.FC = () => {
       const response = await apiClient.delete(`/orders/${order.id}`);
 
       if (response.data.success) {
-        dialog.success('Orden eliminada correctamente');
+        toast.success('Orden eliminada correctamente');
         loadOrders();
       }
     } catch (error) {
       console.error('Error eliminando orden:', error);
-      dialog.error('Error al eliminar la orden');
+      toast.error('Error al eliminar la orden');
     }
   };
 
@@ -221,7 +205,7 @@ export const OrdersPage: React.FC = () => {
       setBulkStatus('');
       loadOrders();
     } catch {
-      dialog.error('Error al aplicar cambio de estado');
+      toast.error('Error al aplicar cambio de estado');
     } finally {
       setApplyingBulk(false);
     }
@@ -255,7 +239,7 @@ export const OrdersPage: React.FC = () => {
             Gestionar Clientes
           </Button>
           <Button
-            onClick={() => setShowNewOrderModal(true)}
+            onClick={() => { setOrderSheetId(undefined); setShowOrderSheet(true); }}
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
@@ -396,6 +380,9 @@ export const OrdersPage: React.FC = () => {
                     <p className="text-sm text-gray-600 truncate" title={order.client_name}>
                       {truncateText(order.client_name, 30)}
                     </p>
+                    <p className="text-xs text-gray-400">
+                      Creada {new Date(order.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </p>
                   </div>
 
                   {/* Vehículo */}
@@ -440,48 +427,27 @@ export const OrdersPage: React.FC = () => {
           </div>
         )}
 
-        {/* Paginación */}
         {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border border-[#e2e8f0] rounded-xl sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed">
-                Anterior
-              </button>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed">
-                Siguiente
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <p className="text-sm text-gray-700">
-                Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span> ({totalOrders} órdenes totales)
-              </p>
-              <nav className="inline-flex rounded-lg border border-[#e2e8f0] overflow-hidden">
-                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1} className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 border-r border-[#e2e8f0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                  Anterior
-                </button>
-                <div className="px-4 py-2 bg-white text-sm font-medium text-gray-700 border-r border-[#e2e8f0] select-none">
-                  {currentPage} / {totalPages}
-                </div>
-                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages} className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                  Siguiente
-                </button>
-              </nav>
-            </div>
-          </div>
+          <PaginationNav
+            data={{ currentPage, totalPages, total: totalOrders, limit: ORDERS_PER_PAGE }}
+            onChange={setCurrentPage}
+            entityLabel="órdenes"
+          />
         )}
       </>
 
-      {/* Modal de nueva orden */}
-      {showNewOrderModal && (
-        <NewOrderModal
-          isOpen={showNewOrderModal}
-          onClose={() => setShowNewOrderModal(false)}
-          onOrderCreated={() => {
-            setShowNewOrderModal(false);
-            loadOrders();
-          }}
-        />
-      )}
+      {alertModal}
+
+      {/* Sheet de orden (crear / editar) */}
+      <OrderSheet
+        isOpen={showOrderSheet}
+        onClose={() => setShowOrderSheet(false)}
+        onSuccess={() => {
+          setShowOrderSheet(false);
+          loadOrders();
+        }}
+        orderId={orderSheetId}
+      />
 
       {/* Modal de gestión de clientes */}
       {showClientsModal && (
@@ -513,22 +479,6 @@ export const OrdersPage: React.FC = () => {
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} />;
       })()}
 
-      {/* Modal de edición */}
-      {showEditModal && selectedOrder && (
-        <EditOrderModal
-          isOpen={showEditModal}
-          order={selectedOrder}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedOrder(null);
-          }}
-          onSuccess={() => {
-            setShowEditModal(false);
-            setSelectedOrder(null);
-            loadOrders();
-          }}
-        />
-      )}
     </div>
   );
 };

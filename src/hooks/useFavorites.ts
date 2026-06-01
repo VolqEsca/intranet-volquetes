@@ -27,9 +27,9 @@ export const useFavorites = () => {
       }
     };
 
-    window.addEventListener(EVENT_NAME as any, handleFavoritesUpdate);
+    window.addEventListener(EVENT_NAME, handleFavoritesUpdate as EventListener);
     return () => {
-      window.removeEventListener(EVENT_NAME as any, handleFavoritesUpdate);
+      window.removeEventListener(EVENT_NAME, handleFavoritesUpdate as EventListener);
     };
   }, []);
 

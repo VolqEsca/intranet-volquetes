@@ -248,21 +248,35 @@ try {
                        working_days_count, notes
                    FROM employee_absences
                    WHERE (start_date <= ? AND end_date >= ?)
+                     AND status != 'rejected'
                    ORDER BY start_date ASC";
 
         $stmtAbs = $pdo->prepare($sqlAbs);
         $stmtAbs->execute([$lastDay, $firstDay]);
 
     } else {
-        // Modo anual (mantener filtro por año fiscal para rendimiento)
-        $sqlAbs = "SELECT
-                       id, employee_id, absence_type, start_date, end_date,
-                       working_days_count, notes
-                   FROM employee_absences
-                   WHERE year = ?
-                   ORDER BY start_date ASC";
-        $stmtAbs = $pdo->prepare($sqlAbs);
-        $stmtAbs->execute([$year]);
+        // Modo anual — filtro opcional por empleado individual
+        $filterEmployeeId = isset($_GET['employee_id']) ? intval($_GET['employee_id']) : null;
+
+        if ($filterEmployeeId !== null && $filterEmployeeId > 0) {
+            $sqlAbs = "SELECT
+                           id, employee_id, absence_type, start_date, end_date,
+                           working_days_count, notes
+                       FROM employee_absences
+                       WHERE year = ? AND employee_id = ?
+                       ORDER BY start_date ASC";
+            $stmtAbs = $pdo->prepare($sqlAbs);
+            $stmtAbs->execute([$year, $filterEmployeeId]);
+        } else {
+            $sqlAbs = "SELECT
+                           id, employee_id, absence_type, start_date, end_date,
+                           working_days_count, notes
+                       FROM employee_absences
+                       WHERE year = ?
+                       ORDER BY start_date ASC";
+            $stmtAbs = $pdo->prepare($sqlAbs);
+            $stmtAbs->execute([$year]);
+        }
     }
 
     while ($row = $stmtAbs->fetch(PDO::FETCH_ASSOC)) {

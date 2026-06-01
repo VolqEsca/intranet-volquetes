@@ -24,7 +24,7 @@ export interface Absence {
   id: number;
   employee_id: number;
   absence_type: 'vacation' | 'special_permit' | 'sick_leave' | 'unpaid_leave';
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'approved';
   start_date: string;
   end_date: string;
   working_days_count: number;
@@ -161,11 +161,21 @@ export const ABSENCE_TYPES = {
 
 export const getAbsenceColor = (type: string) => {
   switch (type) {
-    case 'vacation': return '#5487c0';
-    case 'special_permit': return '#a2bade';
+    case 'vacation': return '#1162a6';
+    case 'special_permit': return '#5487c0';
     case 'sick_leave': return '#a2bade';
     case 'unpaid_leave': return '#dc2626';
     default: return '#cbd5e1';
+  }
+};
+
+export const getAbsenceTextColor = (type: string) => {
+  switch (type) {
+    case 'vacation':       return '#072742';
+    case 'special_permit': return '#22364d';
+    case 'sick_leave':     return '#414a59';
+    case 'unpaid_leave':   return '#580f0f';
+    default:               return '#51555a';
   }
 };
 
@@ -216,12 +226,11 @@ export const HOLIDAY_TYPES = {
   agreement: 'Convenio',
 } as const;
 
-// 🎨 COLORES CORPORATIVOS VERSO: Paleta azul informativa (no de alerta)
 export const HOLIDAY_TYPE_COLORS = {
-  national: 'bg-[#1162a6] text-white border-[#0d4d85]',           // Azul oscuro corporativo (más importante)
-  regional: 'bg-[#5487c0] text-white border-[#4a7bb7]',           // Azul medio corporativo  
-  local: 'bg-[#a2bade] text-[#1162a6] border-[#8ba8d1]',          // Azul claro corporativo
-  agreement: 'bg-slate-100 text-slate-700 border-slate-300',      // Gris neutro convenio
+  national: 'bg-[#1162a6] text-white border-[#1162a6]',
+  regional: 'bg-[#5487c0]/20 text-[#1162a6] border-[#5487c0]/30',
+  local: 'bg-[#a2bade]/20 text-[#1162a6] border-[#a2bade]/40',
+  agreement: 'bg-[#dc2626]/10 text-[#dc2626] border-[#dc2626]/20',
 } as const;
 
 // ========================================
@@ -232,8 +241,10 @@ export const vacationsAPI = {
   getCalendar: (year: number, month: number) => 
     apiClient.get<CalendarData>(`/vacations/calendar.php?year=${year}&month=${month}`),
 
-  getYearlyAbsences: (year: number) => 
-    apiClient.get<{ absences: Absence[] }>(`/vacations/calendar.php?year=${year}`),
+  getYearlyAbsences: (year: number, employeeId?: number) =>
+    apiClient.get<{ absences: Absence[] }>(
+      `/vacations/calendar.php?year=${year}${employeeId ? `&employee_id=${employeeId}` : ''}`
+    ),
 
   calculateWorkingDays: (start: string, end: string) => 
     apiClient.get<{ calculation: WorkingDaysCalculation }>(`/vacations/calculate-days.php?start=${start}&end=${end}`),
@@ -297,7 +308,9 @@ export const detectConflicts = (
   endDate: string,
   employees: Employee[],
   absences: Absence[],
-  excludeAbsenceId?: number
+  excludeAbsenceId?: number,
+  warningThreshold = 3,
+  criticalRemaining = 2
 ): ConflictDetection => {
   const employeesInLocation = employees.filter(emp => 
     emp.location === location && emp.status === 'active'
@@ -344,11 +357,11 @@ export const detectConflicts = (
   if (affectedCount === 0) {
     severity = 'none';
     message = 'No hay conflictos detectados';
-  } else if (remainingEmployees <= 2) {
+  } else if (remainingEmployees <= criticalRemaining) {
     severity = 'critical';
     message = `ALERTA OPERATIVA: ${location}`;
     impactDescription = `Solo quedarían ${remainingEmployees} empleados operativos. Riesgo de parada de producción.`;
-  } else if (affectedCount >= 3) {
+  } else if (affectedCount >= warningThreshold) {
     severity = 'warning';
     message = `Concentración de Ausencias en ${location}`;
     impactDescription = `${affectedCount} empleados ya ausentes. Revisar carga de trabajo restante.`;

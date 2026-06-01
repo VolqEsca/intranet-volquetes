@@ -155,7 +155,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
 
       {/* Footer */}
       <div className="px-8 py-4 border-t border-[#e2e8f0]">
-        <p className="text-xs font-medium text-[#1162a6]">VERSO v2.1.0</p>
+        <p className="text-xs font-medium text-[#1162a6]">VERSO v2.3.0</p>
         <p className="text-xs text-gray-400 mt-0.5">Sistema Integral</p>
       </div>
     </div>

@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { apiErrorMessage } from '../../utils/error';
-import { dialog } from "../../services/dialog.service";
+import { toast } from 'sonner';
 
 export const ProfilePage = () => {
   const { user, updateUserInfo } = useAuth();
@@ -96,12 +96,9 @@ export const ProfilePage = () => {
         rol: formData.rol,
       });
 
-      await dialog.success('Tu perfil ha sido actualizado correctamente', '✅ Perfil Actualizado');
+      toast.success('Perfil actualizado correctamente');
     } catch (error: unknown) {
-      await dialog.error(
-        apiErrorMessage(error, 'No se pudo actualizar tu perfil. Por favor, inténtalo de nuevo.'),
-        'Error al actualizar perfil'
-      );
+      toast.error(apiErrorMessage(error, 'No se pudo actualizar tu perfil. Por favor, inténtalo de nuevo.'));
     } finally {
       setLoading(false);
     }
@@ -111,12 +108,12 @@ export const ProfilePage = () => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      await dialog.error('Las contraseñas no coinciden. Por favor, verifica que ambas sean idénticas.');
+      toast.error('Las contraseñas no coinciden. Por favor, verifica que ambas sean idénticas.');
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      await dialog.error('La contraseña debe tener al menos 6 caracteres.');
+      toast.error('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
@@ -135,15 +132,9 @@ export const ProfilePage = () => {
       });
       setPasswordStrength(0);
       
-      await dialog.success(
-        'Tu contraseña ha sido actualizada exitosamente. Recuerda usar la nueva contraseña en tu próximo inicio de sesión.',
-        '✅ Contraseña Actualizada'
-      );
+      toast.success('Contraseña actualizada correctamente');
     } catch (error: unknown) {
-      await dialog.error(
-        apiErrorMessage(error, 'No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.'),
-        'Error al cambiar contraseña'
-      );
+      toast.error(apiErrorMessage(error, 'No se pudo cambiar la contraseña. Verifica que la contraseña actual sea correcta.'));
     } finally {
       setLoading(false);
     }

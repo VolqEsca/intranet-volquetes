@@ -1,8 +1,8 @@
 <?php
 // ✅ PATRÓN VERSO PROBADO: Mismo que create.php
-require_once __DIR__ . '/../../cors.php';       // Desde /holidays/ sube 2 niveles a /api/
+require_once __DIR__ . '/../../../config.php';
+require_once __DIR__ . '/../../cors.php';
 require_once __DIR__ . '/../../auth_check.php';
-require_once __DIR__ . '/../../../config.php';  // PDO centralizado (sube 3 niveles)
 require_once __DIR__ . '/../../permission_check.php';
 require_module_permission('vacations'); // Autenticación centralizada
 

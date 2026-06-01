@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from '../../components/ui/Modal';
+import { Sheet } from '../../components/ui/Sheet';
 import { Button } from '../../components/ui/Button';
 import { apiClient } from '../../api';
 import { apiErrorMessage } from '../../utils/error';
@@ -40,9 +40,21 @@ export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Añadir Nuevo Cliente" size="max-w-lg">
-      <div className="flex flex-col max-h-[90vh]">
-        <form id="new-client-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Añadir Nuevo Cliente"
+      size="md"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="subtle" onClick={onClose}>Cancelar</Button>
+          <Button type="submit" form="new-client-form" disabled={loading}>
+            {loading ? 'Guardando...' : 'Guardar Cliente'}
+          </Button>
+        </div>
+      }
+    >
+      <form id="new-client-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium">Nombre de la Empresa</label>
             <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-100 rounded-md"/>
@@ -63,11 +75,6 @@ export function NewClientModal({ isOpen, onClose, onClientAdded }: Props) {
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </form>
-        <div className="flex-shrink-0 border-t border-[#e2e8f0] px-6 py-4 flex justify-end gap-3">
-          <Button type="button" variant="subtle" onClick={onClose}>Cancelar</Button>
-          <Button type="submit" form="new-client-form" disabled={loading}>{loading ? 'Guardando...' : 'Guardar Cliente'}</Button>
-        </div>
-      </div>
-    </Modal>
+    </Sheet>
   );
 }

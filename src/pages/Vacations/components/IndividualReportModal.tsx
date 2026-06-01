@@ -4,12 +4,13 @@ import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Employee, VacationBalance, Absence, vacationsAPI } from '../../../api/vacations';
+import { APP_VERSION } from '../../../config/version';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee;
-  balance: VacationBalance;
+  balance: VacationBalance | undefined;
   year: number;
 }
 
@@ -31,13 +32,8 @@ export const IndividualReportModal: React.FC<Props> = ({
       setIsLoadingAbsences(true);
 
       try {
-        const response = await vacationsAPI.getYearlyAbsences(year);
-        const absencesData = response.data.absences || [];
-        
-        // Filtrar solo ausencias de este empleado
-        const employeeAbsences = absencesData.filter(abs => abs.employee_id === employee.id);
-        
-        setYearlyAbsences(employeeAbsences);
+        const response = await vacationsAPI.getYearlyAbsences(year, employee.id);
+        setYearlyAbsences(response.data.absences || []);
       } catch (error: unknown) {
         console.error('❌ Error cargando ausencias individuales:', error);
         setYearlyAbsences([]);
@@ -54,12 +50,12 @@ export const IndividualReportModal: React.FC<Props> = ({
   }, [isOpen, year, employee.id]);
 
   // Calcular datos del balance
-  const annual = balance.annual_days || 0;
-  const carried = balance.carried_over_days || 0;
-  const adjustments = balance.manual_adjustments || 0;
+  const annual = balance?.annual_days || 0;
+  const carried = balance?.carried_over_days || 0;
+  const adjustments = balance?.manual_adjustments || 0;
   const totalGenerated = annual + carried + adjustments;
-  const consumed = balance.consumed_days || 0;
-  const available = balance.available_days || 0;
+  const consumed = balance?.consumed_days || 0;
+  const available = balance?.available_days || 0;
 
   // Filtrar solo vacaciones aprobadas del año
   const employeeVacations = yearlyAbsences.filter(abs => {
@@ -163,7 +159,7 @@ export const IndividualReportModal: React.FC<Props> = ({
 
     lines.push(
       '═══════════════════════════════════════════════════════════',
-      `  Generado: ${new Date().toLocaleDateString('es-ES')} | VERSO v12.8`,
+      `  Generado: ${new Date().toLocaleDateString('es-ES')} | VERSO ${APP_VERSION}`,
       '═══════════════════════════════════════════════════════════'
     );
 
@@ -501,7 +497,7 @@ export const IndividualReportModal: React.FC<Props> = ({
   </div>
 
   <div class="footer">
-    <p><strong>VERSO v12.8</strong> - Sistema de Gestión de Recursos Humanos</p>
+    <p><strong>VERSO ${APP_VERSION}</strong> - Sistema de Gestión de Recursos Humanos</p>
     <p>Convenio Metal de Valladolid ${year} • Volquetes Escalante S.L.</p>
   </div>
 </body>

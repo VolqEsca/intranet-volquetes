@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Employee, VacationBalance, Absence, vacationsAPI } from '../../../api/vacations';
+import { APP_VERSION } from '../../../config/version';
 
 interface Props {
   isOpen: boolean;
@@ -457,7 +458,7 @@ export const BalancesReportModal: React.FC<Props> = ({
 
     htmlContent += `
   <div class="footer">
-    <p><strong>VERSO v12.7</strong> - Sistema de Gestión de Recursos Humanos</p>
+    <p><strong>VERSO ${APP_VERSION}</strong> - Sistema de Gestión de Recursos Humanos</p>
     <p>Convenio Metal de Valladolid ${year} • Volquetes Escalante S.L.</p>
   </div>
 </body>

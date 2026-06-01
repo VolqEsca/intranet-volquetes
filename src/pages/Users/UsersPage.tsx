@@ -21,7 +21,8 @@ import { UserModal } from "./components/UserModal";
 import { TableActionButton } from "../../components/ui/TableActionButton";
 import { PasswordModal } from "./components/PasswordModal";
 import { getRoleConfig } from "../../config/roles";
-import { dialog } from "../../services/dialog.service";
+import { toast } from 'sonner';
+import { useAlertModal } from '../../hooks/useAlertModal';
 
 interface User {
   id: number;
@@ -43,6 +44,7 @@ export const UsersPage = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string>("");
+  const { confirm: alertConfirm, modal: alertModal } = useAlertModal();
 
   // Solo admins pueden acceder - verificamos ambos formatos
   const canManageUsers = currentUser?.rol === "admin" || currentUser?.rol === "Administrador";
@@ -88,28 +90,22 @@ export const UsersPage = () => {
     const userToDelete = users.find(u => u.id === userId);
     const userName = userToDelete?.username || 'este usuario';
     
-    const confirmed = await dialog.confirm(
-      `¿Estás seguro de que quieres eliminar a "${userName}"? Esta acción no se puede deshacer.`,
-      'Eliminar Usuario',
-      {
-        confirmText: 'Eliminar',
-        cancelText: 'Cancelar',
-        variant: 'warning'
-      }
-    );
-    
+    const confirmed = await alertConfirm({
+      title: 'Eliminar usuario',
+      description: `¿Estás seguro de que quieres eliminar a "${userName}"? Esta acción no se puede deshacer.`,
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
+
     if (!confirmed) return;
 
     try {
       await apiClient.delete(`/users/delete.php?id=${userId}`);
-      await dialog.success(`Usuario "${userName}" eliminado correctamente`);
+      toast.success(`Usuario "${userName}" eliminado correctamente`);
       fetchUsers();
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
-      await dialog.error(
-        'No se pudo eliminar el usuario. Por favor, inténtalo de nuevo.',
-        'Error al eliminar'
-      );
+      toast.error('No se pudo eliminar el usuario. Por favor, inténtalo de nuevo.');
     }
   };
 
@@ -117,13 +113,13 @@ export const UsersPage = () => {
     try {
       if (isCreating) {
         await apiClient.post("/users/create.php", userData);
-        await dialog.success('Usuario creado correctamente');
+        toast.success('Usuario creado correctamente');
       } else if (selectedUser) {
         await apiClient.put("/users/update.php", {
           ...userData,
           id: selectedUser.id,
         });
-        await dialog.success('Usuario actualizado correctamente');
+        toast.success('Usuario actualizado correctamente');
       }
       fetchUsers();
     } catch (error) {
@@ -140,7 +136,7 @@ export const UsersPage = () => {
         id: selectedUser.id,
         password,
       });
-      await dialog.success(`Contraseña actualizada correctamente para "${selectedUser.username}"`);
+      toast.success(`Contraseña actualizada correctamente para "${selectedUser.username}"`);
     } catch (error) {
       console.error("Error al cambiar contraseña:", error);
       throw error;
@@ -347,6 +343,8 @@ export const UsersPage = () => {
           onSave={handleSavePassword}
           username={selectedUser?.username || ""}
         />
+
+        {alertModal}
     </div>
   );
 };

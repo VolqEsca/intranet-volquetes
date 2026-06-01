@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, User, Wrench, AlertTriangle, FileEdit, Printer } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
-import { manufacturingAPI } from '../../../api/manufacturing';
-import { dialog } from '../../../services/dialog.service';
+import { manufacturingAPI, ManufacturingOrder } from '../../../api/manufacturing';
+import { toast } from 'sonner';
+import { useAlertModal } from '../../../hooks/useAlertModal';
 import { apiErrorMessage } from '../../../utils/error';
 
 interface EditManufacturingOrderModalProps {
@@ -40,6 +41,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { confirm: alertConfirm, modal: alertModal } = useAlertModal();
 
   // ✅ FUNCIÓN DE CONVERSIÓN DE FECHAS: dd/mm/yyyy → yyyy-mm-dd
   const convertDateFormat = (dateStr: string | null | undefined): string => {
@@ -119,10 +121,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
       
     } catch (error: unknown) {
       console.error('❌ Error loading order data:', error);
-      await dialog.error(
-        apiErrorMessage(error, 'No se pudieron cargar los datos de la orden'),
-        'Error de Carga'
-      );
+      toast.error(apiErrorMessage(error, 'No se pudieron cargar los datos de la orden'));
     } finally {
       setLoadingData(false);
     }
@@ -131,14 +130,16 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
   const handleSubmit = async () => {
     // ✅ VALIDACIONES BÁSICAS
     if (!formData.client_name.trim()) {
-      await dialog.error('El nombre del cliente es requerido', 'Campo Requerido');
+      toast.error('El nombre del cliente es requerido');
       return;
     }
 
-    const confirmed = await dialog.confirm(
-      `¿Está seguro de guardar los cambios en la orden ${orderNumber}?`,
-      'Confirmar Actualización'
-    );
+    const confirmed = await alertConfirm({
+      title: 'Confirmar actualización',
+      description: `¿Está seguro de guardar los cambios en la orden ${orderNumber}?`,
+      variant: 'info',
+      confirmLabel: 'Guardar',
+    });
 
     if (!confirmed) return;
 
@@ -169,18 +170,11 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
       
       await manufacturingAPI.update(orderId, orderData);
       
-      await dialog.success(
-        `La orden ${orderNumber} ha sido actualizada exitosamente.`,
-        'Orden Actualizada'
-      );
-      
+      toast.success(`Orden ${orderNumber} actualizada correctamente`);
       onSuccess();
     } catch (error: unknown) {
       console.error('Error updating manufacturing order:', error);
-      await dialog.error(
-        apiErrorMessage(error, 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.'),
-        'Error al actualizar la orden'
-      );
+      toast.error(apiErrorMessage(error, 'No se pudo actualizar la orden. Por favor, inténtalo de nuevo.'));
     } finally {
       setLoading(false);
     }
@@ -360,7 +354,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as ManufacturingOrder['status'] })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
               >
                 <option value="pending">Pendiente</option>
@@ -377,7 +371,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
               </label>
               <select
                 value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value as ManufacturingOrder['priority'] })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
               >
                 <option value="low">Baja</option>
@@ -468,6 +462,7 @@ const EditManufacturingOrderModal: React.FC<EditManufacturingOrderModalProps> = 
           )}
         </Button>
       </div>
+      {alertModal}
     </div>
   );
 };

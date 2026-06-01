@@ -53,22 +53,27 @@ function listClients() {
 
     $search = $_GET['search'] ?? '';
 
-    if (strlen($search) < 2) {
-        echo json_encode(['success' => true, 'data' => [], 'empty_search' => true]);
-        return;
-    }
-
     try {
-        $term = '%' . $search . '%';
-        $stmt = $pdo->prepare(
-            "SELECT id, name, cif_nif, contact_person, phone, notes, active
-             FROM clients
-             WHERE active = 1
-               AND (name LIKE ? OR cif_nif LIKE ? OR phone LIKE ?)
-             ORDER BY name ASC
-             LIMIT 50"
-        );
-        $stmt->execute([$term, $term, $term]);
+        if (strlen($search) >= 2) {
+            $term = '%' . $search . '%';
+            $stmt = $pdo->prepare(
+                "SELECT id, name, cif_nif, contact_person, phone, notes, active
+                 FROM clients
+                 WHERE active = 1
+                   AND (name LIKE ? OR cif_nif LIKE ? OR phone LIKE ?)
+                 ORDER BY name ASC
+                 LIMIT 50"
+            );
+            $stmt->execute([$term, $term, $term]);
+        } else {
+            $stmt = $pdo->prepare(
+                "SELECT id, name, cif_nif, contact_person, phone, notes, active
+                 FROM clients
+                 WHERE active = 1
+                 ORDER BY name ASC"
+            );
+            $stmt->execute();
+        }
 
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

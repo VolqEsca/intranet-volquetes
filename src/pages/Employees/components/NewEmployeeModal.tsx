@@ -1,6 +1,6 @@
 // src/pages/Employees/components/NewEmployeeModal.tsx - VERSIÓN CORPORATIVA CORREGIDA
 import React, { useState } from 'react';
-import { Modal } from '../../../components/ui/Modal';
+import { Sheet } from '../../../components/ui/Sheet';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS } from '../../../api/employees';
 import { apiErrorMessage } from '../../../utils/error';
@@ -122,9 +122,23 @@ export const NewEmployeeModal: React.FC<NewEmployeeModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Nuevo Empleado">
-      <div className="flex flex-col max-h-[90vh]">
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <Sheet
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Nuevo Empleado"
+      size="lg"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={handleClose} variant="subtle" disabled={isSubmitting}>
+            Cancelar
+          </Button>
+          <Button type="button" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? 'Creando...' : 'Crear Empleado'}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
         {submitError && (
           <div className="p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700">
             {submitError}
@@ -451,24 +465,6 @@ export const NewEmployeeModal: React.FC<NewEmployeeModalProps> = ({
         </div>
 
       </div>
-      <div className="flex-shrink-0 border-t border-[#e2e8f0] px-6 py-4 flex justify-end gap-3">
-        <Button
-          type="button"
-          onClick={handleClose}
-          variant="subtle"
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Creando...' : 'Crear Empleado'}
-        </Button>
-      </div>
-    </div>
-    </Modal>
+    </Sheet>
   );
 };

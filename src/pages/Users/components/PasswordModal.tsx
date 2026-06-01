@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { X, Lock, Eye, EyeOff, Check, AlertCircle, Save } from "lucide-react";
+import { Eye, EyeOff, Check, AlertCircle, Save } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
+import { Sheet } from "../../../components/ui/Sheet";
 import { apiErrorMessage } from '../../../utils/error';
 
 interface PasswordModalProps {
@@ -89,177 +90,133 @@ export const PasswordModal = ({
     try {
       await onSave(password);
       onClose();
-    } catch (error: unknown) {
-      setError(apiErrorMessage(error, "Error al cambiar la contraseña"));
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, "Error al cambiar la contraseña"));
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#e2e8f0] bg-gray-50">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#1162a6]/10 rounded-lg">
-              <Lock className="w-6 h-6 text-[#1162a6]" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Cambiar Contraseña
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Usuario: <strong>{username}</strong>
-              </p>
-            </div>
-          </div>
-          <button
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Cambiar Contraseña"
+      description={`Usuario: ${username}`}
+      size="sm"
+      footer={
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="subtle"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
+            disabled={loading}
+            fullWidth
           >
-            <X size={24} />
-          </button>
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            form="password-form"
+            variant="primary"
+            disabled={loading || password !== confirmPassword}
+            fullWidth
+          >
+            <Save size={18} className="mr-2" />
+            {loading ? "Cambiando..." : "Cambiar Contraseña"}
+          </Button>
         </div>
+      }
+    >
+      <form id="password-form" onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="flex items-center gap-2 p-4 bg-[#dc2626]/5 border border-[#dc2626]/30 rounded-lg text-[#dc2626]">
+            <AlertCircle size={20} />
+            <span>{error}</span>
+          </div>
+        )}
 
-        {/* Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {error && (
-            <div className="flex items-center gap-2 p-4 bg-[#dc2626]/5 border border-[#dc2626]/30 rounded-lg text-[#dc2626]">
-              <AlertCircle size={20} />
-              <span>{error}</span>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nueva contraseña
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+
+          {password && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-gray-600">Fuerza de la contraseña</span>
+                <span className="text-xs font-medium">{getPasswordStrengthText()}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
+                  style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                />
+              </div>
+              <div className="mt-3 space-y-1">
+                {passwordRequirements.map((req, index) => (
+                  <div key={index} className="flex items-center gap-2 text-xs">
+                    {req.met ? (
+                      <Check className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border border-gray-300" />
+                    )}
+                    <span className={req.met ? "text-green-700" : "text-gray-500"}>
+                      {req.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nueva contraseña
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-
-            {/* Indicador de fuerza */}
-            {password && (
-              <div className="mt-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-600">
-                    Fuerza de la contraseña
-                  </span>
-                  <span className="text-xs font-medium">
-                    {getPasswordStrengthText()}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
-                    style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                  />
-                </div>
-
-                {/* Requisitos */}
-                <div className="mt-3 space-y-1">
-                  {passwordRequirements.map((req, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 text-xs"
-                    >
-                      {req.met ? (
-                        <Check className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <div className="w-4 h-4 rounded-full border border-gray-300" />
-                      )}
-                      <span
-                        className={
-                          req.met ? "text-green-700" : "text-gray-500"
-                        }
-                      >
-                        {req.text}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirmar contraseña
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-            {confirmPassword && password !== confirmPassword && (
-              <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                Las contraseñas no coinciden
-              </p>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="flex gap-3 pt-4">
-            <Button
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Confirmar contraseña
+          </label>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1162a6] focus:border-transparent"
+              placeholder="••••••••"
+            />
+            <button
               type="button"
-              variant="subtle"
-              onClick={onClose}
-              disabled={loading}
-              fullWidth
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
             >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading || password !== confirmPassword}
-              fullWidth
-              className="flex items-center justify-center gap-2"
-            >
-              <Save size={18} />
-              {loading ? "Cambiando..." : "Cambiar Contraseña"}
-            </Button>
+              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
           </div>
-        </form>
-      </div>
-    </div>
+          {confirmPassword && password !== confirmPassword && (
+            <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              Las contraseñas no coinciden
+            </p>
+          )}
+        </div>
+      </form>
+    </Sheet>
   );
 };

@@ -9,10 +9,12 @@ import { NewManufacturingOrderModal } from './components/NewManufacturingOrderMo
 import { EditManufacturingOrderModal } from './components/EditManufacturingOrderModal';
 import ManufacturingOrderStatusBadge from './components/ManufacturingOrderStatusBadge';
 import ManufacturingOrderPriorityBadge from './components/ManufacturingOrderPriorityBadge';
-import { dialog } from '../../services/dialog.service';
+import { toast } from 'sonner';
+import { useAlertModal } from '../../hooks/useAlertModal';
 import { Modal } from '../../components/ui/Modal';
 import { formatDate, truncateText } from '../../utils/formatters';
 import { fromSnake } from '../../types/pagination';
+import { PaginationNav } from '../../components/ui/PaginationNav';
 import { apiErrorMessage } from '../../utils/error';
 
 
@@ -39,6 +41,7 @@ export function ManufacturingOrdersPage() {
 
   // ✅ ESTADO PARA DROPDOWN - Idéntico a reparación
   const [activeDropdown, setActiveDropdown] = useState<{id: number, element: HTMLElement} | null>(null);
+  const { confirm: alertConfirm, modal: alertModal } = useAlertModal();
 
   const loadOrders = async () => {
     try {
@@ -98,36 +101,38 @@ export function ManufacturingOrdersPage() {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error('Error abriendo PDF:', error);
-      await dialog.error('Error al abrir el PDF');
+      toast.error('Error al abrir el PDF');
     }
   };
 
   const handleChangeStatus = async (order: ManufacturingOrder, newStatus: string) => {
     try {
-      await manufacturingAPI.updateStatus(order.id, newStatus as any);
-      await dialog.success('Estado actualizado correctamente');
+      await manufacturingAPI.updateStatus(order.id, newStatus);
+      toast.success('Estado actualizado correctamente');
       loadOrders();
     } catch (error: unknown) {
       console.error('Error cambiando estado:', error);
-      await dialog.error(apiErrorMessage(error, 'Error al cambiar el estado'));
+      toast.error(apiErrorMessage(error, 'Error al cambiar el estado'));
     }
   };
 
   const handleDeleteOrder = async (order: ManufacturingOrder) => {
-    const confirmed = await dialog.confirm(
-      `¿Eliminar la orden ${order.order_number}?`,
-      'Esta acción no se puede deshacer'
-    );
+    const confirmed = await alertConfirm({
+      title: `¿Eliminar la orden ${order.order_number}?`,
+      description: 'Esta acción no se puede deshacer',
+      variant: 'danger',
+      confirmLabel: 'Eliminar',
+    });
 
     if (!confirmed) return;
 
     try {
       await manufacturingAPI.delete(order.id);
-      await dialog.success(`Orden ${order.order_number} eliminada correctamente`);
+      toast.success(`Orden ${order.order_number} eliminada correctamente`);
       loadOrders();
     } catch (error: unknown) {
       console.error('Error eliminando orden:', error);
-      await dialog.error(apiErrorMessage(error, 'Error al eliminar la orden'));
+      toast.error(apiErrorMessage(error, 'Error al eliminar la orden'));
     }
   };
 
@@ -155,7 +160,7 @@ export function ManufacturingOrdersPage() {
       setBulkStatus('');
       loadOrders();
     } catch {
-      dialog.error('Error al aplicar cambio de estado');
+      toast.error('Error al aplicar cambio de estado');
     } finally {
       setApplyingBulk(false);
     }
@@ -443,55 +448,12 @@ export function ManufacturingOrdersPage() {
           </table>
         </div>
 
-        {/* Paginación - Idéntica a la actual */}
         {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage <= 1}
-                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Anterior
-              </button>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage >= totalPages}
-                className="inline-flex items-center px-4 py-2 border border-[#e2e8f0] rounded-lg bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Siguiente
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Página <span className="font-medium">{currentPage}</span> de{' '}
-                  <span className="font-medium">{totalPages}</span> ({totalRecords} órdenes totales)
-                </p>
-              </div>
-              <div>
-                <nav className="inline-flex rounded-lg border border-[#e2e8f0] overflow-hidden">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage <= 1}
-                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 border-r border-[#e2e8f0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Anterior
-                  </button>
-                  <div className="px-4 py-2 bg-white text-sm font-medium text-gray-700 border-r border-[#e2e8f0] select-none">
-                    {currentPage} / {totalPages}
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage >= totalPages}
-                    className="px-4 py-2 bg-white text-sm font-medium text-[#1162a6] hover:bg-[#a2bade]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Siguiente
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </div>
+          <PaginationNav
+            data={{ currentPage, totalPages, total: totalRecords, limit: 10 }}
+            onChange={setCurrentPage}
+            entityLabel="órdenes"
+          />
         )}
       </div>
 
@@ -548,6 +510,8 @@ export function ManufacturingOrdersPage() {
         ];
         return <PortalDropdownMenu anchorEl={activeDropdown.element} onClose={close} actions={actions} menuHeight={240} />;
       })()}
+
+      {alertModal}
     </div>
   );
 }

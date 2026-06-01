@@ -1,8 +1,8 @@
 <?php
 // ✅ VERSO v13.1.4 - Sistema de Gestión de Festivos: Actualizar
+require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../cors.php';
 require_once __DIR__ . '/../../auth_check.php';
-require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../permission_check.php';
 require_module_permission('vacations');
 

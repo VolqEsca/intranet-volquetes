@@ -120,6 +120,40 @@ try {
         $data['id']
     ]);
 
+    // 3b. RECALCULAR absence_breakdown (fix B1: edición no actualizaba el desglose por mes)
+    $stmt = $pdo->prepare("DELETE FROM `absence_breakdown` WHERE absence_id = ?");
+    $stmt->execute([$data['id']]);
+
+    // Iterar día a día y agrupar días laborables por year_month (lógica de calculateSmartBreakdown)
+    $bdStart = new DateTime($data['start_date']);
+    $bdEnd   = new DateTime($data['end_date']);
+    $bdEnd->modify('+1 day');
+    $bdInterval = new DateInterval('P1D');
+    $bdPeriod   = new DatePeriod($bdStart, $bdInterval, $bdEnd);
+
+    $bdHolidayStmt = $pdo->prepare(
+        "SELECT holiday_date FROM holidays WHERE holiday_date BETWEEN ? AND ? AND is_active = TRUE"
+    );
+    $bdHolidayStmt->execute([$data['start_date'], $data['end_date']]);
+    $bdHolidays = $bdHolidayStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $bdByMonth = [];
+    foreach ($bdPeriod as $bdDt) {
+        $dow      = (int)$bdDt->format('N');
+        $dateStr  = $bdDt->format('Y-m-d');
+        $yearMonth = $bdDt->format('Y-m');
+        if ($dow < 6 && !in_array($dateStr, $bdHolidays)) {
+            $bdByMonth[$yearMonth] = ($bdByMonth[$yearMonth] ?? 0) + 1;
+        }
+    }
+
+    $bdInsert = $pdo->prepare(
+        "INSERT INTO `absence_breakdown` (absence_id, `year_month`, working_days) VALUES (?, ?, ?)"
+    );
+    foreach ($bdByMonth as $ym => $days) {
+        $bdInsert->execute([$data['id'], $ym, $days]);
+    }
+
     // 4. ✅ APLICAR NUEVO SALDO (solo si la NUEVA ausencia es vacation)
     // 'unpaid_leave' NO entra aquí = NO descuenta saldo (comportamiento correcto)
     $applied_days = 0;

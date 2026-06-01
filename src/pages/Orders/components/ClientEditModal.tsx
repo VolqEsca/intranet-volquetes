@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { apiClient } from '../../../api';
-import { dialog } from '../../../services/dialog.service';
+import { toast } from 'sonner';
 import { isAxiosError } from 'axios';
 
 interface Client {
@@ -65,13 +65,13 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
       if (isCreating || client.id === 0) {
         // Crear nuevo cliente
         await apiClient.post('/clients/', formData);
-        await dialog.success('Cliente creado correctamente');
+        toast.success('Cliente creado correctamente');
       } else {
         // Actualizar cliente existente
         await apiClient.put(`/clients/${client.id}`, formData);
-        await dialog.success('Cliente actualizado correctamente');
+        toast.success('Cliente actualizado correctamente');
       }
-      
+
       onSave();
     } catch (error: unknown) {
       console.error('Error guardando cliente:', error);
@@ -83,19 +83,13 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
           if (data.error.includes('CIF/NIF')) {
             setErrors({ cif_nif: data.error });
           } else {
-            await dialog.error(data.error, 'Error al guardar');
+            toast.error(data.error);
           }
         } else {
-          await dialog.error(
-            `No se pudo ${isCreating ? 'crear' : 'actualizar'} el cliente. Por favor, inténtalo de nuevo.`,
-            'Error al guardar'
-          );
+          toast.error(`No se pudo ${isCreating ? 'crear' : 'actualizar'} el cliente. Por favor, inténtalo de nuevo.`);
         }
       } else {
-        await dialog.error(
-          `No se pudo ${isCreating ? 'crear' : 'actualizar'} el cliente. Por favor, inténtalo de nuevo.`,
-          'Error al guardar'
-        );
+        toast.error(`No se pudo ${isCreating ? 'crear' : 'actualizar'} el cliente. Por favor, inténtalo de nuevo.`);
       }
     } finally {
       setLoading(false);
@@ -124,12 +118,12 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
                   if (errors.name) setErrors({ ...errors, name: '' });
                 }}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark ${
-                  errors.name ? 'border-red-500' : ''
+                  errors.name ? 'border-[#dc2626]' : ''
                 }`}
                 placeholder="Nombre del cliente"
               />
               {errors.name && (
-                <p className="text-sm text-red-600 mt-1">{errors.name}</p>
+                <p className="text-sm text-[#dc2626] mt-1">{errors.name}</p>
               )}
             </div>
 
@@ -145,12 +139,12 @@ export const ClientEditModal: React.FC<ClientEditModalProps> = ({
                   if (errors.cif_nif) setErrors({ ...errors, cif_nif: '' });
                 }}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark ${
-                  errors.cif_nif ? 'border-red-500' : ''
+                  errors.cif_nif ? 'border-[#dc2626]' : ''
                 }`}
                 placeholder="B12345678"
               />
               {errors.cif_nif && (
-                <p className="text-sm text-red-600 mt-1">{errors.cif_nif}</p>
+                <p className="text-sm text-[#dc2626] mt-1">{errors.cif_nif}</p>
               )}
             </div>
           </div>

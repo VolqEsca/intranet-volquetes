@@ -5,7 +5,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import CustomDatePicker from '../../../components/ui/CustomDatePicker';
 import { manufacturingAPI, ManufacturingOrderFormData } from '../../../api/manufacturing';
-import { dialog } from '../../../services/dialog.service';
+import { toast } from 'sonner';
 import { apiErrorMessage } from '../../../utils/error';
 
 interface NewManufacturingOrderModalProps {
@@ -65,10 +65,7 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
     const isValid = validateStep(activeTab);
     
     if (!isValid) {
-      await dialog.error(
-        'Por favor, complete todos los campos requeridos antes de continuar.',
-        'Campos Requeridos'
-      );
+      toast.error('Por favor, complete todos los campos requeridos antes de continuar.');
       return;
     }
     
@@ -98,10 +95,7 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
     }
     
     if (hasErrors) {
-      await dialog.error(
-        'Por favor, complete todos los campos requeridos antes de crear la orden.',
-        'Campos Requeridos'
-      );
+      toast.error('Por favor, complete todos los campos requeridos antes de crear la orden.');
       return;
     }
     
@@ -131,20 +125,13 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
       
       await manufacturingAPI.create(orderData);
       
-      await dialog.success(
-        'La orden de fabricación ha sido creada exitosamente.',
-        'Orden Creada'
-      );
-      
+      toast.success('Orden de fabricación creada correctamente');
       onOrderCreated();
       onClose();
       resetForm();
     } catch (error: unknown) {
       console.error('Error creating manufacturing order:', error);
-      await dialog.error(
-        apiErrorMessage(error, 'No se pudo crear la orden. Por favor, inténtalo de nuevo.'),
-        'Error al crear la orden'
-      );
+      toast.error(apiErrorMessage(error, 'No se pudo crear la orden. Por favor, inténtalo de nuevo.'));
     } finally {
       setLoading(false);
     }
@@ -395,7 +382,7 @@ const NewManufacturingOrderModal: React.FC<NewManufacturingOrderModalProps> = ({
                   </label>
                   <select
                     value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as ManufacturingOrderFormData['priority'] })}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-dark"
                   >
                     <option value="low">Baja</option>

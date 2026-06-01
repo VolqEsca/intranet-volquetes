@@ -96,43 +96,17 @@ try {
         exit;
     }
 
-    $clientId = $orderData['client_id'];
-
     // Iniciar transacción para operaciones atómicas
     $pdo->beginTransaction();
 
-    // ✅ PASO 1: ACTUALIZAR CONTACTO DEL CLIENTE (si se proporcionó)
-    $clientUpdated = false;
-    if (isset($data['client_contact_person']) || isset($data['client_phone'])) {
-        $clientUpdateFields = [];
-        $clientParams = [':client_id' => $clientId];
-
-        if (array_key_exists('client_contact_person', $data)) {
-            $clientUpdateFields[] = "contact_person = :contact_person";
-            $clientParams[':contact_person'] = $data['client_contact_person'];
-        }
-
-        if (array_key_exists('client_phone', $data)) {
-            $clientUpdateFields[] = "phone = :phone";
-            $clientParams[':phone'] = $data['client_phone'];
-        }
-
-        if (!empty($clientUpdateFields)) {
-            $clientSql = "UPDATE clients SET " . implode(', ', $clientUpdateFields) . " WHERE id = :client_id";
-            $clientStmt = $pdo->prepare($clientSql);
-            $clientStmt->execute($clientParams);
-            $clientUpdated = true;
-        }
-    }
-
-    // ✅ PASO 2: ACTUALIZAR ORDEN DE TRABAJO
+    // ✅ PASO 1: ACTUALIZAR ORDEN DE TRABAJO
     $updateFields = [];
     $params = [':id' => $id];
 
     // Campos permitidos para work_orders
     $allowedFields = [
         'client_id', 'unit_type_id', 'brand', 'model', 'license_plate',
-        'status', 'priority', 'description', 'entry_date', 'notes'
+        'contact_person', 'phone', 'status', 'priority', 'description', 'entry_date', 'notes'
     ];
 
     foreach ($allowedFields as $field) {
@@ -220,7 +194,6 @@ try {
 
     // ✅ PASO 5: REGISTRAR EN HISTORIAL (manejo seguro de sesiones)
     $changes = [];
-    if ($clientUpdated) $changes[] = "Contacto del cliente actualizado";
     if (isset($data['status'])) $changes[] = "Estado: {$data['status']}";
     if (isset($data['priority'])) $changes[] = "Prioridad: {$data['priority']}";
     if (isset($data['department_ids'])) $changes[] = "Departamentos actualizados";
@@ -298,7 +271,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Orden actualizada exitosamente' . ($clientUpdated ? ' (incluyendo contacto del cliente)' : ''),
+        'message' => 'Orden actualizada exitosamente',
         'data' => $order
     ]);
 

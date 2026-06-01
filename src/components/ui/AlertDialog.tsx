@@ -96,7 +96,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   if (!isOpen && !isClosing) return null;
 
   return ReactDOM.createPortal(
-    <div className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+    <div className={`fixed inset-0 z-[60] flex items-center justify-center p-4 ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"

@@ -3,6 +3,8 @@ import { X, Copy, CheckCircle, FileText, Loader2 } from 'lucide-react';
 import { vacationsAPI, MonthlyReportData, WeeklyRange } from '../../../api/vacations';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
+import { Modal } from '../../../components/ui/Modal';
+import { APP_VERSION } from '../../../config/version';
 
 interface Props {
   isOpen: boolean;
@@ -111,7 +113,7 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
     lines.push('------------------------------------------------');
     const now = new Date();
     const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
-    lines.push(`Generado: ${dateStr} | Sistema VERSO v12.5`);
+    lines.push(`Generado: ${dateStr} | Sistema VERSO ${APP_VERSION}`);
 
     return lines.join('\n');
   };
@@ -136,14 +138,12 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
     }
   };
 
-  if (!isOpen) return null;
-
   const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-gray-200">
+    <Modal isOpen={isOpen} onClose={onClose} size="max-w-4xl">
+      <div className="flex flex-col max-h-[85vh]">
         {/* Header corporativo */}
         <div className="flex items-center justify-between px-6 py-4 border-b bg-[#1162a6] text-white rounded-t-xl">
           <div className="flex items-center gap-3">
@@ -227,6 +227,6 @@ export const MonthlyReportModal: React.FC<Props> = ({ isOpen, onClose, year, mon
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };

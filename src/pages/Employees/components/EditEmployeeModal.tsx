@@ -1,6 +1,6 @@
 // src/pages/Employees/components/EditEmployeeModal.tsx - VERSIÓN COMPLETA CORREGIDA
 import React, { useState, useEffect } from 'react';
-import { Modal } from '../../../components/ui/Modal';
+import { Sheet } from '../../../components/ui/Sheet';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, EmployeeFormData, EMPLOYEE_CONSTANTS, Employee } from '../../../api/employees';
 import { apiErrorMessage } from '../../../utils/error';
@@ -132,9 +132,23 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={`Editar: ${employee.full_name}`}>
-      <div className="flex flex-col max-h-[90vh]">
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <Sheet
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Editar: ${employee.full_name}`}
+      size="lg"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={handleClose} variant="subtle" disabled={isSubmitting}>
+            Cancelar
+          </Button>
+          <Button type="button" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? 'Actualizando...' : 'Actualizar'}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
         {submitError && (
           <div className="p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700">
             {submitError}
@@ -461,24 +475,6 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
         </div>
 
       </div>
-      <div className="flex-shrink-0 border-t border-[#e2e8f0] px-6 py-4 flex justify-end gap-3">
-        <Button
-          type="button"
-          onClick={handleClose}
-          variant="subtle"
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Actualizando...' : 'Actualizar'}
-        </Button>
-      </div>
-    </div>
-    </Modal>
+    </Sheet>
   );
 };

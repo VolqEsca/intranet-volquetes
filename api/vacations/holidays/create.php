@@ -1,8 +1,8 @@
 <?php
 // ✅ VERSO v14.1 - Gestión Festivos: Crear con Advertencia Honesta
+require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../cors.php';
 require_once __DIR__ . '/../../auth_check.php';
-require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../permission_check.php';
 require_module_permission('vacations');
 

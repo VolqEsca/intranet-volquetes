@@ -1,6 +1,6 @@
 // src/pages/Employees/components/GenerateDocumentsModal.tsx
 import React, { useState } from 'react';
-import { Modal } from '../../../components/ui/Modal';
+import { Sheet } from '../../../components/ui/Sheet';
 import { Button } from '../../../components/ui/Button';
 import { employeesAPI, Employee } from '../../../api/employees';
 import { apiErrorMessage } from '../../../utils/error';
@@ -103,9 +103,27 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={`Documentos: ${employee.full_name}`} size="max-w-lg">
-      <div className="flex flex-col max-h-[90vh]">
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <Sheet
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Documentos: ${employee.full_name}`}
+      size="sm"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={handleClose} variant="subtle" disabled={isGenerating}>
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={handleGenerate}
+            disabled={isGenerating || selectedDocs.length === 0}
+          >
+            {isGenerating ? 'Generando...' : `Generar ${selectedDocs.length} Documento${selectedDocs.length !== 1 ? 's' : ''}`}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
           {error && (
             <div className="p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700 whitespace-pre-wrap">
               {error}
@@ -144,25 +162,6 @@ export const GenerateDocumentsModal: React.FC<GenerateDocumentsModalProps> = ({
             </p>
           </div>
         </div>
-
-        <div className="flex-shrink-0 border-t border-[#e2e8f0] px-6 py-4 flex justify-end gap-3">
-          <Button
-            type="button"
-            onClick={handleClose}
-            variant="subtle"
-            disabled={isGenerating}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            onClick={handleGenerate}
-            disabled={isGenerating || selectedDocs.length === 0}
-          >
-            {isGenerating ? 'Generando...' : `Generar ${selectedDocs.length} Documento${selectedDocs.length !== 1 ? 's' : ''}`}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+    </Sheet>
   );
 };

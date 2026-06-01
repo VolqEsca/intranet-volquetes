@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Plus, FileText, BarChart3, Filter, Users, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Calendar, Plus, FileText, BarChart3, Users, TrendingUp, TrendingDown, AlertTriangle, ChevronLeft, ChevronRight, User, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
 import { vacationsAPI, CalendarData, Absence, Employee } from '../../api/vacations';
+import { apiClient } from '../../api';
 import { MonthlyCalendarGrid } from './components/MonthlyCalendarGrid';
-import { NewAbsenceModal } from './components/NewAbsenceModal';
-import { EditAbsenceModal } from './components/EditAbsenceModal';
-import { AdjustBalanceModal } from './components/AdjustBalanceModal';
+import { NewAbsenceSheet } from './components/NewAbsenceSheet';
+import { EditAbsenceSheet } from './components/EditAbsenceSheet';
+import { AdjustBalanceSheet } from './components/AdjustBalanceSheet';
 import { MonthlyReportModal } from './components/MonthlyReportModal';
 import { BalancesReportModal } from './components/BalancesReportModal';
 import { IndividualReportModal } from './components/IndividualReportModal';
-import HolidaysConfigModal from './components/HolidaysConfigModal';
 import { apiErrorMessage } from '../../utils/error';
 
 const MONTH_NAMES = [
@@ -26,8 +27,16 @@ export const VacationsPage: React.FC = () => {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
 
+  // ======= Thresholds de conflicto (cargados desde /config/vacations.php) =======
+  const [warningThreshold, setWarningThreshold] = useState(3);
+  const [criticalRemaining, setCriticalRemaining] = useState(2);
+
   // ======= Estados de filtros =======
   const [locationFilter, setLocationFilter] = useState<LocationFilter>('all');
+  const [filterEmployeeId, setFilterEmployeeId] = useState<number | null>(null);
+  const [empSearch, setEmpSearch] = useState('');
+  const [showEmpDropdown, setShowEmpDropdown] = useState(false);
+  const empComboRef = useRef<HTMLDivElement>(null);
 
   // ======= Estados de datos =======
   const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
@@ -37,11 +46,10 @@ export const VacationsPage: React.FC = () => {
   // ======= Estados de modales =======
   const [isNewAbsenceModalOpen, setIsNewAbsenceModalOpen] = useState(false);
   const [isEditAbsenceModalOpen, setIsEditAbsenceModalOpen] = useState(false);
-  const [isAdjustBalanceModalOpen, setIsAdjustBalanceModalOpen] = useState(false);
+  const [isAdjustBalanceSheetOpen, setIsAdjustBalanceSheetOpen] = useState(false);
   const [isMonthlyReportModalOpen, setIsMonthlyReportModalOpen] = useState(false);
   const [isBalancesReportModalOpen, setIsBalancesReportModalOpen] = useState(false);
   const [isIndividualReportModalOpen, setIsIndividualReportModalOpen] = useState(false);
-  const [showHolidaysModal, setShowHolidaysModal] = useState(false);
 
   // ======= Estados de selección =======
   const [selectedEmployeeForBalance, setSelectedEmployeeForBalance] = useState<number | null>(null);
@@ -76,6 +84,27 @@ export const VacationsPage: React.FC = () => {
     loadCalendarData();
   }, [year, month]);
 
+  // Carga thresholds de conflicto desde configuración del sistema (fallback a valores del convenio)
+  useEffect(() => {
+    apiClient.get<{ config: Record<string, { valor: string | number }> }>('/config/vacations.php')
+      .then(res => {
+        const c = res.data.config;
+        if (c.vacation_conflict_warning_threshold) setWarningThreshold(Number(c.vacation_conflict_warning_threshold.valor));
+        if (c.vacation_conflict_critical_remaining) setCriticalRemaining(Number(c.vacation_conflict_critical_remaining.valor));
+      })
+      .catch(() => { /* mantener defaults */ });
+  }, []);
+
+  useEffect(() => {
+    const onClickOutside = (e: MouseEvent) => {
+      if (empComboRef.current && !empComboRef.current.contains(e.target as Node)) {
+        setShowEmpDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
   // ======= Navegación inteligente =======
   const goToToday = () => {
     const now = new Date();
@@ -108,26 +137,34 @@ export const VacationsPage: React.FC = () => {
     (_, i) => today.getFullYear() - 2 + i
   );
 
-  // ======= Datos filtrados por nave (optimizado con useMemo) =======
+  // ======= Datos filtrados por nave y/o empleado =======
   const filteredCalendarData = useMemo(() => {
     if (!calendarData) return null;
-    
-    if (locationFilter === 'all') {
+
+    let employees = calendarData.employees;
+
+    if (locationFilter !== 'all') {
+      employees = employees.filter(emp => emp.location === locationFilter);
+    }
+
+    if (filterEmployeeId !== null) {
+      employees = employees.filter(emp => emp.id === filterEmployeeId);
+    }
+
+    if (employees.length === calendarData.employees.length) {
       return calendarData;
     }
 
-    const filteredEmployees = calendarData.employees.filter(emp => emp.location === locationFilter);
-    const filteredEmployeeIds = new Set(filteredEmployees.map(e => e.id));
-    
+    const employeeIds = new Set(employees.map(e => e.id));
     return {
       ...calendarData,
-      employees: filteredEmployees,
-      absences: calendarData.absences.filter(abs => filteredEmployeeIds.has(abs.employee_id)),
+      employees,
+      absences: calendarData.absences.filter(abs => employeeIds.has(abs.employee_id)),
       balances: Object.fromEntries(
-        Object.entries(calendarData.balances).filter(([empId]) => filteredEmployeeIds.has(Number(empId)))
+        Object.entries(calendarData.balances).filter(([empId]) => employeeIds.has(Number(empId)))
       )
     };
-  }, [calendarData, locationFilter]);
+  }, [calendarData, locationFilter, filterEmployeeId]);
 
   // ======= Métricas mensuales en tiempo real =======
   const metrics = useMemo(() => {
@@ -147,14 +184,26 @@ export const VacationsPage: React.FC = () => {
         .map(abs => abs.employee_id)
     ).size;
 
+    const monthStart = new Date(year, month - 1, 1);
+    const monthEnd = new Date(year, month, 0);
     const totalVacationDays = filteredCalendarData.absences
-      .filter(abs => {
-        const absDate = new Date(abs.start_date);
-        return abs.absence_type === 'vacation' && 
-               absDate.getFullYear() === year && 
-               (absDate.getMonth() + 1) === month;
-      })
-      .reduce((sum, abs) => sum + abs.working_days_count, 0);
+      .filter(abs => abs.absence_type === 'vacation')
+      .reduce((sum, abs) => {
+        const absStart = new Date(abs.start_date + 'T00:00:00');
+        const absEnd = new Date(abs.end_date + 'T00:00:00');
+        if (absStart > monthEnd || absEnd < monthStart) return sum;
+        const clampedStart = absStart < monthStart ? new Date(monthStart) : new Date(absStart);
+        const clampedEnd = absEnd > monthEnd ? new Date(monthEnd) : new Date(absEnd);
+        let days = 0;
+        for (const d = new Date(clampedStart); d <= clampedEnd; d.setDate(d.getDate() + 1)) {
+          const dow = d.getDay();
+          if (dow !== 0 && dow !== 6) {
+            const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            if (!filteredCalendarData.holidays.some(h => h.holiday_date === ds)) days++;
+          }
+        }
+        return sum + days;
+      }, 0);
 
     const employeesWithNegativeBalance = filteredCalendarData.employees
       .filter(emp => {
@@ -187,12 +236,12 @@ export const VacationsPage: React.FC = () => {
 
   const handleBalanceClick = (employeeId: number) => {
     setSelectedEmployeeForBalance(employeeId);
-    setIsAdjustBalanceModalOpen(true);
+    setIsAdjustBalanceSheetOpen(true);
   };
 
   const handleBalanceAdjustSuccess = () => {
     loadCalendarData();
-    setIsAdjustBalanceModalOpen(false);
+    setIsAdjustBalanceSheetOpen(false);
     setSelectedEmployeeForBalance(null);
   };
 
@@ -226,11 +275,6 @@ export const VacationsPage: React.FC = () => {
   const handleIndividualReportClick = (employee: Employee) => {
     setSelectedEmployeeForReport(employee);
     setIsIndividualReportModalOpen(true);
-  };
-
-  // ✅ v13.1.4: Recargar calendario tras actualizar festivos
-  const handleHolidaysUpdated = () => {
-    loadCalendarData();
   };
 
   // ======= Datos derivados =======
@@ -278,16 +322,6 @@ export const VacationsPage: React.FC = () => {
           </Button>
 
           <Button
-            variant="secondary"
-            size="md"
-            onClick={() => setShowHolidaysModal(true)}
-            title="Configurar festivos y días no laborables"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Festivos
-          </Button>
-
-          <Button
             onClick={() => {
               setPrefilledDate(null);
               setPrefilledEmployeeId(null);
@@ -300,12 +334,56 @@ export const VacationsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ======= Navegación + Filtros + Métricas en card ======= */}
-      <div className="bg-white rounded-xl border border-[#e2e8f0] p-4 space-y-4">
-        {/* Fila 1: Navegación + Filtros */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* ======= Métricas — grid de 4 cards (mismo Card que OR/Empleados) ======= */}
+      {metrics && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <Card className="p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#1162a6]/10 flex items-center justify-center flex-shrink-0">
+              <Users className="w-4 h-4 text-[#1162a6]" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{metrics.employeesWithAbsences}</div>
+              <div className="text-xs text-gray-400">Con ausencias este mes</div>
+            </div>
+          </Card>
+
+          <Card className="p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#5487c0]/10 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 text-[#5487c0]" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{metrics.totalVacationDays}</div>
+              <div className="text-xs text-gray-400">Días de vacaciones</div>
+            </div>
+          </Card>
+
+          <Card className="p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#dc2626]/10 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-4 h-4 text-[#dc2626]" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{metrics.employeesWithNegativeBalance}</div>
+              <div className="text-xs text-gray-400">Con saldo negativo</div>
+            </div>
+          </Card>
+
+          <Card className="p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#a2bade]/30 flex items-center justify-center flex-shrink-0">
+              <TrendingDown className="w-4 h-4 text-[#dc2626]" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{metrics.employeesLowBalance}</div>
+              <div className="text-xs text-gray-400">Saldo bajo (≤5 días)</div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* ======= Navegación + Filtros — card compacta, fila única ======= */}
+      <div className="bg-white rounded-xl border border-[#e2e8f0] px-4 py-3">
+        <div className="flex items-center flex-wrap gap-3">
           {/* Navegación mes/año */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
             <button
               onClick={goToPreviousMonth}
               className="p-2 rounded-lg hover:bg-gray-50 text-gray-600 border border-[#e2e8f0] bg-white transition-colors"
@@ -357,10 +435,64 @@ export const VacationsPage: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filtros por Nave */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
-            <div className="flex gap-1 p-1 bg-gray-50 rounded-lg border border-[#e2e8f0]">
+          <div className="w-px h-5 bg-[#e2e8f0] flex-shrink-0" />
+
+          {/* Filtros: empleado + nave */}
+          <div className="flex items-center gap-2 flex-1">
+
+            {/* Combobox empleado — mismo contenedor pill que los toggles de nave */}
+            {calendarData && (
+              <div className="relative flex-1" ref={empComboRef}>
+                <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-lg border border-[#e2e8f0]">
+                  <User className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-1.5" />
+                  <input
+                    type="text"
+                    className="text-sm font-semibold text-gray-700 outline-none min-w-[200px] max-w-[220px] placeholder:text-gray-400 bg-transparent px-1.5 py-1"
+                    placeholder="Todos"
+                    value={filterEmployeeId
+                      ? (calendarData.employees.find(e => e.id === filterEmployeeId)?.full_name ?? '')
+                      : empSearch}
+                    onChange={(e) => { setEmpSearch(e.target.value); setFilterEmployeeId(null); setShowEmpDropdown(true); }}
+                    onFocus={() => setShowEmpDropdown(true)}
+                  />
+
+                  {filterEmployeeId && (
+                    <button
+                      onClick={() => { setFilterEmployeeId(null); setEmpSearch(''); }}
+                      className="p-1 text-gray-400 hover:text-gray-600 flex-shrink-0 rounded"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+                {showEmpDropdown && (
+                  <ul className="absolute top-full mt-1 left-0 z-20 w-full min-w-[220px] bg-white border border-[#e2e8f0] rounded-lg shadow-lg max-h-52 overflow-y-auto">
+                    <li
+                      className="px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 cursor-pointer border-b border-[#e2e8f0]"
+                      onMouseDown={() => { setFilterEmployeeId(null); setEmpSearch(''); setShowEmpDropdown(false); }}
+                    >
+                      Todos los empleados
+                    </li>
+                    {calendarData.employees
+                      .filter(emp => emp.full_name.toLowerCase().includes(empSearch.toLowerCase()))
+                      .map(emp => (
+                        <li
+                          key={emp.id}
+                          className={`px-3 py-2 text-sm cursor-pointer hover:bg-[#1162a6]/5 hover:text-[#1162a6] ${
+                            filterEmployeeId === emp.id ? 'bg-[#1162a6]/10 text-[#1162a6] font-semibold' : 'text-gray-700'
+                          }`}
+                          onMouseDown={() => { setFilterEmployeeId(emp.id); setEmpSearch(''); setShowEmpDropdown(false); }}
+                        >
+                          {emp.full_name}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Toggle por nave */}
+            <div className="flex gap-1 p-1 bg-gray-50 rounded-lg border border-[#e2e8f0] ml-auto">
               <Button
                 variant="toggle"
                 active={locationFilter === 'all'}
@@ -391,51 +523,6 @@ export const VacationsPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Fila 2: Métricas en tiempo real */}
-        {metrics && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1 border-t border-[#e2e8f0]">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#1162a6] flex items-center justify-center flex-shrink-0">
-                <Users className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-[#1162a6]">{metrics.employeesWithAbsences}</div>
-                <div className="text-xs text-gray-400">Con ausencias este mes</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#5487c0] flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-[#5487c0]">{metrics.totalVacationDays}</div>
-                <div className="text-xs text-gray-400">Días de vacaciones</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#dc2626] flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-[#dc2626]">{metrics.employeesWithNegativeBalance}</div>
-                <div className="text-xs text-gray-400">Con saldo negativo</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#a2bade] flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-[#5487c0]">{metrics.employeesLowBalance}</div>
-                <div className="text-xs text-gray-400">Saldo bajo (≤5 días)</div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ======= Calendario ======= */}
@@ -456,26 +543,25 @@ export const VacationsPage: React.FC = () => {
             </Button>
           </div>
         ) : filteredCalendarData ? (
-          <div className="bg-white rounded-xl shadow-sm border border-[#e2e8f0] overflow-hidden">
-            <MonthlyCalendarGrid
-              currentYear={year}
-              currentMonth={month}
-              data={filteredCalendarData}
-              onBalanceClick={handleBalanceClick}
-              onAbsenceClick={handleAbsenceClick}
-              onCellClick={handleCellClick}
-              activeLocationFilter={locationFilter}
-              onIndividualReportClick={handleIndividualReportClick}
-            />
-          </div>
+          <MonthlyCalendarGrid
+            currentYear={year}
+            currentMonth={month}
+            data={filteredCalendarData}
+            onBalanceClick={handleBalanceClick}
+            onAbsenceClick={handleAbsenceClick}
+            onCellClick={handleCellClick}
+            activeLocationFilter={locationFilter}
+            onIndividualReportClick={handleIndividualReportClick}
+            warningThreshold={warningThreshold}
+          />
         ) : null}
       </div>
 
       {/* ======= Modales ======= */}
 
-      {/* Modal Nueva Ausencia */}
+      {/* Sheet Nueva Ausencia */}
       {calendarData && (
-        <NewAbsenceModal
+        <NewAbsenceSheet
           isOpen={isNewAbsenceModalOpen}
           onClose={() => {
             setIsNewAbsenceModalOpen(false);
@@ -483,17 +569,17 @@ export const VacationsPage: React.FC = () => {
             setPrefilledEmployeeId(null);
           }}
           onSuccess={handleNewAbsenceSuccess}
-          employees={calendarData.employees}
-          balances={calendarData.balances}
           calendarData={calendarData}
           prefilledDate={prefilledDate}
           prefilledEmployeeId={prefilledEmployeeId}
+          warningThreshold={warningThreshold}
+          criticalRemaining={criticalRemaining}
         />
       )}
 
-      {/* Modal Editar Ausencia */}
+      {/* Sheet Editar Ausencia */}
       {selectedAbsenceForEdit && selectedEmployeeForEdit && calendarData && (
-        <EditAbsenceModal
+        <EditAbsenceSheet
           isOpen={isEditAbsenceModalOpen}
           onClose={handleEditAbsenceClose}
           onSuccess={handleEditAbsenceSuccess}
@@ -501,15 +587,17 @@ export const VacationsPage: React.FC = () => {
           employee={selectedEmployeeForEdit}
           balance={calendarData.balances[selectedEmployeeForEdit.id] || null}
           calendarData={calendarData}
+          warningThreshold={warningThreshold}
+          criticalRemaining={criticalRemaining}
         />
       )}
 
       {/* Modal Ajustar Saldo */}
       {selectedEmployeeForBalanceData && selectedBalanceForAdjust && (
-        <AdjustBalanceModal
-          isOpen={isAdjustBalanceModalOpen}
+        <AdjustBalanceSheet
+          isOpen={isAdjustBalanceSheetOpen}
           onClose={() => {
-            setIsAdjustBalanceModalOpen(false);
+            setIsAdjustBalanceSheetOpen(false);
             setSelectedEmployeeForBalance(null);
           }}
           onSuccess={handleBalanceAdjustSuccess}
@@ -555,14 +643,6 @@ export const VacationsPage: React.FC = () => {
         />
       )}
 
-      {/* ✅ NUEVO v13.1.4: Modal Configuración de Festivos */}
-      {showHolidaysModal && (
-        <HolidaysConfigModal
-          isOpen={showHolidaysModal}
-          onClose={() => setShowHolidaysModal(false)}
-          onHolidaysUpdated={handleHolidaysUpdated}
-        />
-      )}
     </div>
   );
 };

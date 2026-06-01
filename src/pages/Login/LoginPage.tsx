@@ -18,17 +18,43 @@ const formatHHMM = (date: Date): string =>
 const formatSS = (date: Date): string =>
   String(date.getSeconds()).padStart(2, "0");
 
-export const LoginPage = () => {
-  const { login, isLoading } = useAuth();
-  const [error, setError] = useState<string>("");
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+const LiveClock: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  return (
+    <>
+      <p className="text-xs uppercase tracking-widest text-white/80">
+        {getGreeting(currentTime)}
+      </p>
+
+      <div className="w-12 h-px bg-white/30 my-4" />
+
+      <div className="flex items-end gap-2">
+        <span className="text-8xl font-bold text-white tabular-nums leading-none font-mono">
+          {formatHHMM(currentTime)}
+        </span>
+        <span className="text-3xl text-white/80 tabular-nums leading-none pb-2 font-mono">
+          {formatSS(currentTime)}
+        </span>
+      </div>
+
+      <p className="text-base text-white/80 capitalize font-medium mt-4">
+        {formatDate(currentTime)}
+      </p>
+    </>
+  );
+};
+
+export const LoginPage = () => {
+  const { login, isLoading } = useAuth();
+  const [error, setError] = useState<string>("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -226,24 +252,7 @@ export const LoginPage = () => {
             }}
           />
 
-          <p className="text-xs uppercase tracking-widest text-white/80">
-            {getGreeting(currentTime)}
-          </p>
-
-          <div className="w-12 h-px bg-white/30 my-4" />
-
-          <div className="flex items-end gap-2">
-            <span className="text-8xl font-bold text-white tabular-nums leading-none font-mono">
-              {formatHHMM(currentTime)}
-            </span>
-            <span className="text-3xl text-white/80 tabular-nums leading-none pb-2 font-mono">
-              {formatSS(currentTime)}
-            </span>
-          </div>
-
-          <p className="text-base text-white/80 capitalize font-medium mt-4">
-            {formatDate(currentTime)}
-          </p>
+          <LiveClock />
 
         </div>
 
